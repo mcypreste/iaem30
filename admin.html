@@ -728,74 +728,102 @@ async function sbSave(cfg) {
   } catch(e){return false;}
 }
 
-// AUTH — senha sincronizada via Supabase (hash SHA-256)
-const DEFAULT_HASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+const DEFAULT_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
 
 async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  } catch(e) { return ''; }
 }
 
-async function getRemoteHash() {
-  // Reads adminPasswordHash from the config stored in Supabase
+async function getStoredHash() {
   try {
-    const r = await fetch(`${SB}/rest/v1/iaem30_config?id=eq.1&select=config`,{headers:H});
+    const r = await fetch(SB + '/rest/v1/iaem30_config?id=eq.1&select=config', {headers: H});
+    if (!r.ok) throw new Error('fetch failed');
     const rows = await r.json();
-    return rows?.[0]?.config?.adminPasswordHash || DEFAULT_HASH;
-  } catch(e) {
-    // Fallback: check localStorage cache
-    return localStorage.getItem('iaem30_pw_hash') || DEFAULT_HASH;
-  }
+    const h = rows?.[0]?.config?.adminPasswordHash;
+    if (h) { localStorage.setItem('iaem30_pw_hash', h); return h; }
+  } catch(e) {}
+  // Fallback to local cache
+  return localStorage.getItem('iaem30_pw_hash') || DEFAULT_HASH;
 }
 
 async function doLogin() {
-  const u=document.getElementById('lu').value.trim();
-  const p=document.getElementById('lp').value;
-  const btn=document.getElementById('btn-login');
-  btn.disabled=true; btn.textContent='Verificando…';
-  const inputHash = await sha256(p);
-  const remoteHash = await getRemoteHash();
-  if(u==='admin' && inputHash===remoteHash){
-    localStorage.setItem('iaem30_pw_hash', remoteHash); // cache local
-    sessionStorage.setItem('ia_ok','1');
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('admin-screen').style.display='flex';
+  const u   = document.getElementById('lu').value.trim();
+  const p   = document.getElementById('lp').value;
+  const btn = document.getElementById('btn-login');
+  const err = document.getElementById('lerr');
+
+  if (!u || !p) {
+    err.textContent = 'Preencha usuário e senha.';
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Verificando…';
+
+  const inputHash  = await sha256(p);
+  const storedHash = await getStoredHash();
+
+  if (u === 'admin' && inputHash === storedHash) {
+    sessionStorage.setItem('ia_ok', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'flex';
     await init();
   } else {
-    btn.disabled=false; btn.textContent='Entrar no Painel';
-    const e=document.getElementById('lerr'); e.style.display='block';
-    setTimeout(()=>e.style.display='none',3000);
+    btn.disabled = false;
+    btn.textContent = 'Entrar no Painel';
+    err.textContent = 'Usuário ou senha incorretos.';
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 3000);
   }
 }
 
-function doLogout(){sessionStorage.removeItem('ia_ok');location.reload();}
+function doLogout() {
+  sessionStorage.removeItem('ia_ok');
+  location.reload();
+}
 
-async function changePw(){
-  const o=document.getElementById('s-old').value;
-  const n=document.getElementById('s-new').value;
-  const c=document.getElementById('s-cf').value;
-  const oldHash = await sha256(o);
-  const remoteHash = await getRemoteHash();
-  if(oldHash!==remoteHash){toast('Senha atual incorreta','error');return;}
-  if(n.length<6){toast('Mínimo 6 caracteres','error');return;}
-  if(n!==c){toast('Senhas não coincidem','error');return;}
+async function changePw() {
+  const o = document.getElementById('s-old').value;
+  const n = document.getElementById('s-new').value;
+  const c = document.getElementById('s-cf').value;
+  if (!o || !n || !c) { toast('Preencha todos os campos', 'error'); return; }
+  if (n.length < 6)   { toast('Mínimo 6 caracteres', 'error'); return; }
+  if (n !== c)        { toast('Senhas não coincidem', 'error'); return; }
+
+  const oldHash    = await sha256(o);
+  const storedHash = await getStoredHash();
+  if (oldHash !== storedHash) { toast('Senha atual incorreta', 'error'); return; }
+
   const newHash = await sha256(n);
-  // Save hash inside the config JSON in Supabase
-  C.adminPasswordHash = newHash;
-  const ok = await sbSave(C);
-  if(ok){
-    localStorage.setItem('iaem30_pw_hash', newHash);
-    toast('✓ Senha alterada e sincronizada em todos os dispositivos!');
-  } else {
-    toast('Erro ao salvar no Supabase. Tente novamente.','error');
-  }
-  ['s-old','s-new','s-cf'].forEach(id=>document.getElementById(id).value='');
+  // Save to Supabase inside config
+  try {
+    const r = await fetch(SB + '/rest/v1/iaem30_config?id=eq.1', {
+      method: 'PATCH',
+      headers: {...H, Prefer: 'return=minimal'},
+      body: JSON.stringify({ config: {...(C||{}), adminPasswordHash: newHash} })
+    });
+    if (r.ok) {
+      localStorage.setItem('iaem30_pw_hash', newHash);
+      toast('✓ Senha alterada e sincronizada!');
+      ['s-old','s-new','s-cf'].forEach(id => document.getElementById(id).value = '');
+    } else {
+      toast('Erro ao salvar no Supabase', 'error');
+    }
+  } catch(e) { toast('Erro de conexão', 'error'); }
 }
 
-window.addEventListener('load',()=>{
-  if(sessionStorage.getItem('ia_ok')==='1'){
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('admin-screen').style.display='flex';
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('ia_ok') === '1') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'flex';
     init();
   }
 });
