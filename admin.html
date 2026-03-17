@@ -1,198 +1,190 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin — IA em 30</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    :root{--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a26;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--accent:#7c5cfc;--accent2:#a78bfa;--text:#f0eeff;--muted:#8b86a8;--muted2:#5a5670;--green:#10b981;--red:#ef4444;--gold:#f59e0b;--sidebar-w:260px;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;}
-    h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;font-weight:700;}
-    /* LOGIN */
-    #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(124,92,252,0.1) 0%,transparent 60%);}
-    .login-card{width:400px;background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:48px;}
-    .login-logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:8px;}
-    .login-logo span{color:var(--accent);}
-    .login-sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:36px;}
-    .fg{margin-bottom:20px;}
-    .fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em;}
-    .fg input{width:100%;padding:12px 16px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:15px;font-family:'DM Sans',sans-serif;transition:border-color .2s;outline:none;}
-    .fg input:focus{border-color:var(--accent);}
-    .btn-login{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;transition:all .2s;}
-    .btn-login:hover{background:#8b6dfd;}
-    .btn-login:disabled{opacity:.6;cursor:wait;}
-    .login-err{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:16px;display:none;}
-    .login-hint{text-align:center;color:var(--muted2);font-size:12px;margin-top:16px;}
-    /* ADMIN */
-    #admin-screen{display:none;min-height:100vh;}
-    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:50;}
-    .sb-header{padding:24px 20px;border-bottom:1px solid var(--border);}
-    .sb-logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
-    .sb-logo span{color:var(--accent);}
-    .sb-role{font-size:11px;color:var(--muted2);margin-top:2px;text-transform:uppercase;letter-spacing:0.08em;}
-    .sb-conn{display:inline-flex;align-items:center;gap:5px;font-size:10px;margin-top:6px;color:var(--muted2);}
-    .sb-dot{width:6px;height:6px;border-radius:50%;background:var(--muted2);transition:background .3s;}
-    .sb-dot.ok{background:var(--green);}
-    .sb-nav{flex:1;padding:16px 12px;overflow-y:auto;}
-    .nav-sec{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted2);padding:8px 8px 6px;font-weight:600;}
-    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s;margin-bottom:2px;}
-    .nav-item:hover{background:var(--surface2);color:var(--text);}
-    .nav-item.active{background:rgba(124,92,252,0.12);color:var(--accent2);font-weight:500;}
-    .sb-foot{padding:16px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
-    .btn-site,.btn-out{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:13px;cursor:pointer;transition:all .15s;border:none;background:transparent;text-decoration:none;font-family:'DM Sans',sans-serif;width:100%;}
-    .btn-site{color:var(--accent2);}
-    .btn-site:hover{background:rgba(124,92,252,0.1);}
-    .btn-out{color:var(--red);}
-    .btn-out:hover{background:rgba(239,68,68,0.08);}
-    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column;}
-    .topbar{position:sticky;top:0;z-index:40;background:rgba(10,10,15,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
-    .topbar-title{font-size:17px;font-weight:600;}
-    .topbar-actions{display:flex;gap:12px;align-items:center;}
-    .btn-save{display:flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 20px;cursor:pointer;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;transition:all .2s;}
-    .btn-save:hover{background:#8b6dfd;}
-    .btn-save:disabled{opacity:.6;cursor:wait;}
-    .btn-reset{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:9px 16px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s;}
-    .btn-reset:hover{border-color:var(--red);color:var(--red);}
-    .panel{display:none;padding:32px;flex:1;}
-    .panel.active{display:block;}
-    .pg{display:grid;gap:24px;}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
-    .card-h{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-    .card-h h3{font-size:15px;}
-    .card-b{padding:24px;display:flex;flex-direction:column;gap:20px;}
-    .field{display:flex;flex-direction:column;gap:7px;}
-    .field label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;}
-    .field input,.field textarea{background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical;}
-    .field input:focus,.field textarea:focus{border-color:var(--accent);}
-    .field .hint{font-size:11px;color:var(--muted2);}
-    .fr{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-    .le{display:flex;flex-direction:column;gap:10px;}
-    .li{display:flex;gap:10px;align-items:flex-start;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;}
-    .li-body{flex:1;display:flex;flex-direction:column;gap:8px;}
-    .li-body input,.li-body textarea{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;transition:border-color .2s;width:100%;}
-    .li-body input:focus,.li-body textarea:focus{border-color:var(--accent);}
-    .li-acts{display:flex;flex-direction:column;gap:6px;}
-    .btn-ic{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s;flex-shrink:0;}
-    .btn-ic:hover{border-color:var(--border2);color:var(--text);}
-    .btn-ic.d:hover{border-color:var(--red);color:var(--red);}
-    .btn-add{display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;border:1px dashed var(--border2);color:var(--muted);border-radius:10px;padding:10px;cursor:pointer;font-size:13px;transition:all .2s;width:100%;}
-    .btn-add:hover{border-color:var(--accent2);color:var(--accent2);}
-    .og{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
-    .sc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
-    .sc .sl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
-    .sc .sv{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;}
-    .sc .ss{font-size:12px;color:var(--muted2);margin-top:4px;}
-    .pf{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;color:var(--muted);font-size:14px;}
-    .pl{color:var(--accent2);text-decoration:none;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
-    .pl:hover{text-decoration:underline;}
-    .tag{display:inline-flex;align-items:center;background:rgba(124,92,252,0.1);color:var(--accent2);border:1px solid rgba(124,92,252,0.2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:500;}
-    .tag.g{background:rgba(16,185,129,0.1);color:var(--green);border-color:rgba(16,185,129,0.2);}
-    .star-row{display:flex;gap:4px;}
-    .star-btn{background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted2);transition:color .15s;padding:2px;}
-    .star-btn.on{color:var(--gold);}
-    #toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:14px 20px;display:flex;align-items:center;gap:10px;font-size:14px;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:360px;}
-    #toast.show{transform:translateY(0);opacity:1;}
-    #toast.success{border-color:rgba(16,185,129,0.4);}
-    #toast.error{border-color:rgba(239,68,68,0.4);}
-    @media(max-width:1024px){.og{grid-template-columns:1fr 1fr;}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — IA em 30</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--s:#12121a;--s2:#1a1a26;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--a:#7c5cfc;--a2:#a78bfa;--t:#f0eeff;--m:#8b86a8;--m2:#5a5670;--g:#10b981;--r:#ef4444;--gold:#f59e0b;--W:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:'DM Sans',sans-serif;font-size:15px}
+h1,h2,h3{font-family:'Syne',sans-serif;font-weight:700}
+
+/* LOGIN */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(124,92,252,.1),transparent 60%)}
+.lcard{width:400px;background:var(--s);border:1px solid var(--b2);border-radius:20px;padding:48px}
+.llogo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:6px}
+.llogo span{color:var(--a)}
+.lsub{text-align:center;color:var(--m);font-size:14px;margin-bottom:32px}
+.fg{margin-bottom:18px}
+.fg label{display:block;font-size:12px;color:var(--m);margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.fg input{width:100%;padding:12px 16px;background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--t);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.fg input:focus{border-color:var(--a)}
+.btnl{width:100%;padding:13px;background:var(--a);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;transition:background .2s}
+.btnl:hover{background:#8b6dfd}
+.btnl:disabled{opacity:.6;cursor:wait}
+.lerr{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--r);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:14px;display:none}
+.lhint{text-align:center;color:var(--m2);font-size:12px;margin-top:14px}
+
+/* ADMIN LAYOUT */
+#admin{display:none;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--W);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:50}
+.shead{padding:22px 18px;border-bottom:1px solid var(--b)}
+.slogo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.slogo span{color:var(--a)}
+.srole{font-size:11px;color:var(--m2);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+.sconn{display:flex;align-items:center;gap:5px;font-size:10px;margin-top:5px;color:var(--m2)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--m2)}
+.sdot.ok{background:var(--g)}
+.snav{flex:1;padding:14px 10px;overflow-y:auto}
+.nsec{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--m2);padding:8px 8px 5px;font-weight:600}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--m);font-size:13.5px;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
+.ni:hover{background:var(--s2);color:var(--t)}
+.ni.on{background:rgba(124,92,252,.12);color:var(--a2);font-weight:500}
+.sfoot{padding:14px 10px;border-top:1px solid var(--b);display:flex;flex-direction:column;gap:6px}
+.sbtn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;width:100%;transition:all .15s}
+.sbtn.site{color:var(--a2)}.sbtn.site:hover{background:rgba(124,92,252,.1)}
+.sbtn.out{color:var(--r)}.sbtn.out:hover{background:rgba(239,68,68,.08)}
+
+/* MAIN */
+.main{margin-left:var(--W);min-height:100vh;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:40;background:rgba(10,10,15,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);padding:15px 28px;display:flex;align-items:center;justify-content:space-between}
+.tbtitle{font-size:16px;font-weight:600}
+.tbacts{display:flex;gap:10px;align-items:center}
+.bsave{display:flex;align-items:center;gap:7px;background:var(--a);color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;transition:background .2s}
+.bsave:hover{background:#8b6dfd}
+.bsave:disabled{opacity:.6;cursor:wait}
+.breset{background:none;border:1px solid var(--b2);color:var(--m);padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
+.breset:hover{border-color:var(--r);color:var(--r)}
+
+/* PANELS */
+.panel{display:none;padding:28px;flex:1}
+.panel.on{display:block}
+.pg{display:grid;gap:20px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden}
+.ch{padding:16px 22px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.ch h3{font-size:14.5px}
+.cb{padding:22px;display:flex;flex-direction:column;gap:18px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:11.5px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:.06em}
+.field input,.field textarea,.field select{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13.5px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--a)}
+.field .hint{font-size:11px;color:var(--m2)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.le{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;gap:8px;align-items:flex-start;background:var(--s2);border:1px solid var(--b);border-radius:9px;padding:12px}
+.lib{flex:1;display:flex;flex-direction:column;gap:7px}
+.lib input,.lib textarea{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 11px;color:var(--t);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;width:100%;transition:border-color .2s}
+.lib input:focus,.lib textarea:focus{border-color:var(--a)}
+.lacts{display:flex;flex-direction:column;gap:5px}
+.bic{background:none;border:1px solid var(--b);color:var(--m);border-radius:6px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0}
+.bic:hover{border-color:var(--b2);color:var(--t)}
+.bic.d:hover{border-color:var(--r);color:var(--r)}
+.badd{display:flex;align-items:center;justify-content:center;gap:7px;background:none;border:1px dashed var(--b2);color:var(--m);border-radius:9px;padding:9px;cursor:pointer;font-size:13px;transition:all .2s;width:100%}
+.badd:hover{border-color:var(--a2);color:var(--a2)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px}
+.kpi .kl{font-size:11px;color:var(--m);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.kpi .kv{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
+.kpi .ks{font-size:11.5px;color:var(--m2);margin-top:3px}
+.tag{display:inline-flex;align-items:center;background:rgba(124,92,252,.1);color:var(--a2);border:1px solid rgba(124,92,252,.2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:500}
+.tag.g{background:rgba(16,185,129,.1);color:var(--g);border-color:rgba(16,185,129,.2)}
+.stars{display:flex;gap:3px}
+.star{background:none;border:none;cursor:pointer;font-size:17px;color:var(--m2);padding:1px;transition:color .15s}
+.star.on{color:var(--gold)}
+#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--s2);border:1px solid var(--b2);border-radius:11px;padding:13px 18px;display:flex;align-items:center;gap:9px;font-size:13.5px;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{border-color:rgba(16,185,129,.4)}
+#toast.err{border-color:rgba(239,68,68,.4)}
+code{background:var(--s2);padding:2px 7px;border-radius:5px;font-size:12px;word-break:break-all}
+@media(max-width:1024px){.kpis{grid-template-columns:1fr 1fr}}
+</style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="login-card">
-    <div class="login-logo">IA<span>em30</span></div>
-    <div class="login-sub">Painel de Administração</div>
-    <div class="fg"><label>Usuário</label><input type="text" id="lu" placeholder="admin" autocomplete="username"></div>
-    <div class="fg"><label>Senha</label><input type="password" id="lp" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar no Painel</button>
-    <div class="login-err" id="lerr">Usuário ou senha incorretos.</div>
-    <div class="login-hint">Senha padrão: <code>admin123</code> — sincronizada via Supabase em todos os dispositivos</div>
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div class="llogo">IA<span>em30</span></div>
+    <div class="lsub">Painel de Administração</div>
+    <div class="fg"><label>Usuário</label><input id="lu" type="text" placeholder="admin" autocomplete="username"></div>
+    <div class="fg"><label>Senha</label><input id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btnl" id="btnl" onclick="doLogin()">Entrar no Painel</button>
+    <div class="lerr" id="lerr">Usuário ou senha incorretos.</div>
+    <div class="lhint">Senha padrão: <code>admin123</code></div>
   </div>
 </div>
 
-<div id="admin-screen">
+<!-- ADMIN -->
+<div id="admin">
   <div class="sidebar">
-    <div class="sb-header">
-      <div class="sb-logo">IA<span>em30</span></div>
-      <div class="sb-role">Admin Dashboard</div>
-      <div class="sb-conn"><span class="sb-dot" id="sb-dot"></span><span id="sb-txt">Verificando...</span></div>
+    <div class="shead">
+      <div class="slogo">IA<span>em30</span></div>
+      <div class="srole">Admin</div>
+      <div class="sconn"><span class="sdot" id="sdot"></span><span id="stxt">Verificando...</span></div>
     </div>
-    <nav class="sb-nav">
-      <div class="nav-sec">Visão Geral</div>
-      <div class="nav-item active" onclick="showPanel('dashboard',this)">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>
-        Dashboard
-      </div>
-      <div class="nav-sec" style="margin-top:16px">Conteúdo</div>
-      <div class="nav-item" onclick="showPanel('general',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M4 6h16M4 12h10M4 18h7"/></svg>Geral & Textos</div>
-      <div class="nav-item" onclick="showPanel('hero',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M3 9l9-7 9 7v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>Hero & CTA</div>
-      <div class="nav-item" onclick="showPanel('benefits',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>Benefícios</div>
-      <div class="nav-item" onclick="showPanel('weeks',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M16 2v4M8 2v4M3 10h18"/></svg>Semanas & Conteúdo</div>
-      <div class="nav-item" onclick="showPanel('monetize',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Monetização</div>
-      <div class="nav-item" onclick="showPanel('testimonials',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Depoimentos</div>
-      <div class="nav-item" onclick="showPanel('pricing',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Preço & Compra</div>
-      <div class="nav-item" onclick="showPanel('faq',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>FAQ</div>
-      <div class="nav-item" onclick="showPanel('conversion',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Conversão & Urgência</div>
-      <div class="nav-item" onclick="showPanel('fornotfor',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Para quem é</div>
-      <div class="nav-item" onclick="showPanel('bonus',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><polyline stroke="currentColor" stroke-width="1.8" stroke-linecap="round" points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 22V7m0 0H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zm0 0h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Bônus</div>
-      <div class="nav-item" onclick="showPanel('sales',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vendas</div>
-      <div class="nav-item" onclick="showPanel('analytics',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Analytics</div>
-      <div class="nav-item" onclick="showPanel('conversion',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Conversão & Urgência</div>
-      <div class="nav-item" onclick="showPanel('fornotfor',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/></svg>Para quem é</div>
-      <div class="nav-item" onclick="showPanel('bonus',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><polyline stroke="currentColor" stroke-width="1.8" stroke-linecap="round" points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 22V7"/></svg>Bônus</div>
-      <div class="nav-item" onclick="showPanel('thankyou',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline stroke="currentColor" stroke-width="1.8" stroke-linecap="round" points="22 4 12 14.01 9 11.01"/></svg>Página Obrigado</div>
-      <div class="nav-item" onclick="showPanel('coupons',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Cupons</div>
-      <div class="nav-item" onclick="showPanel('notifications',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notif. de Vendas</div>
-      <div class="nav-item" onclick="showPanel('sales',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Vendas</div>
-      <div class="nav-item" onclick="showPanel('analytics',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Analytics</div>
-      <div class="nav-sec" style="margin-top:16px">Sistema</div>
-      <div class="nav-item" onclick="showPanel('settings',this)"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path stroke="currentColor" stroke-width="1.8" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</div>
+    <nav class="snav">
+      <div class="nsec">Geral</div>
+      <button class="ni on" onclick="go('dash',this)">📊 Dashboard</button>
+      <button class="ni" onclick="go('geral',this)">📝 Textos & Geral</button>
+      <button class="ni" onclick="go('hero',this)">🏠 Hero & CTA</button>
+      <button class="ni" onclick="go('preco',this)">💰 Preço & Compra</button>
+      <div class="nsec" style="margin-top:14px">Conteúdo</div>
+      <button class="ni" onclick="go('beneficios',this)">✅ Benefícios</button>
+      <button class="ni" onclick="go('semanas',this)">📅 Semanas & Aprend.</button>
+      <button class="ni" onclick="go('monetize',this)">💡 Monetização</button>
+      <button class="ni" onclick="go('depoimentos',this)">💬 Depoimentos</button>
+      <button class="ni" onclick="go('faq',this)">❓ FAQ</button>
+      <div class="nsec" style="margin-top:14px">Conversão</div>
+      <button class="ni" onclick="go('conversion',this)">⚡ Urgência & Popups</button>
+      <button class="ni" onclick="go('paraquem',this)">👥 Para quem é</button>
+      <button class="ni" onclick="go('bonus',this)">🎁 Bônus</button>
+      <button class="ni" onclick="go('obrigado',this)">🎉 Pág. Obrigado</button>
+      <div class="nsec" style="margin-top:14px">Dados</div>
+      <button class="ni" onclick="go('vendas',this)">💳 Vendas</button>
+      <button class="ni" onclick="go('cupons',this)">🎟️ Cupons</button>
+      <button class="ni" onclick="go('notifs',this)">🔔 Notif. Vendas</button>
+      <button class="ni" onclick="go('analytics',this)">📈 Analytics</button>
+      <div class="nsec" style="margin-top:14px">Sistema</div>
+      <button class="ni" onclick="go('config',this)">⚙️ Configurações</button>
     </nav>
-    <div class="sb-foot">
-      <a href="index.html" target="_blank" class="btn-site"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline stroke="currentColor" stroke-width="2" points="15 3 21 3 21 9"/><line stroke="currentColor" stroke-width="2" stroke-linecap="round" x1="10" y1="14" x2="21" y2="3"/></svg>Ver Site</a>
-      <button class="btn-out" onclick="doLogout()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button>
+    <div class="sfoot">
+      <a href="index.html" target="_blank" class="sbtn site">↗ Ver Site</a>
+      <button class="sbtn out" onclick="doLogout()">← Sair</button>
     </div>
   </div>
 
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title" id="ptitle">Dashboard</div>
-      <div class="topbar-actions">
-        <button class="btn-reset" onclick="confirmReset()">Resetar Padrões</button>
-        <button class="btn-save" id="btn-save" onclick="saveAll()">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline stroke="currentColor" stroke-width="2" points="17 21 17 13 7 13 7 21"/><polyline stroke="currentColor" stroke-width="2" points="7 3 7 8 15 8"/></svg>
-          Salvar Tudo
-        </button>
+      <div class="tbtitle" id="ptitle">Dashboard</div>
+      <div class="tbacts">
+        <button class="breset" onclick="confirmReset()">Resetar Padrões</button>
+        <button class="bsave" id="bsave" onclick="saveAll()">💾 Salvar Tudo</button>
       </div>
     </div>
 
     <!-- DASHBOARD -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="og">
-        <div class="sc"><div class="sl">Preço atual</div><div class="sv" id="d-price">R$19,90</div><div class="ss">Produto</div></div>
-        <div class="sc"><div class="sl">Benefícios</div><div class="sv" id="d-ben">6</div><div class="ss">Cards ativos</div></div>
-        <div class="sc"><div class="sl">Depoimentos</div><div class="sv" id="d-test">3</div><div class="ss">Visíveis no site</div></div>
-        <div class="sc"><div class="sl">Último save</div><div class="sv" style="font-size:13px;padding-top:6px" id="d-save">—</div><div class="ss">Supabase</div></div>
+    <div class="panel on" id="p-dash">
+      <div class="kpis">
+        <div class="kpi"><div class="kl">Preço</div><div class="kv" id="kp">R$19,90</div></div>
+        <div class="kpi"><div class="kl">Benefícios</div><div class="kv" id="kb">6</div></div>
+        <div class="kpi"><div class="kl">Depoimentos</div><div class="kv" id="kd">3</div></div>
+        <div class="kpi"><div class="kl">Último save</div><div class="kv" style="font-size:13px;padding-top:5px" id="ks">—</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-        <div class="card">
-          <div class="card-h"><h3>Link do Produto</h3><span class="tag g">Principal</span></div>
-          <div class="card-b">
-            <div class="field"><label>URL de Compra</label><input type="url" id="d-link" placeholder="https://..."><span class="hint">Todos os botões CTA apontam para este link.</span></div>
-            <button class="btn-save" style="width:fit-content" onclick="saveLinkOnly()">Salvar Link Agora</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card"><div class="ch"><h3>Link do Produto</h3><span class="tag g">Principal</span></div>
+          <div class="cb">
+            <div class="field"><label>URL de Compra</label><input type="url" id="d-link" placeholder="https://..."><span class="hint">Todos os botões apontam para este link.</span></div>
+            <button class="bsave" style="width:fit-content" onclick="saveLinkNow()">Salvar Link Agora</button>
           </div>
         </div>
-        <div class="card">
-          <div class="card-h"><h3>Visualizar Site</h3></div>
-          <div class="card-b">
-            <div class="pf">
-              <div style="font-size:28px;margin-bottom:10px">🌐</div>
-              <div style="font-size:13px;margin-bottom:14px">Alterações salvas no Supabase aparecem imediatamente no site em qualquer dispositivo.</div>
-              <a href="index.html" target="_blank" class="pl"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline stroke="currentColor" stroke-width="2" points="15 3 21 3 21 9"/><line stroke="currentColor" stroke-width="2" stroke-linecap="round" x1="10" y1="14" x2="21" y2="3"/></svg>Abrir index.html ↗</a>
+        <div class="card"><div class="ch"><h3>Site ao vivo</h3></div>
+          <div class="cb">
+            <div style="text-align:center;padding:16px;color:var(--m)">
+              <div style="font-size:32px;margin-bottom:10px">🌐</div>
+              <div style="font-size:13px;margin-bottom:12px">Alterações aparecem instantaneamente no site após salvar.</div>
+              <a href="index.html" target="_blank" style="color:var(--a2);font-size:13px;text-decoration:none">Abrir site ↗</a>
             </div>
           </div>
         </div>
@@ -200,1235 +192,822 @@
     </div>
 
     <!-- GERAL -->
-    <div class="panel" id="panel-general">
+    <div class="panel" id="p-geral">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>Identidade & Link</h3></div><div class="card-b"><div class="fr"><div class="field"><label>Nome da Marca</label><input type="text" id="f-footerBrand"></div><div class="field"><label>Link do Produto</label><input type="url" id="f-productLink"></div></div></div></div>
-        <div class="card"><div class="card-h"><h3>Barra de Prova Social</h3></div><div class="card-b">
-          <div class="fr"><div class="field"><label>Stat 1 — Número</label><input type="text" id="f-stat1Num"></div><div class="field"><label>Stat 1 — Label</label><input type="text" id="f-stat1Label"></div></div>
-          <div class="fr"><div class="field"><label>Stat 2 — Número</label><input type="text" id="f-stat2Num"></div><div class="field"><label>Stat 2 — Label</label><input type="text" id="f-stat2Label"></div></div>
-          <div class="fr"><div class="field"><label>Stat 3 — Número</label><input type="text" id="f-stat3Num"></div><div class="field"><label>Stat 3 — Label</label><input type="text" id="f-stat3Label"></div></div>
-          <div class="fr"><div class="field"><label>Stat 4 — Número</label><input type="text" id="f-stat4Num"></div><div class="field"><label>Stat 4 — Label</label><input type="text" id="f-stat4Label"></div></div>
+        <div class="card"><div class="ch"><h3>Identidade</h3></div><div class="cb">
+          <div class="fr">
+            <div class="field"><label>Nome da Marca</label><input type="text" id="f-brand"></div>
+            <div class="field"><label>Link do Produto</label><input type="url" id="f-link"></div>
+          </div>
         </div></div>
-        <div class="card"><div class="card-h"><h3>Seção "Por que este ebook?"</h3></div><div class="card-b"><div class="field"><label>Título</label><input type="text" id="f-whyTitle"></div><div class="field"><label>Subtítulo</label><textarea rows="2" id="f-whySubtitle"></textarea></div></div></div>
-        <div class="card"><div class="card-h"><h3>CTA Final</h3></div><div class="card-b"><div class="field"><label>Título</label><input type="text" id="f-ctaFinalTitle"></div><div class="field"><label>Descrição</label><textarea rows="2" id="f-ctaFinalDesc"></textarea></div><div class="field"><label>Texto do Botão</label><input type="text" id="f-ctaFinalText"></div></div></div>
+        <div class="card"><div class="ch"><h3>Barra de Prova Social</h3></div><div class="cb">
+          <div class="fr"><div class="field"><label>Stat 1 — Número</label><input id="f-s1n"></div><div class="field"><label>Stat 1 — Label</label><input id="f-s1l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 2 — Número</label><input id="f-s2n"></div><div class="field"><label>Stat 2 — Label</label><input id="f-s2l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 3 — Número</label><input id="f-s3n"></div><div class="field"><label>Stat 3 — Label</label><input id="f-s3l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 4 — Número</label><input id="f-s4n"></div><div class="field"><label>Stat 4 — Label</label><input id="f-s4l"></div></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Seção "Por que este ebook?"</h3></div><div class="cb">
+          <div class="field"><label>Título</label><input id="f-whyt"></div>
+          <div class="field"><label>Subtítulo</label><textarea rows="2" id="f-whys"></textarea></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>CTA Final</h3></div><div class="cb">
+          <div class="field"><label>Título</label><input id="f-ctat"></div>
+          <div class="field"><label>Descrição</label><textarea rows="2" id="f-ctad"></textarea></div>
+          <div class="field"><label>Texto do Botão</label><input id="f-ctab"></div>
+        </div></div>
       </div>
     </div>
 
     <!-- HERO -->
-    <div class="panel" id="panel-hero">
+    <div class="panel" id="p-hero">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>Seção Hero</h3></div><div class="card-b">
-          <div class="field"><label>Badge</label><input type="text" id="f-heroBadge"></div>
-          <div class="field"><label>Título Principal (HTML aceito)</label><textarea rows="3" id="f-heroTitle"></textarea><span class="hint">Use &lt;span class="highlight"&gt;texto&lt;/span&gt; para destacar em roxo.</span></div>
-          <div class="field"><label>Subtítulo</label><textarea rows="3" id="f-heroSubtitle"></textarea></div>
+        <div class="card"><div class="ch"><h3>Seção Hero</h3></div><div class="cb">
+          <div class="field"><label>Badge</label><input id="f-badge"></div>
+          <div class="field"><label>Título (HTML aceito)</label><textarea rows="3" id="f-title"></textarea><span class="hint">Use &lt;span class="highlight"&gt;texto&lt;/span&gt; para roxo.</span></div>
+          <div class="field"><label>Subtítulo</label><textarea rows="3" id="f-sub"></textarea></div>
         </div></div>
-        <div class="card"><div class="card-h"><h3>Botões & Capa do Ebook</h3></div><div class="card-b">
-          <div class="field"><label>Link do Produto</label><input type="url" id="f-productLink2"></div>
-          <div class="field"><label>Texto do Botão Principal</label><input type="text" id="f-heroCtaText"></div>
-          <div class="fr"><div class="field"><label>Título na Capa</label><input type="text" id="f-bookTitle"></div><div class="field"><label>Subtítulo na Capa</label><input type="text" id="f-bookSub"></div></div>
-          <div class="field"><label>Badge de Preço na Capa</label><input type="text" id="f-bookPriceBadge"></div>
+        <div class="card"><div class="ch"><h3>Botões & Capa</h3></div><div class="cb">
+          <div class="field"><label>Link do Produto</label><input type="url" id="f-link2"></div>
+          <div class="field"><label>Texto do Botão Principal</label><input id="f-ctxt"></div>
+          <div class="fr"><div class="field"><label>Título na Capa</label><input id="f-bt"></div><div class="field"><label>Subtítulo na Capa</label><input id="f-bs"></div></div>
+          <div class="field"><label>Badge de Preço na Capa</label><input id="f-bp"></div>
         </div></div>
       </div>
     </div>
 
-    <!-- BENEFITS -->
-    <div class="panel" id="panel-benefits">
-      <div class="card"><div class="card-h"><h3>Cards de Benefícios</h3></div><div class="card-b"><div class="le" id="benefits-editor"></div><button class="btn-add" onclick="addBenefit()">+ Adicionar Benefício</button></div></div>
+    <!-- PRECO -->
+    <div class="panel" id="p-preco">
+      <div class="pg">
+        <div class="card"><div class="ch"><h3>Preço & Link</h3></div><div class="cb">
+          <div class="field"><label>Link do Produto</label><input type="url" id="f-link3"></div>
+          <div class="fr"><div class="field"><label>Preço Antigo</label><input id="f-pold"></div><div class="field"><label>Preço Principal</label><input id="f-pmain"></div></div>
+          <div class="fr"><div class="field"><label>Centavos</label><input id="f-pcents"></div><div class="field"><label>Texto do Botão CTA</label><input id="f-pctxt"></div></div>
+          <div class="field"><label>Texto da Garantia</label><textarea rows="3" id="f-gtxt"></textarea></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Lista de Inclusos (um por linha)</h3></div><div class="cb">
+          <div class="field"><textarea rows="9" id="f-feats"></textarea></div>
+        </div></div>
+      </div>
     </div>
 
-    <!-- WEEKS -->
-    <div class="panel" id="panel-weeks">
+    <!-- BENEFICIOS -->
+    <div class="panel" id="p-beneficios">
+      <div class="card"><div class="ch"><h3>Cards de Benefícios</h3></div><div class="cb">
+        <div class="le" id="e-ben"></div>
+        <button class="badd" onclick="addItem('ben')">+ Adicionar Benefício</button>
+      </div></div>
+    </div>
+
+    <!-- SEMANAS -->
+    <div class="panel" id="p-semanas">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>O que você vai aprender</h3></div><div class="card-b">
-          <div class="field"><label>Título</label><input type="text" id="f-learnTitle"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-learnDesc"></textarea></div>
-          <div class="field"><label>Lista (um item por linha)</label><textarea rows="8" id="f-learnItems"></textarea><span class="hint">Cada linha vira um bullet ✓ na lista.</span></div>
+        <div class="card"><div class="ch"><h3>O que você vai aprender</h3></div><div class="cb">
+          <div class="field"><label>Título</label><input id="f-lt"></div>
+          <div class="field"><label>Descrição</label><textarea rows="2" id="f-ld"></textarea></div>
+          <div class="field"><label>Lista (um por linha)</label><textarea rows="8" id="f-li"></textarea></div>
         </div></div>
-        <div class="card"><div class="card-h"><h3>Semanas do Plano</h3></div><div class="card-b"><div class="le" id="weeks-editor"></div><button class="btn-add" onclick="addWeek()">+ Adicionar Semana</button></div></div>
+        <div class="card"><div class="ch"><h3>Semanas do Plano</h3></div><div class="cb">
+          <div class="le" id="e-wks"></div>
+          <button class="badd" onclick="addItem('wks')">+ Adicionar Semana</button>
+        </div></div>
       </div>
     </div>
 
     <!-- MONETIZE -->
-    <div class="panel" id="panel-monetize">
-      <div class="card"><div class="card-h"><h3>Formas de Monetização</h3></div><div class="card-b">
-        <div class="fr"><div class="field"><label>Título da Seção</label><input type="text" id="f-monetizeTitle"></div><div class="field"><label>Descrição</label><input type="text" id="f-monetizeDesc"></div></div>
-        <div class="le" id="monetize-editor"></div>
-        <button class="btn-add" onclick="addMonetize()">+ Adicionar Item</button>
+    <div class="panel" id="p-monetize">
+      <div class="card"><div class="ch"><h3>Formas de Monetização</h3></div><div class="cb">
+        <div class="fr"><div class="field"><label>Título</label><input id="f-mt"></div><div class="field"><label>Descrição</label><input id="f-md"></div></div>
+        <div class="le" id="e-mon"></div>
+        <button class="badd" onclick="addItem('mon')">+ Adicionar</button>
       </div></div>
     </div>
 
-    <!-- TESTIMONIALS -->
-    <div class="panel" id="panel-testimonials">
-      <div class="card"><div class="card-h"><h3>Depoimentos</h3></div><div class="card-b">
-        <div class="field"><label>Título da Seção</label><input type="text" id="f-testimonialsTitle"></div>
-        <div class="le" id="testimonials-editor"></div>
-        <button class="btn-add" onclick="addTest()">+ Adicionar Depoimento</button>
+    <!-- DEPOIMENTOS -->
+    <div class="panel" id="p-depoimentos">
+      <div class="card"><div class="ch"><h3>Depoimentos</h3></div><div class="cb">
+        <div class="field"><label>Título da Seção</label><input id="f-testt"></div>
+        <div class="le" id="e-test"></div>
+        <button class="badd" onclick="addItem('test')">+ Adicionar Depoimento</button>
       </div></div>
-    </div>
-
-    <!-- PRICING -->
-    <div class="panel" id="panel-pricing">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Preço & Link</h3></div><div class="card-b">
-          <div class="field"><label>Link do Produto</label><input type="url" id="f-productLink3"></div>
-          <div class="fr"><div class="field"><label>Preço Antigo (riscado)</label><input type="text" id="f-priceOld"></div><div class="field"><label>Preço Principal</label><input type="text" id="f-priceMain"></div></div>
-          <div class="fr"><div class="field"><label>Centavos</label><input type="text" id="f-priceCents"></div><div class="field"><label>Texto do Botão CTA</label><input type="text" id="f-pricingCtaText"></div></div>
-          <div class="field"><label>Texto da Garantia</label><textarea rows="3" id="f-guaranteeText"></textarea></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Lista de Inclusos</h3></div><div class="card-b"><div class="field"><label>Itens (um por linha)</label><textarea rows="10" id="f-pricingFeatures"></textarea><span class="hint">Cada linha vira um item ✓.</span></div></div></div>
-      </div>
     </div>
 
     <!-- FAQ -->
-    <div class="panel" id="panel-faq">
-      <div class="card"><div class="card-h"><h3>Perguntas Frequentes</h3></div><div class="card-b"><div class="le" id="faq-editor"></div><button class="btn-add" onclick="addFaq()">+ Adicionar Pergunta</button></div></div>
+    <div class="panel" id="p-faq">
+      <div class="card"><div class="ch"><h3>Perguntas Frequentes</h3></div><div class="cb">
+        <div class="le" id="e-faq"></div>
+        <button class="badd" onclick="addItem('faq')">+ Adicionar Pergunta</button>
+      </div></div>
     </div>
 
-
     <!-- CONVERSION -->
-    <div class="panel" id="panel-conversion">
+    <div class="panel" id="p-conversion">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>Timer de Urgência</h3></div><div class="card-b">
+        <div class="card"><div class="ch"><h3>Timer de Urgência</h3></div><div class="cb">
           <div class="fr">
-            <div class="field"><label>Exibir barra de urgência?</label>
-              <select id="f-showUrgencyBar"><option value="true">Sim</option><option value="false">Não</option></select></div>
-            <div class="field"><label>Duração do timer (minutos)</label><input type="number" id="f-urgencyMinutes" min="5" max="1440"></div>
+            <div class="field"><label>Exibir?</label><select id="f-ub"><option value="true">Sim</option><option value="false">Não</option></select></div>
+            <div class="field"><label>Duração (minutos)</label><input type="number" id="f-um" min="5" max="1440"></div>
           </div>
-          <div class="field"><label>Texto da urgência</label><input type="text" id="f-urgencyText" placeholder="Oferta especial expira em"></div>
-          <div class="field"><label>Sufixo da urgência</label><input type="text" id="f-urgencySuffix" placeholder="— garanta o preço antes que suba!"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Modal de Compra</h3></div><div class="card-b">
-          <div class="field"><label>Texto do botão de compra (modal)</label><input type="text" id="f-modalCtaText"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Exit Intent Popup</h3></div><div class="card-b">
-          <div class="field"><label>Título do popup</label><input type="text" id="f-exitTitle"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-exitDesc"></textarea></div>
-          <div class="field"><label>Texto do botão</label><input type="text" id="f-exitCta"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Barra Flutuante (Sticky)</h3></div><div class="card-b">
-          <div class="field"><label>Texto do botão sticky</label><input type="text" id="f-stickyCtaText"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Vídeo de Apresentação</h3></div><div class="card-b">
           <div class="fr">
-            <div class="field"><label>Exibir seção de vídeo?</label>
-              <select id="f-showVideoSection"><option value="false">Não</option><option value="true">Sim</option></select></div>
-            <div class="field"><label>Título da seção</label><input type="text" id="f-videoTitle"></div>
+            <div class="field"><label>Texto</label><input id="f-ut"></div>
+            <div class="field"><label>Sufixo</label><input id="f-us"></div>
           </div>
-          <div class="field"><label>URL do YouTube</label><input type="url" id="f-videoUrl" placeholder="https://www.youtube.com/watch?v=...">
-            <span class="hint">Cole o link do YouTube. O vídeo será embutido automaticamente.</span></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Exit Intent & Modal</h3></div><div class="cb">
+          <div class="field"><label>Título Exit Popup</label><input id="f-xt"></div>
+          <div class="field"><label>Descrição Exit Popup</label><textarea rows="2" id="f-xd"></textarea></div>
+          <div class="field"><label>Botão Exit Popup</label><input id="f-xb"></div>
+          <div class="field"><label>Texto Botão Modal</label><input id="f-mct"></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Notificações & Sticky & Vídeo</h3></div><div class="cb">
+          <div class="fr">
+            <div class="field"><label>Notif. venda ao vivo?</label><select id="f-sn"><option value="true">Sim</option><option value="false">Não</option></select></div>
+            <div class="field"><label>Intervalo (seg)</label><input type="number" id="f-si" min="10" max="120"></div>
+          </div>
+          <div class="field"><label>Texto botão sticky</label><input id="f-sc"></div>
+          <div class="fr">
+            <div class="field"><label>Exibir vídeo?</label><select id="f-vs"><option value="false">Não</option><option value="true">Sim</option></select></div>
+            <div class="field"><label>Título do vídeo</label><input id="f-vt"></div>
+          </div>
+          <div class="field"><label>URL YouTube</label><input type="url" id="f-vu" placeholder="https://youtube.com/watch?v=..."></div>
         </div></div>
       </div>
     </div>
 
-    <!-- FOR / NOT FOR -->
-    <div class="panel" id="panel-fornotfor">
+    <!-- PARA QUEM -->
+    <div class="panel" id="p-paraquem">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>Título da Seção</h3></div><div class="card-b">
-          <div class="field"><label>Título</label><input type="text" id="f-fnfTitle"></div>
+        <div class="card"><div class="ch"><h3>Título</h3></div><div class="cb">
+          <div class="field"><input id="f-fnft"></div>
         </div></div>
-        <div class="card"><div class="card-h"><h3>✅ É para você se... (um por linha)</h3></div><div class="card-b">
-          <div class="field"><textarea rows="6" id="f-forItems"></textarea><span class="hint">Um item por linha.</span></div>
+        <div class="card"><div class="ch"><h3>✅ É para você se... (um por linha)</h3></div><div class="cb">
+          <div class="field"><textarea rows="6" id="f-fi"></textarea></div>
         </div></div>
-        <div class="card"><div class="card-h"><h3>❌ NÃO é para você se... (um por linha)</h3></div><div class="card-b">
-          <div class="field"><textarea rows="5" id="f-notForItems"></textarea><span class="hint">Um item por linha.</span></div>
+        <div class="card"><div class="ch"><h3>❌ NÃO é para você se... (um por linha)</h3></div><div class="cb">
+          <div class="field"><textarea rows="5" id="f-ni"></textarea></div>
         </div></div>
       </div>
     </div>
 
     <!-- BONUS -->
-    <div class="panel" id="panel-bonus">
-      <div class="card"><div class="card-h"><h3>Seção de Bônus</h3></div><div class="card-b">
-        <div class="fr"><div class="field"><label>Título</label><input type="text" id="f-bonusTitle"></div><div class="field"><label>Descrição</label><input type="text" id="f-bonusDesc"></div></div>
-        <div class="le" id="bonus-editor"></div>
-        <button class="btn-add" onclick="addBonus()">+ Adicionar Bônus</button>
+    <div class="panel" id="p-bonus">
+      <div class="card"><div class="ch"><h3>Bônus</h3></div><div class="cb">
+        <div class="fr"><div class="field"><label>Título</label><input id="f-bnt"></div><div class="field"><label>Descrição</label><input id="f-bnd"></div></div>
+        <div class="le" id="e-bon"></div>
+        <button class="badd" onclick="addItem('bon')">+ Adicionar Bônus</button>
       </div></div>
     </div>
 
-
-    <!-- SALES -->
-    <div class="panel" id="panel-sales">
+    <!-- OBRIGADO -->
+    <div class="panel" id="p-obrigado">
       <div class="pg">
-        <!-- KPI row -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-          <div class="sc"><div class="sl">Hoje</div><div class="sv" id="s-today">R$0</div><div class="ss" id="s-today-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Esta semana</div><div class="sv" id="s-week">R$0</div><div class="ss" id="s-week-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Este mês</div><div class="sv" id="s-month">R$0</div><div class="ss" id="s-month-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Total</div><div class="sv" id="s-total">R$0</div><div class="ss" id="s-total-count">0 vendas</div></div>
+        <div class="card"><div class="ch"><h3>Página de Obrigado (pós-compra)</h3></div><div class="cb">
+          <div class="field"><label>Título</label><input id="f-tyt"></div>
+          <div class="field"><label>Descrição</label><textarea rows="2" id="f-tyd"></textarea></div>
+          <div class="field"><label>Próximos Passos (um por linha)</label><textarea rows="6" id="f-tys"></textarea></div>
+          <div class="field"><label>Texto de Compartilhamento</label><input id="f-tys2"></div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Como usar</h3></div><div class="cb">
+          <div style="font-size:13px;color:var(--m);line-height:1.8">
+            Configure a PerfectPay para redirecionar após compra para:<br>
+            <code>https://seusite.com/?purchased=1</code>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- VENDAS -->
+    <div class="panel" id="p-vendas">
+      <div class="pg">
+        <div class="kpis">
+          <div class="kpi"><div class="kl">Hoje</div><div class="kv" id="sv-hj">R$0</div><div class="ks" id="sv-hjc">0 vendas</div></div>
+          <div class="kpi"><div class="kl">Semana</div><div class="kv" id="sv-sm">R$0</div><div class="ks" id="sv-smc">0 vendas</div></div>
+          <div class="kpi"><div class="kl">Mês</div><div class="kv" id="sv-ms">R$0</div><div class="ks" id="sv-msc">0 vendas</div></div>
+          <div class="kpi"><div class="kl">Total</div><div class="kv" id="sv-tt">R$0</div><div class="ks" id="sv-ttc">0 vendas</div></div>
         </div>
-        <!-- API Token config -->
-        <div class="card"><div class="card-h"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-token-status">Não configurado</span></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Para buscar suas vendas automaticamente, gere um token em:<br>
-            <strong style="color:var(--text)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
-            Copie o token gerado e cole aqui. Ele é salvo com segurança no Supabase e nunca fica exposto.
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <input type="password" id="pp-token-input" placeholder="eyJ0eXAiOiJKV1Qi..." style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:monospace;outline:none;min-width:200px">
-            <button class="btn-save" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
+        <div class="card"><div class="ch"><h3>🔑 Token API PerfectPay</h3><span class="tag" id="pp-st">Não configurado</span></div><div class="cb">
+          <div style="font-size:13px;color:var(--m);margin-bottom:10px">PerfectPay → Ferramentas → API → + Adicionar. Cole o token abaixo:</div>
+          <div style="display:flex;gap:10px">
+            <input type="password" id="pp-tk" placeholder="Seu token da API..." style="flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13px;outline:none">
+            <button class="bsave" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
           </div>
         </div></div>
-
-        <!-- Sync card -->
-        <div class="card"><div class="card-h"><h3>🔄 Sincronizar Vendas da PerfectPay</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
-            Busca todas as suas vendas diretamente da API da PerfectPay e salva no painel. Use os filtros para sincronizar um período específico ou clique em Sincronizar Tudo para puxar todas as vendas.
+        <div class="card"><div class="ch"><h3>🔄 Sincronizar Vendas</h3></div><div class="cb">
+          <div class="fr">
+            <div class="field"><label>Data início</label><input type="date" id="sy-from"></div>
+            <div class="field"><label>Data fim</label><input type="date" id="sy-to"></div>
           </div>
-          <div class="fr" style="margin-bottom:16px">
-            <div class="field"><label>Data início</label><input type="date" id="sync-from"></div>
-            <div class="field"><label>Data fim</label><input type="date" id="sync-to"></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="bsave" style="width:fit-content" onclick="syncSales(false)">🔄 Sincronizar Período</button>
+            <button class="bsave" style="width:fit-content;background:var(--s2);border:1px solid var(--b2);color:var(--t)" onclick="syncSales(true)">⬇️ Sincronizar Tudo</button>
           </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn-save" style="width:fit-content" onclick="syncPPSales()">🔄 Sincronizar Período</button>
-            <button class="btn-save" style="width:fit-content;background:var(--surface2);border:1px solid var(--border2);color:var(--text)" onclick="syncPPSales(true)">⬇️ Sincronizar Tudo</button>
-          </div>
-          <div id="sync-result" style="margin-top:14px;font-size:13px;display:none"></div>
+          <div id="sy-res" style="font-size:13px;display:none;margin-top:8px"></div>
         </div></div>
-
-        <!-- Webhook fallback -->
-        <div class="card"><div class="card-h"><h3>🔗 Webhook (automático a cada venda)</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Configure também o webhook para receber vendas em tempo real sem precisar sincronizar manualmente.<br>
-            <strong style="color:var(--text)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <code style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;flex:1;word-break:break-all">
-              https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook
-            </code>
-            <button class="btn-save" style="width:fit-content;padding:9px 16px" onclick="copyWebhook()">📋 Copiar</button>
+        <div class="card"><div class="ch"><h3>🔗 Webhook (tempo real)</h3></div><div class="cb">
+          <div style="font-size:13px;color:var(--m);margin-bottom:10px">PerfectPay → Ferramentas → PostBack/Webhook → cole esta URL:</div>
+          <div style="display:flex;gap:10px">
+            <code style="flex:1;padding:10px">https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook</code>
+            <button class="bsave" style="width:fit-content;padding:9px 14px" onclick="copyHook()">📋 Copiar</button>
           </div>
         </div></div>
-        <!-- Sales table -->
         <div class="card">
-          <div class="card-h">
-            <h3>Últimas vendas</h3>
-            <div style="display:flex;gap:8px;align-items:center">
-              <select id="sales-filter" onchange="loadSales()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--text);font-size:13px;outline:none">
-                <option value="all">Todos os status</option>
-                <option value="approved">Aprovadas</option>
-                <option value="refunded">Reembolsadas</option>
-                <option value="pending">Pendentes</option>
-                <option value="cancelled">Canceladas</option>
+          <div class="ch"><h3>Últimas vendas</h3>
+            <div style="display:flex;gap:8px">
+              <select id="sf" onchange="loadSales()" style="background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:5px 10px;color:var(--t);font-size:13px;outline:none">
+                <option value="all">Todos</option><option value="approved">Aprovadas</option>
+                <option value="refunded">Reembolsos</option><option value="pending">Pendentes</option>
               </select>
-              <button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadSales()">🔄 Atualizar</button>
+              <button class="bsave" style="padding:6px 12px;font-size:12px" onclick="loadSales()">↺</button>
             </div>
           </div>
-          <div class="card-b"><div id="sales-table" style="font-size:13px;color:var(--muted)">Carregando...</div></div>
+          <div class="cb"><div id="sv-tbl" style="font-size:13px;color:var(--m)">Carregando...</div></div>
         </div>
-        <!-- Manual sale entry -->
-        <div class="card"><div class="card-h"><h3>Registrar Venda Manualmente</h3></div><div class="card-b">
-          <div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Use apenas se a PerfectPay não enviar o webhook automaticamente.</div>
+        <div class="card"><div class="ch"><h3>Registrar Manualmente</h3></div><div class="cb">
+          <div class="fr"><div class="field"><label>Nome</label><input id="ms-n"></div><div class="field"><label>Email</label><input type="email" id="ms-e"></div></div>
           <div class="fr">
-            <div class="field"><label>Nome do cliente</label><input type="text" id="ms-name" placeholder="João Silva"></div>
-            <div class="field"><label>Email</label><input type="email" id="ms-email" placeholder="joao@email.com"></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Valor (R$)</label><input type="number" id="ms-amount" placeholder="19.90" step="0.01"></div>
-            <div class="field"><label>Método de pagamento</label>
-              <select id="ms-method" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none">
-                <option value="credit_card">Cartão de Crédito</option>
-                <option value="pix">PIX</option>
-                <option value="boleto">Boleto</option>
+            <div class="field"><label>Valor R$</label><input type="number" id="ms-v" step="0.01"></div>
+            <div class="field"><label>Método</label>
+              <select id="ms-m" style="background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13.5px;outline:none">
+                <option value="credit_card">Cartão</option><option value="pix">PIX</option><option value="boleto">Boleto</option>
               </select>
             </div>
           </div>
-          <button class="btn-save" style="width:fit-content" onclick="addManualSale()">Registrar Venda</button>
+          <button class="bsave" style="width:fit-content" onclick="addSale()">Registrar Venda</button>
         </div></div>
       </div>
     </div>
+
+    <!-- CUPONS -->
+    <div class="panel" id="p-cupons">
+      <div class="pg">
+        <div class="card"><div class="ch"><h3>Criar Cupom</h3></div><div class="cb">
+          <div class="fr">
+            <div class="field"><label>Código</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
+            <div class="field"><label>Desconto %</label><input type="number" id="cp-p" value="20" min="1" max="99"></div>
+          </div>
+          <div class="fr">
+            <div class="field"><label>Máx. Usos</label><input type="number" id="cp-m" value="999"></div>
+            <div class="field" style="justify-content:flex-end"><button class="bsave" style="width:100%;margin-top:22px" onclick="createCoupon()">Criar Cupom</button></div>
+          </div>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Cupons</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadCoupons()">↺</button></div>
+          <div class="cb"><div id="cp-lst" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFS -->
+    <div class="panel" id="p-notifs">
+      <div class="pg">
+        <div class="card"><div class="ch"><h3>Adicionar Notificação</h3></div><div class="cb">
+          <div class="fr"><div class="field"><label>Nome</label><input id="nt-n" placeholder="João S."></div><div class="field"><label>Cidade</label><input id="nt-c" placeholder="São Paulo"></div></div>
+          <button class="bsave" style="width:fit-content" onclick="addNotif()">Adicionar</button>
+        </div></div>
+        <div class="card"><div class="ch"><h3>Notificações</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadNotifs()">↺</button></div>
+          <div class="cb"><div id="nt-lst" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ANALYTICS -->
-    <div class="panel" id="panel-analytics">
+    <div class="panel" id="p-analytics">
       <div class="pg">
-        <div class="card"><div class="card-h"><h3>Resumo (últimas 24h)</h3></div><div class="card-b">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px" id="analytics-stats">
-            <div class="sc"><div class="sl">Visitantes</div><div class="sv" id="an-visitors">—</div></div>
-            <div class="sc"><div class="sl">Cliques CTA</div><div class="sv" id="an-cta">—</div></div>
-            <div class="sc"><div class="sl">Taxa de Clique</div><div class="sv" id="an-rate">—</div></div>
-            <div class="sc"><div class="sl">Mobile vs Desktop</div><div class="sv" id="an-device" style="font-size:14px;padding-top:4px">—</div></div>
-          </div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Últimas visitas</h3><button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadAnalytics()">🔄 Atualizar</button></div><div class="card-b">
-          <div id="analytics-table" style="font-size:13px;color:var(--muted)">Carregando...</div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Origens de tráfego</h3></div><div class="card-b">
-          <div id="analytics-sources" style="font-size:13px;color:var(--muted)">Carregando...</div>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- CONVERSION -->
-    <div class="panel" id="panel-conversion">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Timer de Urgência</h3></div><div class="card-b">
-          <div class="fr">
-            <div class="field"><label>Exibir barra?</label><select id="f-showUrgencyBar"><option value="true">Sim</option><option value="false">Não</option></select></div>
-            <div class="field"><label>Duração (minutos)</label><input type="number" id="f-urgencyMinutes" min="5" max="1440"></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Texto</label><input type="text" id="f-urgencyText"></div>
-            <div class="field"><label>Sufixo</label><input type="text" id="f-urgencySuffix"></div>
-          </div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Modal de Compra</h3></div><div class="card-b">
-          <div class="field"><label>Texto do botão CTA no modal</label><input type="text" id="f-modalCtaText"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Exit Intent Popup</h3></div><div class="card-b">
-          <div class="field"><label>Título</label><input type="text" id="f-exitTitle"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-exitDesc"></textarea></div>
-          <div class="field"><label>Texto do botão</label><input type="text" id="f-exitCta"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Notificações de Venda ao Vivo</h3></div><div class="card-b">
-          <div class="fr">
-            <div class="field"><label>Exibir notificações?</label><select id="f-showSaleNotifications"><option value="true">Sim</option><option value="false">Não</option></select></div>
-            <div class="field"><label>Intervalo (segundos)</label><input type="number" id="f-saleNotifInterval" min="10" max="120"></div>
-          </div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Barra Sticky & Vídeo</h3></div><div class="card-b">
-          <div class="field"><label>Texto do botão sticky</label><input type="text" id="f-stickyCtaText"></div>
-          <div class="fr">
-            <div class="field"><label>Exibir seção de vídeo?</label><select id="f-showVideoSection"><option value="false">Não</option><option value="true">Sim</option></select></div>
-            <div class="field"><label>Título do vídeo</label><input type="text" id="f-videoTitle"></div>
-          </div>
-          <div class="field"><label>URL do YouTube</label><input type="url" id="f-videoUrl" placeholder="https://www.youtube.com/watch?v=..."><span class="hint">Cole o link do YouTube. O vídeo será embutido automaticamente.</span></div>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- FOR / NOT FOR -->
-    <div class="panel" id="panel-fornotfor">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Título da Seção</h3></div><div class="card-b">
-          <div class="field"><label>Título</label><input type="text" id="f-fnfTitle"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>✅ É para você se... (um por linha)</h3></div><div class="card-b">
-          <div class="field"><textarea rows="6" id="f-forItems"></textarea></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>❌ NÃO é para você se... (um por linha)</h3></div><div class="card-b">
-          <div class="field"><textarea rows="5" id="f-notForItems"></textarea></div>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- BONUS -->
-    <div class="panel" id="panel-bonus">
-      <div class="card"><div class="card-h"><h3>Seção de Bônus</h3></div><div class="card-b">
-        <div class="fr"><div class="field"><label>Título</label><input type="text" id="f-bonusTitle"></div><div class="field"><label>Descrição</label><input type="text" id="f-bonusDesc"></div></div>
-        <div class="le" id="bonus-editor"></div>
-        <button class="btn-add" onclick="addBonus()">+ Adicionar Bônus</button>
-      </div></div>
-    </div>
-
-    <!-- THANK YOU -->
-    <div class="panel" id="panel-thankyou">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Página de Obrigado (pós-compra)</h3></div><div class="card-b">
-          <div class="field"><label>Título</label><input type="text" id="f-tyTitle"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-tyDesc"></textarea></div>
-          <div class="field"><label>Próximos Passos (um por linha)</label><textarea rows="6" id="f-tySteps"></textarea><span class="hint">Cada linha vira um passo ✓ na página de obrigado.</span></div>
-          <div class="field"><label>Texto para compartilhar</label><input type="text" id="f-tyShareText"></div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Como usar</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);line-height:1.8">
-            A página de obrigado aparece quando o visitante acessa o site com o parâmetro <code>?purchased=1</code> na URL.<br><br>
-            Configure sua plataforma de pagamento (PerfectPay) para redirecionar para:<br>
-            <code style="background:var(--surface2);padding:4px 8px;border-radius:6px;display:inline-block;margin-top:4px">https://seusite.com/?purchased=1</code>
-          </div>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- COUPONS -->
-    <div class="panel" id="panel-coupons">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Criar Cupom</h3></div><div class="card-b">
-          <div class="fr">
-            <div class="field"><label>Código do Cupom</label><input type="text" id="new-coupon-code" placeholder="EX: PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
-            <div class="field"><label>Desconto (%)</label><input type="number" id="new-coupon-pct" min="1" max="99" value="20"></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Máximo de Usos</label><input type="number" id="new-coupon-max" value="999"></div>
-            <div class="field" style="justify-content:flex-end"><button class="btn-save" style="width:100%;margin-top:24px" onclick="createCoupon()">Criar Cupom</button></div>
-          </div>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Cupons Ativos</h3><button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadCoupons()">🔄 Atualizar</button></div>
-        <div class="card-b"><div id="coupons-list" style="font-size:13px;color:var(--muted)">Carregando...</div></div></div>
-      </div>
-    </div>
-
-    <!-- NOTIFICATIONS -->
-    <div class="panel" id="panel-notifications">
-      <div class="pg">
-        <div class="card"><div class="card-h"><h3>Adicionar Notificação</h3></div><div class="card-b">
-          <div class="fr">
-            <div class="field"><label>Nome (ex: João S.)</label><input type="text" id="new-notif-name" placeholder="João S."></div>
-            <div class="field"><label>Cidade</label><input type="text" id="new-notif-city" placeholder="São Paulo"></div>
-          </div>
-          <button class="btn-save" style="width:fit-content" onclick="addNotification()">Adicionar</button>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Notificações Cadastradas</h3><button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadNotifications()">🔄 Atualizar</button></div>
-        <div class="card-b"><div id="notif-list" style="font-size:13px;color:var(--muted)">Carregando...</div></div></div>
-      </div>
-    </div>
-
-
-    <!-- SALES -->
-    <div class="panel" id="panel-sales">
-      <div class="pg">
-        <!-- KPI row -->
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
-          <div class="sc"><div class="sl">Hoje</div><div class="sv" id="s-today">R$0</div><div class="ss" id="s-today-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Esta semana</div><div class="sv" id="s-week">R$0</div><div class="ss" id="s-week-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Este mês</div><div class="sv" id="s-month">R$0</div><div class="ss" id="s-month-count">0 vendas</div></div>
-          <div class="sc"><div class="sl">Total</div><div class="sv" id="s-total">R$0</div><div class="ss" id="s-total-count">0 vendas</div></div>
+        <div class="kpis">
+          <div class="kpi"><div class="kl">Visitantes 24h</div><div class="kv" id="an-v">—</div></div>
+          <div class="kpi"><div class="kl">Cliques CTA</div><div class="kv" id="an-c">—</div></div>
+          <div class="kpi"><div class="kl">Taxa Clique</div><div class="kv" id="an-r">—</div></div>
+          <div class="kpi"><div class="kl">Emails</div><div class="kv" id="an-e">—</div></div>
         </div>
-        <!-- API Token config -->
-        <div class="card"><div class="card-h"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-token-status">Não configurado</span></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Para buscar suas vendas automaticamente, gere um token em:<br>
-            <strong style="color:var(--text)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
-            Copie o token gerado e cole aqui. Ele é salvo com segurança no Supabase e nunca fica exposto.
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <input type="password" id="pp-token-input" placeholder="eyJ0eXAiOiJKV1Qi..." style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:monospace;outline:none;min-width:200px">
-            <button class="btn-save" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
-          </div>
-        </div></div>
-
-        <!-- Sync card -->
-        <div class="card"><div class="card-h"><h3>🔄 Sincronizar Vendas da PerfectPay</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
-            Busca todas as suas vendas diretamente da API da PerfectPay e salva no painel. Use os filtros para sincronizar um período específico ou clique em Sincronizar Tudo para puxar todas as vendas.
-          </div>
-          <div class="fr" style="margin-bottom:16px">
-            <div class="field"><label>Data início</label><input type="date" id="sync-from"></div>
-            <div class="field"><label>Data fim</label><input type="date" id="sync-to"></div>
-          </div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn-save" style="width:fit-content" onclick="syncPPSales()">🔄 Sincronizar Período</button>
-            <button class="btn-save" style="width:fit-content;background:var(--surface2);border:1px solid var(--border2);color:var(--text)" onclick="syncPPSales(true)">⬇️ Sincronizar Tudo</button>
-          </div>
-          <div id="sync-result" style="margin-top:14px;font-size:13px;display:none"></div>
-        </div></div>
-
-        <!-- Webhook fallback -->
-        <div class="card"><div class="card-h"><h3>🔗 Webhook (automático a cada venda)</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Configure também o webhook para receber vendas em tempo real sem precisar sincronizar manualmente.<br>
-            <strong style="color:var(--text)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <code style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;flex:1;word-break:break-all">
-              https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook
-            </code>
-            <button class="btn-save" style="width:fit-content;padding:9px 16px" onclick="copyWebhook()">📋 Copiar</button>
-          </div>
-        </div></div>
-        <!-- Sales table -->
-        <div class="card">
-          <div class="card-h">
-            <h3>Últimas vendas</h3>
-            <div style="display:flex;gap:8px;align-items:center">
-              <select id="sales-filter" onchange="loadSales()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 10px;color:var(--text);font-size:13px;outline:none">
-                <option value="all">Todos os status</option>
-                <option value="approved">Aprovadas</option>
-                <option value="refunded">Reembolsadas</option>
-                <option value="pending">Pendentes</option>
-                <option value="cancelled">Canceladas</option>
-              </select>
-              <button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadSales()">🔄 Atualizar</button>
-            </div>
-          </div>
-          <div class="card-b"><div id="sales-table" style="font-size:13px;color:var(--muted)">Carregando...</div></div>
+        <div class="card"><div class="ch"><h3>Visitas recentes</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadAnalytics()">↺</button></div>
+          <div class="cb"><div id="an-tbl" style="font-size:13px;color:var(--m)">Carregando...</div></div>
         </div>
-        <!-- Manual sale entry -->
-        <div class="card"><div class="card-h"><h3>Registrar Venda Manualmente</h3></div><div class="card-b">
-          <div style="font-size:12px;color:var(--muted2);margin-bottom:12px">Use apenas se a PerfectPay não enviar o webhook automaticamente.</div>
-          <div class="fr">
-            <div class="field"><label>Nome do cliente</label><input type="text" id="ms-name" placeholder="João Silva"></div>
-            <div class="field"><label>Email</label><input type="email" id="ms-email" placeholder="joao@email.com"></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Valor (R$)</label><input type="number" id="ms-amount" placeholder="19.90" step="0.01"></div>
-            <div class="field"><label>Método de pagamento</label>
-              <select id="ms-method" style="background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none">
-                <option value="credit_card">Cartão de Crédito</option>
-                <option value="pix">PIX</option>
-                <option value="boleto">Boleto</option>
-              </select>
-            </div>
-          </div>
-          <button class="btn-save" style="width:fit-content" onclick="addManualSale()">Registrar Venda</button>
-        </div></div>
       </div>
     </div>
-    <!-- ANALYTICS -->
-    <div class="panel" id="panel-analytics">
-      <div class="pg">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px">
-          <div class="sc"><div class="sl">Visitantes 24h</div><div class="sv" id="an-visitors">—</div></div>
-          <div class="sc"><div class="sl">Cliques CTA</div><div class="sv" id="an-cta">—</div></div>
-          <div class="sc"><div class="sl">Taxa de Clique</div><div class="sv" id="an-rate">—</div></div>
-          <div class="sc"><div class="sl">Emails Capturados</div><div class="sv" id="an-emails">—</div></div>
-        </div>
-        <div class="card"><div class="card-h"><h3>Dispositivos & Fontes</h3></div><div class="card-b">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
-            <div><div style="font-size:12px;color:var(--muted2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Dispositivos</div><div id="an-devices">—</div></div>
-            <div><div style="font-size:12px;color:var(--muted2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em">Origens</div><div id="an-sources">—</div></div>
-          </div>
+
+    <!-- CONFIG -->
+    <div class="panel" id="p-config">
+      <div class="pg" style="max-width:500px">
+        <div class="card"><div class="ch"><h3>Alterar Senha</h3></div><div class="cb">
+          <div class="field"><label>Senha Atual</label><input type="password" id="pw-o"></div>
+          <div class="field"><label>Nova Senha (mín. 6)</label><input type="password" id="pw-n"></div>
+          <div class="field"><label>Confirmar</label><input type="password" id="pw-c"></div>
+          <button class="bsave" style="width:fit-content" onclick="changePw()">Alterar Senha</button>
         </div></div>
-        <div class="card"><div class="card-h"><h3>Últimas visitas</h3><button class="btn-save" style="width:fit-content;padding:6px 14px;font-size:12px" onclick="loadAnalytics()">🔄 Atualizar</button></div>
-        <div class="card-b"><div id="analytics-table" style="font-size:13px;color:var(--muted)">Carregando...</div></div></div>
-        <div class="card"><div class="card-h"><h3>Emails capturados</h3></div>
-        <div class="card-b"><div id="emails-table" style="font-size:13px;color:var(--muted)">Carregando...</div></div></div>
-      </div>
-    </div>
-    <!-- SETTINGS -->
-    <div class="panel" id="panel-settings">
-      <div class="pg" style="max-width:520px">
-        <div class="card"><div class="card-h"><h3>Alterar Senha</h3></div><div class="card-b">
-          <div class="field"><label>Senha Atual</label><input type="password" id="s-old"></div>
-          <div class="field"><label>Nova Senha</label><input type="password" id="s-new" placeholder="Mínimo 6 caracteres"></div>
-          <div class="field"><label>Confirmar</label><input type="password" id="s-cf"></div>
-          <button class="btn-save" style="width:fit-content" onclick="changePw()">Alterar Senha</button>
-        </div></div>
-        <div class="card"><div class="card-h"><h3>Backup</h3></div><div class="card-b">
-          <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px">Todas as configs vivem no Supabase. Use o JSON como backup externo caso queira arquivar uma versão.</div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap">
-            <button class="btn-save" style="width:fit-content" onclick="exportCfg()">📥 Exportar JSON</button>
-            <button class="btn-reset" onclick="document.getElementById('imp').click()">📤 Importar JSON</button>
-            <input type="file" id="imp" accept=".json" style="display:none" onchange="importCfg(event)">
+        <div class="card"><div class="ch"><h3>Backup</h3></div><div class="cb">
+          <div style="font-size:13px;color:var(--m);margin-bottom:10px">Configs salvas no Supabase. Exporte como JSON para backup local.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="bsave" style="width:fit-content" onclick="exportJSON()">📥 Exportar JSON</button>
+            <button class="breset" onclick="document.getElementById('imp').click()">📤 Importar JSON</button>
+            <input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
           </div>
         </div></div>
       </div>
     </div>
+
   </div>
 </div>
 
 <div id="toast"><span id="ti">✓</span> <span id="tm"></span></div>
 
 <script>
-const SB = 'https://ihylwxjxjajtdhsnlrfm.supabase.co';
-const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
-const H  = {apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
+// ═══════════════════════════
+// SUPABASE
+// ═══════════════════════════
+const SB='https://ihylwxjxjajtdhsnlrfm.supabase.co';
+const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
+const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
 
-async function sbLoad() {
-  try {
-    const r = await fetch(`${SB}/rest/v1/iaem30_config?id=eq.1&select=config,updated_at`,{headers:H});
-    if(!r.ok) return null;
-    return (await r.json())?.[0] ?? null;
-  } catch(e){return null;}
-}
+async function sbGet(t,q=''){try{const r=await fetch(SB+'/rest/v1/'+t+q,{headers:H});return r.ok?r.json():null;}catch{return null;}}
+async function sbPost(t,d){try{const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(d)});return r.ok;}catch{return false;}}
+async function sbPatch(t,q,d){try{const r=await fetch(SB+'/rest/v1/'+t+q,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(d)});return r.ok;}catch{return false;}}
 
-async function sbSave(cfg) {
-  try {
-    const r = await fetch(`${SB}/rest/v1/iaem30_config?id=eq.1`,{
-      method:'PATCH', headers:{...H,Prefer:'return=minimal'},
-      body:JSON.stringify({config:cfg,updated_at:new Date().toISOString()})
-    });
-    return r.ok;
-  } catch(e){return false;}
-}
-
-// ═══════════════════════════════════════
+// ═══════════════════════════
 // AUTH
-// ═══════════════════════════════════════
-const DEFAULT_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9'; // admin123
+// ═══════════════════════════
+const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 
-async function sha256(str) {
-  try {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-  } catch(e) { return ''; }
+async function sha256(s){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-async function getStoredHash() {
-  try {
-    const r = await fetch(SB + '/rest/v1/iaem30_config?id=eq.1&select=config', {headers: H});
-    if (!r.ok) throw new Error('fetch failed');
-    const rows = await r.json();
-    const h = rows?.[0]?.config?.adminPasswordHash;
-    if (h) { localStorage.setItem('iaem30_pw_hash', h); return h; }
-  } catch(e) {}
-  // Fallback to local cache
-  return localStorage.getItem('iaem30_pw_hash') || DEFAULT_HASH;
+async function getHash(){
+  const rows=await sbGet('iaem30_config','?id=eq.1&select=config');
+  const h=rows?.[0]?.config?.adminPasswordHash;
+  if(h){localStorage.setItem('adm_h',h);return h;}
+  return localStorage.getItem('adm_h')||DEFHASH;
 }
 
-async function doLogin() {
-  const u   = document.getElementById('lu').value.trim();
-  const p   = document.getElementById('lp').value;
-  const btn = document.getElementById('btn-login');
-  const err = document.getElementById('lerr');
-
-  if (!u || !p) {
-    err.textContent = 'Preencha usuário e senha.';
-    err.style.display = 'block';
-    setTimeout(() => err.style.display = 'none', 3000);
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = 'Verificando…';
-
-  const inputHash  = await sha256(p);
-  const storedHash = await getStoredHash();
-
-  if (u === 'admin' && inputHash === storedHash) {
-    sessionStorage.setItem('ia_ok', '1');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'flex';
-    await init();
+async function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  const btn=document.getElementById('btnl');
+  const err=document.getElementById('lerr');
+  if(!u||!p){err.textContent='Preencha os campos.';err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
+  btn.disabled=true;btn.textContent='Verificando…';
+  const ih=await sha256(p);
+  const sh=await getHash();
+  if(u==='admin'&&ih===sh){
+    sessionStorage.setItem('ok','1');
+    document.getElementById('login').style.display='none';
+    document.getElementById('admin').style.display='flex';
+    await boot();
   } else {
-    btn.disabled = false;
-    btn.textContent = 'Entrar no Painel';
-    err.textContent = 'Usuário ou senha incorretos.';
-    err.style.display = 'block';
-    setTimeout(() => err.style.display = 'none', 3000);
+    btn.disabled=false;btn.textContent='Entrar no Painel';
+    err.textContent='Usuário ou senha incorretos.';err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
   }
 }
 
-function doLogout() {
-  sessionStorage.removeItem('ia_ok');
-  location.reload();
+document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){sessionStorage.removeItem('ok');location.reload();}
+
+async function changePw(){
+  const o=document.getElementById('pw-o').value;
+  const n=document.getElementById('pw-n').value;
+  const c=document.getElementById('pw-c').value;
+  if(!o||!n||!c){toast('Preencha todos os campos','err');return;}
+  if(n.length<6){toast('Mínimo 6 caracteres','err');return;}
+  if(n!==c){toast('Senhas não coincidem','err');return;}
+  const oh=await sha256(o), sh=await getHash();
+  if(oh!==sh){toast('Senha atual incorreta','err');return;}
+  const nh=await sha256(n);
+  const ok=await sbPatch('iaem30_config','?id=eq.1',{config:{...C,adminPasswordHash:nh}});
+  if(ok){localStorage.setItem('adm_h',nh);toast('✓ Senha alterada!');['pw-o','pw-n','pw-c'].forEach(id=>document.getElementById(id).value='');}
+  else toast('Erro ao salvar','err');
 }
 
-async function changePw() {
-  const o = document.getElementById('s-old').value;
-  const n = document.getElementById('s-new').value;
-  const c = document.getElementById('s-cf').value;
-  if (!o || !n || !c) { toast('Preencha todos os campos', 'error'); return; }
-  if (n.length < 6)   { toast('Mínimo 6 caracteres', 'error'); return; }
-  if (n !== c)        { toast('Senhas não coincidem', 'error'); return; }
-
-  const oldHash    = await sha256(o);
-  const storedHash = await getStoredHash();
-  if (oldHash !== storedHash) { toast('Senha atual incorreta', 'error'); return; }
-
-  const newHash = await sha256(n);
-  // Save to Supabase inside config
-  try {
-    const r = await fetch(SB + '/rest/v1/iaem30_config?id=eq.1', {
-      method: 'PATCH',
-      headers: {...H, Prefer: 'return=minimal'},
-      body: JSON.stringify({ config: {...(C||{}), adminPasswordHash: newHash} })
-    });
-    if (r.ok) {
-      localStorage.setItem('iaem30_pw_hash', newHash);
-      toast('✓ Senha alterada e sincronizada!');
-      ['s-old','s-new','s-cf'].forEach(id => document.getElementById(id).value = '');
-    } else {
-      toast('Erro ao salvar no Supabase', 'error');
-    }
-  } catch(e) { toast('Erro de conexão', 'error'); }
-}
-
-window.addEventListener('load', () => {
-  if (sessionStorage.getItem('ia_ok') === '1') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('admin-screen').style.display = 'flex';
-    init();
-  }
-});
-
+// ═══════════════════════════
 // DEFAULTS
+// ═══════════════════════════
 const DEF={
   productLink:'https://go.perfectpay.com.br/PPU38CQ4TBC',
   heroTitle:'Como Ganhar Dinheiro com <span class="highlight">IA em 30 Dias</span>',
-  heroSubtitle:'O ebook completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA de forma ética e estratégica.',
+  heroSubtitle:'O ebook completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA.',
   heroBadge:'🔥 Mais de 1.200 criadores já transformaram',
   heroCtaText:'Quero Meu Ebook por R$19,90',
-  bookTitle:'Como Ganhar Dinheiro com IA em 30 Dias',bookSub:'Guia Prático para Criadores Independentes',bookPriceBadge:'R$19,90',
+  bookTitle:'Como Ganhar Dinheiro com IA em 30 Dias',bookSub:'Guia Prático para Criadores',bookPriceBadge:'R$19,90',
   stat1Num:'1.200+',stat1Label:'criadores impactados',stat2Num:'⭐ 4.9',stat2Label:'avaliação média',
-  stat3Num:'7 dias',stat3Label:'de garantia total',stat4Num:'30 dias',stat4Label:'para transformação',
+  stat3Num:'7 dias',stat3Label:'garantia total',stat4Num:'30 dias',stat4Label:'para transformação',
   whyTitle:'IA: Sua Aliada Criativa',whySubtitle:'A Inteligência Artificial está mudando o jogo.',
-  learnTitle:'O que você vai aprender',learnDesc:'Um método estruturado semana a semana para você sair do zero à sua primeira renda com IA.',
-  monetizeTitle:'Transforme Sua Criação em Renda Real',monetizeDesc:'Descubra 5 caminhos comprovados.',
+  learnTitle:'O que você vai aprender',learnDesc:'Um método estruturado semana a semana.',
+  monetizeTitle:'Transforme Sua Criação em Renda Real',monetizeDesc:'5 caminhos comprovados.',
   testimonialsTitle:'O que dizem nossos leitores',
   priceOld:'R$47',priceMain:'19',priceCents:',90',
   pricingCtaText:'Quero Meu Ebook Agora →',
-  guaranteeText:'Garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% do seu dinheiro — sem perguntas.',
-  ctaFinalTitle:'Sua Decisão, Seu Futuro',ctaFinalDesc:'Ser criador independente hoje não é apenas criar — é empreender a própria arte.',ctaFinalText:'Começar Minha Transformação →',
+  guaranteeText:'Garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% — sem perguntas.',
+  ctaFinalTitle:'Sua Decisão, Seu Futuro',ctaFinalDesc:'Seja criador independente.',ctaFinalText:'Começar Minha Transformação →',
   footerBrand:'IA em 30',
-  benefits:[{icon:'🧠',title:'Remove Bloqueios Criativos',desc:'Supere o bloqueio com ideias instantâneas.'},{icon:'⚡',title:'Acelera Seus Processos',desc:'Produza em horas o que levaria dias.'},{icon:'💰',title:'Reduz Seus Custos',desc:'Elimine gastos com ferramentas caras.'},{icon:'🎨',title:'Profissionaliza Sua Marca',desc:'Identidade visual forte e consistente.'},{icon:'🛠️',title:'Ferramentas para Cada Criação',desc:'Midjourney, ChatGPT, Soundraw e mais.'},{icon:'🤝',title:'IA Como Aliada',desc:'Você é o criador. A IA amplifica sua visão.'}],
-  learnItems:['5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo (ChatGPT, Midjourney, Soundraw)','Plano de ação de 30 dias completo','Como posicionar e vender produtos digitais','Estratégias de conteúdo para crescer nas redes','Ética e direitos autorais no uso de IA'],
-  weeks:[{num:'01',title:'Base Criativa',desc:'Defina identidade, escolha nicho e configure ferramentas.'},{num:'02',title:'Produto Digital',desc:'Desenvolva seu produto principal e construa identidade visual.'},{num:'03',title:'Visibilidade',desc:'Produza conteúdo promocional e feche suas primeiras vendas.'},{num:'04',title:'Escala Real',desc:'Melhore qualidade, crie pacotes premium e automatize.'}],
-  monetizeItems:[{num:'01',title:'Venda da Própria Criação',desc:'Música autoral, ilustrações digitais, fotografias.'},{num:'02',title:'Serviços Personalizados',desc:'Capas de álbum, artes para redes sociais.'},{num:'03',title:'Produtos Digitais',desc:'Ebooks artísticos, packs de artes e prompts.'},{num:'04',title:'Conteúdo Monetizado',desc:'YouTube, TikTok, Reels e Patreon.'},{num:'05',title:'Ensino e Consultoria',desc:'Cursos e mentorias para criadores.'},{num:'06',title:'Pacotes Premium',desc:'Serviços completos e recorrentes.'}],
-  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas já estava vendendo artes digitais no Instagram!"',name:'Ana Silva',role:'Ilustradora Digital',avatar:'🎨'},{stars:5,text:'"Já ganhei R$1.800 num mês usando as técnicas do ebook!"',name:'Carlos M.',role:'Produtor Musical',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias."',name:'Juliana R.',role:'Designer Gráfica',avatar:'✨'}],
-  pricingFeatures:['Ebook completo em PDF (180+ páginas)','5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo','Plano de ação de 30 dias completo','Dicas de ética e direitos autorais','Download imediato + Acesso vitalício'],
-  faqs:[{q:'Preciso ter conhecimento prévio em IA?',a:'Não! O ebook foi feito do zero ao avançado.'},{q:'Funciona para qualquer tipo de artista?',a:'Sim! Abordamos ferramentas para músicos, ilustradores, designers e muito mais.'},{q:'Usar IA não vai tirar minha autenticidade?',a:'Pelo contrário. IA é uma ferramenta, não um substituto à sua criatividade.'},{q:'Quanto tempo para ter resultados?',a:'Muitos leitores relatam resultados nas primeiras 2 semanas.'}]
+  urgencyMinutes:47,showUrgencyBar:true,
+  urgencyText:'Oferta especial expira em',urgencySuffix:'— garanta o preço antes que suba!',
+  modalCtaText:'Comprar com Segurança',
+  exitTitle:'Espera! Não vai perder essa oportunidade...',
+  exitDesc:'Você estava prestes a sair. O preço especial pode subir a qualquer momento.',
+  exitCta:'Quero garantir meu ebook agora →',
+  showSaleNotifications:true,saleNotifInterval:25,
+  stickyCtaText:'Quero Agora →',
+  showVideoSection:false,videoUrl:'',videoTitle:'Veja o que você vai receber',
+  fnfTitle:'Este ebook é para você?',
+  forItems:['Quer monetizar sua criação de forma independente','Está disposto a aprender ferramentas de IA','Busca liberdade financeira e criativa'],
+  notForItems:['Busca dinheiro fácil sem esforço','Não está disposto a criar e divulgar'],
+  bonusTitle:'Comprando hoje você leva também',bonusDesc:'Bônus exclusivos desta oferta',
+  bonusItems:[{icon:'📋',title:'Checklist de Ferramentas',desc:'As melhores ferramentas gratuitas e pagas.',value:'Valor: R$27'},{icon:'🎯',title:'Guia de Nicho Rápido',desc:'Defina seu nicho em 30 minutos.',value:'Valor: R$19'},{icon:'📱',title:'Scripts para Redes Sociais',desc:'10 roteiros prontos para conteúdo viral.',value:'Valor: R$37'}],
+  tyTitle:'Obrigado pela sua compra! 🎉',
+  tyDesc:'Verifique seu email. Caso não encontre, verifique o spam.',
+  tySteps:['1. Acesse seu email e procure a mensagem da PerfectPay','2. Clique no link de download','3. Salve o PDF no seu dispositivo','4. Comece pelo Módulo 1 — leva 20 minutos!'],
+  tyShareText:'Gostou? Compartilhe com um amigo! 🙌',
+  benefits:[{icon:'🧠',title:'Remove Bloqueios Criativos',desc:'Supere o bloqueio com ideias instantâneas.'},{icon:'⚡',title:'Acelera Seus Processos',desc:'Produza em horas o que levaria dias.'},{icon:'💰',title:'Reduz Seus Custos',desc:'Elimine gastos com ferramentas caras.'},{icon:'🎨',title:'Profissionaliza Sua Marca',desc:'Identidade visual forte.'},{icon:'🛠️',title:'Ferramentas',desc:'Midjourney, ChatGPT, Soundraw e mais.'},{icon:'🤝',title:'IA Como Aliada',desc:'Você cria. A IA amplifica.'}],
+  learnItems:['5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo','Plano de ação de 30 dias completo','Como posicionar e vender produtos digitais','Estratégias de conteúdo para redes','Ética e direitos autorais'],
+  weeks:[{num:'01',title:'Base Criativa',desc:'Defina identidade e configure ferramentas.'},{num:'02',title:'Produto Digital',desc:'Desenvolva seu produto principal.'},{num:'03',title:'Visibilidade',desc:'Feche suas primeiras vendas.'},{num:'04',title:'Escala Real',desc:'Crie pacotes premium e automatize.'}],
+  monetizeItems:[{num:'01',title:'Venda da Própria Criação',desc:'Música, ilustrações, fotos.'},{num:'02',title:'Serviços Personalizados',desc:'Capas, artes e trilhas.'},{num:'03',title:'Produtos Digitais',desc:'Ebooks e packs de artes.'},{num:'04',title:'Conteúdo Monetizado',desc:'YouTube, TikTok, Patreon.'},{num:'05',title:'Ensino',desc:'Cursos e mentorias.'},{num:'06',title:'Pacotes Premium',desc:'Serviços completos.'}],
+  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas já vendia artes digitais no Instagram!"',name:'Ana Silva',role:'Ilustradora',avatar:'🎨'},{stars:5,text:'"Já ganhei R$1.800 num mês!"',name:'Carlos M.',role:'Músico',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias."',name:'Juliana R.',role:'Designer',avatar:'✨'}],
+  pricingFeatures:['Ebook completo em PDF','5 formas de monetizar','Ferramentas de IA passo a passo','Plano de 30 dias','Dicas de ética','Download imediato + Acesso vitalício'],
+  faqs:[{q:'Preciso de conhecimento prévio?',a:'Não! É do zero ao avançado.'},{q:'Funciona para qualquer artista?',a:'Sim! Músicos, ilustradores, designers, escritores.'},{q:'Vai tirar minha autenticidade?',a:'Não. IA é ferramenta, não substituto.'},{q:'Quando terei resultados?',a:'Muitos relatam resultados nas primeiras 2 semanas.'}]
 };
 
 let C={...DEF};
 
-async function init(){
-  const row=await sbLoad();
-  const dot=document.getElementById('sb-dot');
-  const txt=document.getElementById('sb-txt');
-  if(row!==null){
-    dot.classList.add('ok'); txt.textContent='Supabase conectado';
-    if(row.config&&Object.keys(row.config).length>0) C={...DEF,...row.config};
-    if(row.updated_at){
-      const d=new Date(row.updated_at);
-      document.getElementById('d-save').textContent=d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+// ═══════════════════════════
+// BOOT
+// ═══════════════════════════
+async function boot(){
+  const row=await sbGet('iaem30_config','?id=eq.1&select=config,updated_at');
+  const dot=document.getElementById('sdot');
+  const txt=document.getElementById('stxt');
+  if(row&&row[0]){
+    dot.classList.add('ok');txt.textContent='Supabase ✓';
+    if(row[0].config&&Object.keys(row[0].config).length) C={...DEF,...row[0].config};
+    if(row[0].updated_at){
+      const d=new Date(row[0].updated_at);
+      document.getElementById('ks').textContent=d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
     }
   } else {
-    txt.textContent='⚠️ Sem conexão';
-    toast('❌ Sem conexão com o Supabase. Verifique sua internet e recarregue a página.','error');
+    txt.textContent='Offline';
+    toast('Sem conexão Supabase. Verifique internet.','err');
   }
   fill();
 }
 
-const PTITLES={dashboard:'Dashboard',general:'Geral & Textos',hero:'Hero & CTA',benefits:'Benefícios',weeks:'Semanas & Conteúdo',monetize:'Monetização',testimonials:'Depoimentos',pricing:'Preço & Compra',faq:'FAQ',conversion:'Conversão & Urgência',fornotfor:'Para quem é',bonus:'Bônus',thankyou:'Página de Obrigado',coupons:'Cupons de Desconto',notifications:'Notif. de Vendas',sales:'Vendas & Receita',analytics:'Analytics',settings:'Configurações'};
-function showPanel(id,el){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  el.classList.add('active');
-  document.getElementById('ptitle').textContent=PTITLES[id]||id;
-  if(id==='analytics')     setTimeout(loadAnalytics,50);
-  if(id==='sales')         setTimeout(()=>{ loadSales(); loadPPToken(); },50);
-  if(id==='coupons')       setTimeout(loadCoupons,50);
-  if(id==='notifications') setTimeout(loadNotifications,50);
+window.addEventListener('load',()=>{
+  if(sessionStorage.getItem('ok')==='1'){
+    document.getElementById('login').style.display='none';
+    document.getElementById('admin').style.display='flex';
+    boot();
+  }
+});
+
+// ═══════════════════════════
+// NAV
+// ═══════════════════════════
+const TITLES={dash:'Dashboard',geral:'Textos & Geral',hero:'Hero & CTA',preco:'Preço & Compra',beneficios:'Benefícios',semanas:'Semanas & Aprendizado',monetize:'Monetização',depoimentos:'Depoimentos',faq:'FAQ',conversion:'Urgência & Popups',paraquem:'Para quem é',bonus:'Bônus',obrigado:'Página de Obrigado',vendas:'Vendas',cupons:'Cupons',notifs:'Notificações de Vendas',analytics:'Analytics',config:'Configurações'};
+function go(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  el.classList.add('on');
+  document.getElementById('ptitle').textContent=TITLES[id]||id;
+  if(id==='analytics')setTimeout(loadAnalytics,50);
+  if(id==='vendas')setTimeout(()=>{loadSales();loadPPTokenStatus();},50);
+  if(id==='cupons')setTimeout(loadCoupons,50);
+  if(id==='notifs')setTimeout(loadNotifs,50);
 }
 
+// ═══════════════════════════
+// FILL FIELDS
+// ═══════════════════════════
 function fill(){
-  const map={
-    'f-footerBrand':'footerBrand','f-productLink':'productLink','f-productLink2':'productLink','f-productLink3':'productLink',
-    'f-stat1Num':'stat1Num','f-stat1Label':'stat1Label','f-stat2Num':'stat2Num','f-stat2Label':'stat2Label',
-    'f-stat3Num':'stat3Num','f-stat3Label':'stat3Label','f-stat4Num':'stat4Num','f-stat4Label':'stat4Label',
-    'f-whyTitle':'whyTitle','f-whySubtitle':'whySubtitle',
-    'f-heroBadge':'heroBadge','f-heroTitle':'heroTitle','f-heroSubtitle':'heroSubtitle','f-heroCtaText':'heroCtaText',
-    'f-bookTitle':'bookTitle','f-bookSub':'bookSub','f-bookPriceBadge':'bookPriceBadge',
-    'f-learnTitle':'learnTitle','f-learnDesc':'learnDesc',
-    'f-monetizeTitle':'monetizeTitle','f-monetizeDesc':'monetizeDesc',
-    'f-testimonialsTitle':'testimonialsTitle',
-    'f-priceOld':'priceOld','f-priceMain':'priceMain','f-priceCents':'priceCents',
-    'f-pricingCtaText':'pricingCtaText','f-guaranteeText':'guaranteeText',
-    'f-ctaFinalTitle':'ctaFinalTitle','f-ctaFinalDesc':'ctaFinalDesc','f-ctaFinalText':'ctaFinalText',
+  const m={'f-brand':'footerBrand','f-link':'productLink','f-link2':'productLink','f-link3':'productLink',
+    'f-s1n':'stat1Num','f-s1l':'stat1Label','f-s2n':'stat2Num','f-s2l':'stat2Label',
+    'f-s3n':'stat3Num','f-s3l':'stat3Label','f-s4n':'stat4Num','f-s4l':'stat4Label',
+    'f-whyt':'whyTitle','f-whys':'whySubtitle',
+    'f-badge':'heroBadge','f-title':'heroTitle','f-sub':'heroSubtitle','f-ctxt':'heroCtaText',
+    'f-bt':'bookTitle','f-bs':'bookSub','f-bp':'bookPriceBadge',
+    'f-pold':'priceOld','f-pmain':'priceMain','f-pcents':'priceCents',
+    'f-pctxt':'pricingCtaText','f-gtxt':'guaranteeText',
+    'f-ctat':'ctaFinalTitle','f-ctad':'ctaFinalDesc','f-ctab':'ctaFinalText',
+    'f-lt':'learnTitle','f-ld':'learnDesc',
+    'f-mt':'monetizeTitle','f-md':'monetizeDesc','f-testt':'testimonialsTitle',
+    'f-um':'urgencyMinutes','f-ut':'urgencyText','f-us':'urgencySuffix',
+    'f-xt':'exitTitle','f-xd':'exitDesc','f-xb':'exitCta','f-mct':'modalCtaText',
+    'f-si':'saleNotifInterval','f-sc':'stickyCtaText','f-vt':'videoTitle','f-vu':'videoUrl',
+    'f-fnft':'fnfTitle','f-bnt':'bonusTitle','f-bnd':'bonusDesc',
+    'f-tyt':'tyTitle','f-tyd':'tyDesc','f-tys2':'tyShareText',
+    'd-link':'productLink',
   };
-  for(const[id,k]of Object.entries(map)){const el=document.getElementById(id);if(el&&C[k]!=null)el.value=C[k];}
-  const dl=document.getElementById('d-link'); if(dl)dl.value=C.productLink||'';
-  const li=document.getElementById('f-learnItems'); if(li)li.value=(C.learnItems||[]).join('\n');
-  const pf=document.getElementById('f-pricingFeatures'); if(pf)pf.value=(C.pricingFeatures||[]).join('\n');
-  rBen(C.benefits||[]); rWeeks(C.weeks||[]); rMon(C.monetizeItems||[]); rTest(C.testimonials||[]); rFaq(C.faqs||[]);
-  rBonus(C.bonusItems||[]);
-  // New fields
-  const nf={
-    'f-urgencyMinutes':'urgencyMinutes','f-urgencyText':'urgencyText','f-urgencySuffix':'urgencySuffix',
-    'f-modalCtaText':'modalCtaText','f-exitTitle':'exitTitle','f-exitDesc':'exitDesc','f-exitCta':'exitCta',
-    'f-stickyCtaText':'stickyCtaText','f-videoTitle':'videoTitle','f-videoUrl':'videoUrl',
-    'f-fnfTitle':'fnfTitle','f-bonusTitle':'bonusTitle','f-bonusDesc':'bonusDesc',
-  };
-  for(const[id,k]of Object.entries(nf)){const el=document.getElementById(id);if(el&&C[k]!=null)el.value=C[k];}
-  const suv=document.getElementById('f-showUrgencyBar');
-  if(suv) suv.value=String(C.showUrgencyBar!==false);
-  const svs=document.getElementById('f-showVideoSection');
-  if(svs) svs.value=String(!!C.showVideoSection);
-  const fi=document.getElementById('f-forItems');
-  if(fi) fi.value=(C.forItems||[]).join('\n');
-  const nfi=document.getElementById('f-notForItems');
-  if(nfi) nfi.value=(C.notForItems||[]).join('\n');
-  updDash();
+  for(const[id,k]of Object.entries(m)){const el=document.getElementById(id);if(el&&C[k]!=null)el.value=C[k];}
+  const sel=(id,val)=>{const el=document.getElementById(id);if(el)el.value=String(val);};
+  sel('f-ub',C.showUrgencyBar!==false);
+  sel('f-sn',C.showSaleNotifications!==false);
+  sel('f-vs',!!C.showVideoSection);
+  const ta=(id,arr)=>{const el=document.getElementById(id);if(el)el.value=(arr||[]).join('\n');};
+  ta('f-feats',C.pricingFeatures);
+  ta('f-li',C.learnItems);
+  ta('f-fi',C.forItems);
+  ta('f-ni',C.notForItems);
+  ta('f-tys',C.tySteps);
+  renderList('ben',C.benefits||[]);
+  renderList('wks',C.weeks||[]);
+  renderList('mon',C.monetizeItems||[]);
+  renderList('test',C.testimonials||[]);
+  renderList('faq',C.faqs||[]);
+  renderList('bon',C.bonusItems||[]);
+  updateDash();
 }
 
-function updDash(){
-  const b=document.getElementById('d-ben'),t=document.getElementById('d-test'),p=document.getElementById('d-price');
-  if(b)b.textContent=(C.benefits||[]).length;
-  if(t)t.textContent=(C.testimonials||[]).length;
-  if(p)p.textContent='R$'+(C.priceMain||'19')+(C.priceCents||',90');
+function updateDash(){
+  const v=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  v('kp','R$'+(C.priceMain||'19')+(C.priceCents||',90'));
+  v('kb',(C.benefits||[]).length);
+  v('kd',(C.testimonials||[]).length);
 }
 
+// ═══════════════════════════
+// COLLECT
+// ═══════════════════════════
 function collect(){
-  const v=id=>{const el=document.getElementById(id);return el?el.value:undefined;};
-  const pl=v('f-productLink3')||v('f-productLink2')||v('f-productLink')||C.productLink;
-  return{...C,productLink:pl,footerBrand:v('f-footerBrand'),
-    stat1Num:v('f-stat1Num'),stat1Label:v('f-stat1Label'),stat2Num:v('f-stat2Num'),stat2Label:v('f-stat2Label'),
-    stat3Num:v('f-stat3Num'),stat3Label:v('f-stat3Label'),stat4Num:v('f-stat4Num'),stat4Label:v('f-stat4Label'),
-    whyTitle:v('f-whyTitle'),whySubtitle:v('f-whySubtitle'),
-    heroBadge:v('f-heroBadge'),heroTitle:v('f-heroTitle'),heroSubtitle:v('f-heroSubtitle'),heroCtaText:v('f-heroCtaText'),
-    bookTitle:v('f-bookTitle'),bookSub:v('f-bookSub'),bookPriceBadge:v('f-bookPriceBadge'),
-    learnTitle:v('f-learnTitle'),learnDesc:v('f-learnDesc'),
-    monetizeTitle:v('f-monetizeTitle'),monetizeDesc:v('f-monetizeDesc'),
-    testimonialsTitle:v('f-testimonialsTitle'),
-    priceOld:v('f-priceOld'),priceMain:v('f-priceMain'),priceCents:v('f-priceCents'),
-    pricingCtaText:v('f-pricingCtaText'),guaranteeText:v('f-guaranteeText'),
-    ctaFinalTitle:v('f-ctaFinalTitle'),ctaFinalDesc:v('f-ctaFinalDesc'),ctaFinalText:v('f-ctaFinalText'),
-    learnItems:(v('f-learnItems')||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    pricingFeatures:(v('f-pricingFeatures')||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    benefits:cBen(),weeks:cWeeks(),monetizeItems:cMon(),testimonials:cTest(),faqs:cFaq(),bonusItems:cBonus(),
-    showUrgencyBar:document.getElementById('f-showUrgencyBar')?.value!=='false',
-    urgencyMinutes:Number(document.getElementById('f-urgencyMinutes')?.value)||47,
-    urgencyText:document.getElementById('f-urgencyText')?.value||'Oferta especial expira em',
-    urgencySuffix:document.getElementById('f-urgencySuffix')?.value||'— garanta o preço antes que suba!',
-    modalCtaText:document.getElementById('f-modalCtaText')?.value,
-    exitTitle:document.getElementById('f-exitTitle')?.value,
-    exitDesc:document.getElementById('f-exitDesc')?.value,
-    exitCta:document.getElementById('f-exitCta')?.value,
-    stickyCtaText:document.getElementById('f-stickyCtaText')?.value,
-    showVideoSection:document.getElementById('f-showVideoSection')?.value==='true',
-    videoTitle:document.getElementById('f-videoTitle')?.value,
-    videoUrl:document.getElementById('f-videoUrl')?.value,
-    fnfTitle:document.getElementById('f-fnfTitle')?.value,
-    forItems:(document.getElementById('f-forItems')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    notForItems:(document.getElementById('f-notForItems')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    bonusTitle:document.getElementById('f-bonusTitle')?.value,
-    bonusDesc:document.getElementById('f-bonusDesc')?.value,
-    tyTitle:document.getElementById('f-tyTitle')?.value,
-    tyDesc:document.getElementById('f-tyDesc')?.value,
-    tySteps:(document.getElementById('f-tySteps')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    tyShareText:document.getElementById('f-tyShareText')?.value,
-    showSaleNotifications:document.getElementById('f-showSaleNotifications')?.value!=='false',
-    saleNotifInterval:Number(document.getElementById('f-saleNotifInterval')?.value)||25,
-    showUrgencyBar: document.getElementById('f-showUrgencyBar')?.value!=='false',
-    urgencyMinutes: Number(document.getElementById('f-urgencyMinutes')?.value)||47,
-    urgencyText: document.getElementById('f-urgencyText')?.value||'Oferta especial expira em',
-    urgencySuffix: document.getElementById('f-urgencySuffix')?.value||'— garanta o preço antes que suba!',
-    modalCtaText: document.getElementById('f-modalCtaText')?.value,
-    exitTitle: document.getElementById('f-exitTitle')?.value,
-    exitDesc: document.getElementById('f-exitDesc')?.value,
-    exitCta: document.getElementById('f-exitCta')?.value,
-    stickyCtaText: document.getElementById('f-stickyCtaText')?.value,
-    showVideoSection: document.getElementById('f-showVideoSection')?.value==='true',
-    videoTitle: document.getElementById('f-videoTitle')?.value,
-    videoUrl: document.getElementById('f-videoUrl')?.value,
-    fnfTitle: document.getElementById('f-fnfTitle')?.value,
-    forItems: (document.getElementById('f-forItems')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    notForItems: (document.getElementById('f-notForItems')?.value||'').split('\n').map(s=>s.trim()).filter(Boolean),
-    bonusTitle: document.getElementById('f-bonusTitle')?.value,
-    bonusDesc: document.getElementById('f-bonusDesc')?.value,
+  const v=id=>{const el=document.getElementById(id);return el?el.value:null;};
+  const ta=id=>(v(id)||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  const pl=v('f-link3')||v('f-link2')||v('f-link')||C.productLink;
+  return{...C,productLink:pl,footerBrand:v('f-brand'),
+    stat1Num:v('f-s1n'),stat1Label:v('f-s1l'),stat2Num:v('f-s2n'),stat2Label:v('f-s2l'),
+    stat3Num:v('f-s3n'),stat3Label:v('f-s3l'),stat4Num:v('f-s4n'),stat4Label:v('f-s4l'),
+    whyTitle:v('f-whyt'),whySubtitle:v('f-whys'),
+    heroBadge:v('f-badge'),heroTitle:v('f-title'),heroSubtitle:v('f-sub'),heroCtaText:v('f-ctxt'),
+    bookTitle:v('f-bt'),bookSub:v('f-bs'),bookPriceBadge:v('f-bp'),
+    priceOld:v('f-pold'),priceMain:v('f-pmain'),priceCents:v('f-pcents'),
+    pricingCtaText:v('f-pctxt'),guaranteeText:v('f-gtxt'),
+    ctaFinalTitle:v('f-ctat'),ctaFinalDesc:v('f-ctad'),ctaFinalText:v('f-ctab'),
+    learnTitle:v('f-lt'),learnDesc:v('f-ld'),
+    monetizeTitle:v('f-mt'),monetizeDesc:v('f-md'),testimonialsTitle:v('f-testt'),
+    urgencyMinutes:Number(v('f-um'))||47,urgencyText:v('f-ut'),urgencySuffix:v('f-us'),
+    showUrgencyBar:document.getElementById('f-ub')?.value!=='false',
+    exitTitle:v('f-xt'),exitDesc:v('f-xd'),exitCta:v('f-xb'),modalCtaText:v('f-mct'),
+    showSaleNotifications:document.getElementById('f-sn')?.value!=='false',
+    saleNotifInterval:Number(v('f-si'))||25,stickyCtaText:v('f-sc'),
+    showVideoSection:document.getElementById('f-vs')?.value==='true',
+    videoTitle:v('f-vt'),videoUrl:v('f-vu'),
+    fnfTitle:v('f-fnft'),bonusTitle:v('f-bnt'),bonusDesc:v('f-bnd'),
+    tyTitle:v('f-tyt'),tyDesc:v('f-tyd'),tyShareText:v('f-tys2'),
+    pricingFeatures:ta('f-feats'),learnItems:ta('f-li'),
+    forItems:ta('f-fi'),notForItems:ta('f-ni'),tySteps:ta('f-tys'),
+    benefits:collectList('ben'),weeks:collectList('wks'),
+    monetizeItems:collectList('mon'),testimonials:collectList('test'),
+    faqs:collectList('faq'),bonusItems:collectList('bon'),
   };
 }
 
+// ═══════════════════════════
+// SAVE
+// ═══════════════════════════
 async function saveAll(){
-  const btn=document.getElementById('btn-save');
-  btn.disabled=true; btn.textContent='Salvando…';
+  const btn=document.getElementById('bsave');
+  btn.disabled=true;btn.textContent='Salvando…';
   C=collect();
-  const ok=await sbSave(C);
-  btn.disabled=false;
-  btn.innerHTML='<svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline stroke="currentColor" stroke-width="2" points="17 21 17 13 7 13 7 21"/><polyline stroke="currentColor" stroke-width="2" points="7 3 7 8 15 8"/></svg> Salvar Tudo';
-  updDash();
+  const ok=await sbPatch('iaem30_config','?id=eq.1',{config:C,updated_at:new Date().toISOString()});
+  btn.disabled=false;btn.textContent='💾 Salvar Tudo';
   if(ok){
+    updateDash();
     const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    document.getElementById('d-save').textContent=now;
-    toast('✓ Salvo no Supabase! Site atualizado instantaneamente.');
+    document.getElementById('ks').textContent=now;
+    toast('✓ Salvo no Supabase! Site atualizado.');
   } else {
-    toast('❌ Erro ao salvar no Supabase. Verifique sua conexão.','error');
+    toast('❌ Erro ao salvar. Verifique conexão.','err');
   }
 }
 
-async function saveLinkOnly(){
-  const link=document.getElementById('d-link').value;
-  C.productLink=link;
-  const ok=await sbSave(C);
-  toast(ok?'✓ Link salvo no Supabase!':'❌ Erro ao salvar no Supabase. Verifique sua conexão.',ok?'success':'error');
+async function saveLinkNow(){
+  C.productLink=document.getElementById('d-link').value;
+  const ok=await sbPatch('iaem30_config','?id=eq.1',{config:C});
+  toast(ok?'✓ Link salvo!':'❌ Erro ao salvar.','ok');
 }
 
 function confirmReset(){
-  if(confirm('Isso vai resetar todos os campos para os padrões. Tem certeza?')){
-    C={...DEF}; fill(); toast('Campos resetados. Clique em Salvar Tudo para confirmar.');
-  }
+  if(confirm('Resetar tudo para os padrões?')){C={...DEF};fill();toast('Resetado. Clique Salvar Tudo.');}
 }
 
+// ═══════════════════════════
 // LIST EDITORS
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+// ═══════════════════════════
+function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
 
-function rBen(items){
-  document.getElementById('benefits-editor').innerHTML=items.map((b,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
-        <input placeholder="Emoji" value="${esc(b.icon)}" data-k="icon" data-i="${i}">
-        <input placeholder="Título" value="${esc(b.title)}" data-k="title" data-i="${i}">
-      </div>
-      <input placeholder="Descrição" value="${esc(b.desc)}" data-k="desc" data-i="${i}">
-    </div><div class="li-acts">
-      <button class="btn-ic" onclick="mvBen(${i},-1)">↑</button>
-      <button class="btn-ic" onclick="mvBen(${i},1)">↓</button>
-      <button class="btn-ic d" onclick="rmBen(${i})">✕</button>
-    </div></div>`).join('');
-}
-function cBen(){const a=JSON.parse(JSON.stringify(C.benefits||[]));document.querySelectorAll('#benefits-editor input').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(a[i])a[i][k]=x.value;});return a;}
-function addBenefit(){C.benefits=cBen();C.benefits.push({icon:'✨',title:'Novo Benefício',desc:'Descrição aqui.'});rBen(C.benefits);}
-function rmBen(i){C.benefits=cBen();C.benefits.splice(i,1);rBen(C.benefits);}
-function mvBen(i,d){C.benefits=cBen();const a=C.benefits,j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];rBen(a);}
+const SCHEMAS={
+  ben:['icon:64px','title:1fr','desc:1fr'],
+  wks:['num:64px','title:1fr','desc:1fr'],
+  mon:['num:64px','title:1fr','desc:1fr'],
+  test:['avatar:64px','name:1fr','role:1fr'],
+  faq:['q:1fr'],
+  bon:['icon:64px','title:1fr','value:120px','desc:1fr'],
+};
+const EXTRA={test:'text',faq:'a'};
 
-function rWeeks(items){
-  document.getElementById('weeks-editor').innerHTML=items.map((w,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
-        <input placeholder="Nº" value="${esc(w.num)}" data-k="num" data-i="${i}">
-        <input placeholder="Título" value="${esc(w.title)}" data-k="title" data-i="${i}">
-      </div>
-      <input placeholder="Descrição" value="${esc(w.desc)}" data-k="desc" data-i="${i}">
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmWeek(${i})">✕</button></div></div>`).join('');
+function renderList(key,items){
+  const el=document.getElementById('e-'+key);if(!el)return;
+  const schema=SCHEMAS[key]||[];
+  const extra=EXTRA[key];
+  el.innerHTML=items.map((item,i)=>{
+    const cols=schema.map(s=>{const[k,w]=s.split(':');return`<input placeholder="${k}" value="${e(item[k]||'')}" data-k="${k}" data-i="${i}" style="width:${w||'1fr'}">`;}).join('');
+    const grid=`grid-template-columns:${schema.map(s=>s.split(':')[1]||'1fr').join(' ')}`;
+    const extraHtml=extra?`<textarea rows="2" placeholder="${extra}" data-k="${extra}" data-i="${i}">${e(item[extra]||'')}</textarea>`:'';
+    const stars=key==='test'?`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--m)">Estrelas:<div class="stars" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star${s<=(item.stars||5)?' on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div></div>`:'';
+    return`<div class="li"><div class="lib"><div style="display:grid;gap:7px;${grid}">${cols}</div>${extraHtml}${stars}</div>
+    <div class="lacts">
+      ${key==='ben'?`<button class="bic" onclick="mv('${key}',${i},-1)">↑</button><button class="bic" onclick="mv('${key}',${i},1)">↓</button>`:''}
+      <button class="bic d" onclick="rm('${key}',${i})">✕</button>
+    </div></div>`;
+  }).join('');
 }
-function cWeeks(){const a=JSON.parse(JSON.stringify(C.weeks||[]));document.querySelectorAll('#weeks-editor input').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(a[i])a[i][k]=x.value;});return a;}
-function addWeek(){C.weeks=cWeeks();C.weeks.push({num:String(C.weeks.length+1).padStart(2,'0'),title:'Nova Semana',desc:'Descrição.'});rWeeks(C.weeks);}
-function rmWeek(i){C.weeks=cWeeks();C.weeks.splice(i,1);rWeeks(C.weeks);}
 
-function rMon(items){
-  document.getElementById('monetize-editor').innerHTML=items.map((m,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
-        <input placeholder="Nº" value="${esc(m.num)}" data-k="num" data-i="${i}">
-        <input placeholder="Título" value="${esc(m.title)}" data-k="title" data-i="${i}">
-      </div>
-      <input placeholder="Descrição" value="${esc(m.desc)}" data-k="desc" data-i="${i}">
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmMon(${i})">✕</button></div></div>`).join('');
-}
-function cMon(){const a=JSON.parse(JSON.stringify(C.monetizeItems||[]));document.querySelectorAll('#monetize-editor input').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(a[i])a[i][k]=x.value;});return a;}
-function addMonetize(){C.monetizeItems=cMon();C.monetizeItems.push({num:String(C.monetizeItems.length+1).padStart(2,'0'),title:'Nova Forma',desc:'Descrição.'});rMon(C.monetizeItems);}
-function rmMon(i){C.monetizeItems=cMon();C.monetizeItems.splice(i,1);rMon(C.monetizeItems);}
-
-function rTest(items){
-  document.getElementById('testimonials-editor').innerHTML=items.map((t,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <input placeholder="Emoji" value="${esc(t.avatar)}" data-k="avatar" data-i="${i}" style="width:64px">
-        <input placeholder="Nome" value="${esc(t.name)}" data-k="name" data-i="${i}" style="flex:1;min-width:100px">
-        <input placeholder="Profissão" value="${esc(t.role)}" data-k="role" data-i="${i}" style="flex:1;min-width:100px">
-      </div>
-      <textarea rows="2" placeholder="Texto do depoimento" data-k="text" data-i="${i}">${esc(t.text)}</textarea>
-      <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">Estrelas:
-        <div class="star-row" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star-btn ${s<=t.stars?'on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div>
-      </div>
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmTest(${i})">✕</button></div></div>`).join('');
-}
-function setStar(i,s){document.getElementById('sr-'+i).querySelectorAll('.star-btn').forEach(b=>b.classList.toggle('on',+b.dataset.s<=s));}
-function cTest(){
-  const a=JSON.parse(JSON.stringify(C.testimonials||[]));
-  document.querySelectorAll('#testimonials-editor [data-i]').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(!a[i]||k==='stars')return;a[i][k]=x.tagName==='TEXTAREA'?x.value:x.value;});
-  a.forEach((t,i)=>{const row=document.getElementById('sr-'+i);if(!row)return;let s=0;row.querySelectorAll('.star-btn.on').forEach(()=>s++);t.stars=s||5;});
+function collectList(key){
+  const schema=SCHEMAS[key]||[];
+  const extra=EXTRA[key];
+  const a=JSON.parse(JSON.stringify(C[{ben:'benefits',wks:'weeks',mon:'monetizeItems',test:'testimonials',faq:'faqs',bon:'bonusItems'}[key]]||[]));
+  document.querySelectorAll('#e-'+key+' [data-i]').forEach(el=>{
+    const i=+el.dataset.i,k=el.dataset.k;
+    if(a[i])a[i][k]=el.tagName==='TEXTAREA'?el.value:el.value;
+  });
+  if(key==='test'){
+    a.forEach((t,i)=>{const row=document.getElementById('sr-'+i);if(!row)return;let s=0;row.querySelectorAll('.star.on').forEach(()=>s++);t.stars=s||5;});
+  }
   return a;
 }
-function addTest(){C.testimonials=cTest();C.testimonials.push({stars:5,text:'"Depoimento aqui."',name:'Nome',role:'Profissão',avatar:'⭐'});rTest(C.testimonials);}
-function rmTest(i){C.testimonials=cTest();C.testimonials.splice(i,1);rTest(C.testimonials);}
 
-function rFaq(items){
-  document.getElementById('faq-editor').innerHTML=items.map((f,i)=>`
-    <div class="li"><div class="li-body">
-      <input placeholder="Pergunta" value="${esc(f.q)}" data-k="q" data-i="${i}">
-      <textarea rows="2" placeholder="Resposta" data-k="a" data-i="${i}">${esc(f.a)}</textarea>
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmFaq(${i})">✕</button></div></div>`).join('');
+function setStar(i,s){document.getElementById('sr-'+i).querySelectorAll('.star').forEach(b=>b.classList.toggle('on',+b.dataset.s<=s));}
+
+const DEFS={ben:{icon:'✨',title:'Novo Benefício',desc:'Descrição.'},wks:{num:'05',title:'Nova Semana',desc:'Descrição.'},mon:{num:'07',title:'Nova Forma',desc:'Descrição.'},test:{stars:5,text:'"Depoimento aqui."',name:'Nome',role:'Profissão',avatar:'⭐'},faq:{q:'Nova pergunta?',a:'Resposta aqui.'},bon:{icon:'🎁',title:'Novo Bônus',desc:'Descrição.',value:'Valor: R$27'}};
+const KEYS={ben:'benefits',wks:'weeks',mon:'monetizeItems',test:'testimonials',faq:'faqs',bon:'bonusItems'};
+
+function addItem(key){
+  C[KEYS[key]]=collectList(key);
+  C[KEYS[key]].push({...DEFS[key]});
+  renderList(key,C[KEYS[key]]);
 }
-function cFaq(){const a=JSON.parse(JSON.stringify(C.faqs||[]));document.querySelectorAll('#faq-editor [data-i]').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(a[i])a[i][k]=x.tagName==='TEXTAREA'?x.value:x.value;});return a;}
-function addFaq(){C.faqs=cFaq();C.faqs.push({q:'Nova pergunta?',a:'Resposta aqui.'});rFaq(C.faqs);}
-function rmFaq(i){C.faqs=cFaq();C.faqs.splice(i,1);rFaq(C.faqs);}
+function rm(key,i){C[KEYS[key]]=collectList(key);C[KEYS[key]].splice(i,1);renderList(key,C[KEYS[key]]);}
+function mv(key,i,d){C[KEYS[key]]=collectList(key);const a=C[KEYS[key]],j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];renderList(key,a);}
 
-// Auto-load panels handled inside showPanel()
-
+// ═══════════════════════════
 // COUPONS
+// ═══════════════════════════
 async function createCoupon(){
-  const code=document.getElementById('new-coupon-code').value.trim().toUpperCase();
-  const pct=Number(document.getElementById('new-coupon-pct').value)||20;
-  const max=Number(document.getElementById('new-coupon-max').value)||999;
-  if(!code){toast('Digite um código para o cupom','error');return;}
+  const code=document.getElementById('cp-c').value.trim().toUpperCase();
+  const pct=Number(document.getElementById('cp-p').value)||20;
+  const max=Number(document.getElementById('cp-m').value)||999;
+  if(!code){toast('Digite o código','err');return;}
   const ok=await sbPost('iaem30_coupons',{code,discount_percent:pct,active:true,uses:0,max_uses:max});
-  if(ok){toast('✓ Cupom criado!');document.getElementById('new-coupon-code').value='';loadCoupons();}
-  else toast('Erro ao criar cupom. Código pode já existir.','error');
+  if(ok){toast('✓ Cupom criado!');document.getElementById('cp-c').value='';loadCoupons();}
+  else toast('Erro. Código pode já existir.','err');
 }
 async function loadCoupons(){
   const rows=await sbGet('iaem30_coupons','?order=created_at.desc');
-  const el=document.getElementById('coupons-list'); if(!el)return;
-  if(!rows||!rows.length){el.innerHTML='<span style="color:var(--muted2)">Nenhum cupom cadastrado.</span>';return;}
-  el.innerHTML=`<table style="width:100%;border-collapse:collapse">
-    <thead><tr style="border-bottom:1px solid var(--border)">
-      ${['Código','Desconto','Usos','Máx.','Ativo','Ação'].map(h=>`<th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em">${h}</th>`).join('')}
-    </tr></thead>
-    <tbody>${rows.map(c=>`<tr style="border-bottom:1px solid var(--border)">
-      <td style="padding:8px 4px;font-weight:600;font-family:'Syne',sans-serif">${c.code}</td>
-      <td style="padding:8px 4px;color:var(--green)">${c.discount_percent}%</td>
-      <td style="padding:8px 4px">${c.uses}</td>
-      <td style="padding:8px 4px">${c.max_uses}</td>
-      <td style="padding:8px 4px">${c.active?'<span style="color:var(--green)">✓ Sim</span>':'<span style="color:var(--red)">✕ Não</span>'}</td>
-      <td style="padding:8px 4px"><button onclick="toggleCoupon('${c.id}',${!c.active})" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px">${c.active?'Desativar':'Ativar'}</button></td>
-    </tr>`).join('')}
-    </tbody></table>`;
+  const el=document.getElementById('cp-lst');if(!el)return;
+  if(!rows?.length){el.innerHTML='<span style="color:var(--m2)">Nenhum cupom.</span>';return;}
+  el.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
+    ['Código','%','Usos','Máx','Ativo','Ação'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
+    '</tr></thead><tbody>'+
+    rows.map(c=>`<tr style="border-bottom:1px solid var(--b)">
+      <td style="padding:8px 5px;font-weight:600">${c.code}</td>
+      <td style="padding:8px 5px;color:var(--g)">${c.discount_percent}%</td>
+      <td style="padding:8px 5px">${c.uses}</td>
+      <td style="padding:8px 5px">${c.max_uses}</td>
+      <td style="padding:8px 5px">${c.active?'<span style="color:var(--g)">✓</span>':'<span style="color:var(--r)">✕</span>'}</td>
+      <td style="padding:8px 5px"><button onclick="toggleCoupon('${c.id}',${!c.active})" style="background:var(--s2);border:1px solid var(--b);color:var(--m);padding:4px 8px;border-radius:5px;cursor:pointer;font-size:12px">${c.active?'Desativar':'Ativar'}</button></td>
+    </tr>`).join('')+'</tbody></table>';
 }
-async function toggleCoupon(id,active){
-  await sbPatch('iaem30_coupons',`?id=eq.${id}`,{active});
-  loadCoupons();
-  toast(active?'Cupom ativado!':'Cupom desativado.');
-}
+async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCoupons();toast(active?'Ativado!':'Desativado.');}
 
-// NOTIFICATIONS
-async function addNotification(){
-  const name=document.getElementById('new-notif-name').value.trim();
-  const city=document.getElementById('new-notif-city').value.trim();
-  if(!name||!city){toast('Preencha nome e cidade','error');return;}
-  const ok=await sbPost('iaem30_sale_notifications',{name,city});
-  if(ok){toast('✓ Notificação adicionada!');document.getElementById('new-notif-name').value='';document.getElementById('new-notif-city').value='';loadNotifications();}
-  else toast('Erro ao adicionar.','error');
+// ═══════════════════════════
+// NOTIFS
+// ═══════════════════════════
+async function addNotif(){
+  const n=document.getElementById('nt-n').value.trim();
+  const c=document.getElementById('nt-c').value.trim();
+  if(!n||!c){toast('Preencha nome e cidade','err');return;}
+  const ok=await sbPost('iaem30_sale_notifications',{name:n,city:c});
+  if(ok){toast('✓ Adicionado!');document.getElementById('nt-n').value='';document.getElementById('nt-c').value='';loadNotifs();}
+  else toast('Erro','err');
 }
-async function loadNotifications(){
+async function loadNotifs(){
   const rows=await sbGet('iaem30_sale_notifications','?order=created_at.desc&limit=30');
-  const el=document.getElementById('notif-list'); if(!el)return;
-  if(!rows||!rows.length){el.innerHTML='<span style="color:var(--muted2)">Nenhuma notificação cadastrada.</span>';return;}
-  el.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px">${rows.map(n=>`
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:8px">
-      ✅ <strong>${n.name}</strong> de ${n.city}
-    </div>`).join('')}</div>`;
+  const el=document.getElementById('nt-lst');if(!el)return;
+  if(!rows?.length){el.innerHTML='<span style="color:var(--m2)">Nenhuma.</span>';return;}
+  el.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:7px">'+
+    rows.map(r=>`<div style="background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:5px 11px;font-size:13px">✅ <strong>${r.name}</strong> de ${r.city}</div>`).join('')+
+    '</div>';
 }
 
+// ═══════════════════════════
+// SALES
+// ═══════════════════════════
+async function loadPPTokenStatus(){
+  const rows=await sbGet('iaem30_secrets','?key=eq.perfectpay_token&select=value');
+  const el=document.getElementById('pp-st');
+  if(rows?.[0]?.value){if(el){el.textContent='✓ Configurado';el.className='tag g';}}
+}
+async function savePPToken(){
+  const tk=document.getElementById('pp-tk').value.trim();
+  if(!tk){toast('Cole o token','err');return;}
+  const rows=await sbGet('iaem30_secrets','?key=eq.perfectpay_token');
+  const ok=rows?.length
+    ?await sbPatch('iaem30_secrets','?key=eq.perfectpay_token',{value:tk,updated_at:new Date().toISOString()})
+    :await sbPost('iaem30_secrets',{key:'perfectpay_token',value:tk});
+  if(ok){toast('✓ Token salvo!');document.getElementById('pp-tk').value='';loadPPTokenStatus();}
+  else toast('Erro','err');
+}
+async function syncSales(all){
+  const res=document.getElementById('sy-res');res.style.display='block';
+  res.innerHTML='<span style="color:var(--a2)">⏳ Sincronizando...</span>';
+  const body={page:1};
+  if(!all){const f=document.getElementById('sy-from').value,t=document.getElementById('sy-to').value;if(f)body.date_from=f;if(t)body.date_to=t;}
+  try{
+    const r=await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/sync-perfectpay-sales',{method:'POST',headers:{'Content-Type':'application/json',apikey:AK},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.ok){res.innerHTML='<span style="color:var(--g)">✓ '+d.synced+' vendas sincronizadas!</span>';toast('✓ '+d.synced+' vendas importadas!');loadSales();}
+    else{res.innerHTML='<span style="color:var(--r)">❌ '+(d.error||'Erro')+'</span>';toast(d.error||'Erro','err');}
+  }catch(ex){res.innerHTML='<span style="color:var(--r)">❌ '+ex+'</span>';toast('Erro de conexão','err');}
+}
+async function loadSales(){
+  const filter=document.getElementById('sf')?.value||'all';
+  const all=await sbGet('iaem30_sales','?order=created_at.desc&limit=500')||[];
+  const appr=all.filter(s=>s.status==='approved');
+  const now=new Date();
+  const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+  const wk=new Date(now-7*86400000).toISOString();
+  const mo=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
+  const kpi=(rows,from)=>{const f=rows.filter(s=>s.created_at>=from);return{t:f.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:f.length};};
+  const fmt=v=>'R$'+v.toFixed(2).replace('.',',');
+  const K=(id,val,cs,cl)=>{const e=document.getElementById(id);if(e)e.textContent=val;const ec=document.getElementById(cs);if(ec)ec.textContent=cl+' venda'+(cl!==1?'s':'');};
+  const t=kpi(appr,tod),w=kpi(appr,wk),m=kpi(appr,mo),tt={t:appr.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:appr.length};
+  K('sv-hj',fmt(t.t),'sv-hjc',t.c);K('sv-sm',fmt(w.t),'sv-smc',w.c);K('sv-ms',fmt(m.t),'sv-msc',m.c);K('sv-tt',fmt(tt.t),'sv-ttc',tt.c);
+  const disp=filter==='all'?all:all.filter(s=>s.status===filter);
+  const tbl=document.getElementById('sv-tbl');if(!tbl)return;
+  if(!disp.length){tbl.innerHTML='<div style="text-align:center;padding:24px;color:var(--m2)">Nenhuma venda. Configure webhook ou sincronize acima.</div>';return;}
+  const sb=s=>({approved:'<span style="color:var(--g)">✓ Aprovada</span>',refunded:'<span style="color:var(--r)">↩ Reembolso</span>',cancelled:'<span style="color:var(--m)">✕ Cancelada</span>',pending:'<span style="color:var(--gold)">⏳ Pendente</span>'}[s]||s);
+  tbl.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
+    ['Data','Cliente','Email','Valor','Método','Status'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
+    '</tr></thead><tbody>'+
+    disp.slice(0,50).map(s=>`<tr style="border-bottom:1px solid var(--b)">
+      <td style="padding:9px 5px;font-size:12px">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="padding:9px 5px;font-size:13px">${s.customer_name||'—'}</td>
+      <td style="padding:9px 5px;font-size:12px;color:var(--m)">${s.customer_email||'—'}</td>
+      <td style="padding:9px 5px;font-size:13px;font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</td>
+      <td style="padding:9px 5px;font-size:12px;color:var(--m)">${s.payment_method||'—'}</td>
+      <td style="padding:9px 5px">${sb(s.status)}</td>
+    </tr>`).join('')+
+    '</tbody></table>'+(disp.length>50?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--m2)">Mostrando 50 de ${disp.length}</div>`:'');
+}
+async function addSale(){
+  const n=document.getElementById('ms-n').value.trim();
+  const em=document.getElementById('ms-e').value.trim();
+  const v=parseFloat(document.getElementById('ms-v').value);
+  const mt=document.getElementById('ms-m').value;
+  if(!em||!v){toast('Preencha email e valor','err');return;}
+  const ok=await sbPost('iaem30_sales',{order_id:'manual_'+Date.now(),customer_name:n,customer_email:em,amount:v,status:'approved',payment_method:mt,product_name:'IA em 30 Dias'});
+  if(ok){toast('✓ Venda registrada!');['ms-n','ms-e','ms-v'].forEach(id=>document.getElementById(id).value='');loadSales();}
+  else toast('Erro','err');
+}
+function copyHook(){navigator.clipboard.writeText('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook').then(()=>toast('✓ Copiado!'));}
+
+// ═══════════════════════════
 // ANALYTICS
+// ═══════════════════════════
 async function loadAnalytics(){
   const since=new Date(Date.now()-86400000).toISOString();
-  const [vRows,cRows,eRows]=await Promise.all([
-    sbGet('iaem30_visitors',`?created_at=gte.${since}&select=*&order=created_at.desc&limit=200`),
-    sbGet('iaem30_cta_clicks',`?created_at=gte.${since}&select=*`),
-    sbGet('iaem30_emails',`?select=email,created_at&order=created_at.desc&limit=50`),
+  const [vr,cr,er]=await Promise.all([
+    sbGet('iaem30_visitors','?created_at=gte.'+since+'&select=*&order=created_at.desc&limit=100'),
+    sbGet('iaem30_cta_clicks','?created_at=gte.'+since+'&select=*'),
+    sbGet('iaem30_emails','?select=email,created_at&order=created_at.desc&limit=50'),
   ]);
-  const visitors=vRows||[], ctas=cRows||[], emails=eRows||[];
-  const total=visitors.length, ctaCount=ctas.length;
-  document.getElementById('an-visitors').textContent=total;
-  document.getElementById('an-cta').textContent=ctaCount;
-  document.getElementById('an-rate').textContent=total?Math.round(ctaCount/total*100)+'%':'0%';
-  document.getElementById('an-emails').textContent=emails.length;
-
-  // Devices
-  const mobile=visitors.filter(v=>v.device==='mobile').length;
-  const devEl=document.getElementById('an-devices');
-  if(devEl) devEl.innerHTML=`
-    <div style="margin-bottom:8px;font-size:13px">📱 Mobile: <strong>${mobile}</strong> (${total?Math.round(mobile/total*100):0}%)</div>
-    <div style="font-size:13px">💻 Desktop: <strong>${total-mobile}</strong> (${total?Math.round((total-mobile)/total*100):0}%)</div>`;
-
-  // Sources
-  const srcMap={};
-  visitors.forEach(v=>{const s=v.utm_source||v.referrer?.split('/')[2]||'Direto';srcMap[s]=(srcMap[s]||0)+1;});
-  const sorted=Object.entries(srcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const srcEl=document.getElementById('an-sources');
-  if(srcEl) srcEl.innerHTML=sorted.map(([s,c])=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <span style="font-size:12px;min-width:100px;color:var(--text)">${s}</span>
-      <div style="flex:1;background:var(--surface2);border-radius:4px;height:6px">
-        <div style="background:var(--accent);height:6px;border-radius:4px;width:${total?Math.round(c/total*100):0}%"></div>
-      </div>
-      <span style="font-size:11px;color:var(--muted);min-width:30px">${c}</span>
-    </div>`).join('');
-
-  // Table
-  const tEl=document.getElementById('analytics-table');
-  if(tEl){
-    if(!visitors.length){tEl.innerHTML='<span style="color:var(--muted2)">Nenhuma visita nas últimas 24h.</span>';return;}
-    tEl.innerHTML=`<table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        ${['Hora','Dispositivo','Fonte','UTM','CTA'].map(h=>`<th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase">${h}</th>`).join('')}
-      </tr></thead>
-      <tbody>${visitors.slice(0,25).map(v=>`<tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:8px 4px;font-size:12px">${new Date(v.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
-        <td style="padding:8px 4px;font-size:12px">${v.device==='mobile'?'📱':'💻'}</td>
-        <td style="padding:8px 4px;font-size:12px">${v.referrer?.split('/')[2]||'Direto'}</td>
-        <td style="padding:8px 4px;font-size:12px">${v.utm_source||'—'}</td>
-        <td style="padding:8px 4px">${v.clicked_cta?'<span style="color:var(--green);font-size:12px">✓</span>':'<span style="color:var(--muted2);font-size:12px">—</span>'}</td>
-      </tr>`).join('')}</tbody></table>`;
-  }
-
-  // Emails table
-  const eEl=document.getElementById('emails-table');
-  if(eEl){
-    if(!emails.length){eEl.innerHTML='<span style="color:var(--muted2)">Nenhum email capturado ainda.</span>';return;}
-    eEl.innerHTML=`<div style="display:flex;flex-wrap:wrap;gap:8px">${emails.map(e=>`
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px">
-        📧 ${e.email}
-      </div>`).join('')}</div>`;
-  }
+  const v=vr||[],c=cr||[],em=er||[];
+  const tot=v.length,cc=c.length;
+  document.getElementById('an-v').textContent=tot;
+  document.getElementById('an-c').textContent=cc;
+  document.getElementById('an-r').textContent=tot?Math.round(cc/tot*100)+'%':'0%';
+  document.getElementById('an-e').textContent=em.length;
+  const tbl=document.getElementById('an-tbl');if(!tbl)return;
+  if(!v.length){tbl.innerHTML='<span style="color:var(--m2)">Nenhuma visita nas últimas 24h.</span>';return;}
+  tbl.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
+    ['Hora','Dispositivo','Fonte','CTA'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
+    '</tr></thead><tbody>'+
+    v.slice(0,25).map(vv=>`<tr style="border-bottom:1px solid var(--b)">
+      <td style="padding:8px 5px;font-size:12px">${new Date(vv.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="padding:8px 5px;font-size:12px">${vv.device==='mobile'?'📱':'💻'} ${vv.device||'—'}</td>
+      <td style="padding:8px 5px;font-size:12px">${vv.utm_source||vv.referrer?.split('/')[2]||'Direto'}</td>
+      <td style="padding:8px 5px">${vv.clicked_cta?'<span style="color:var(--g);font-size:12px">✓</span>':'<span style="color:var(--m2);font-size:12px">—</span>'}</td>
+    </tr>`).join('')+'</tbody></table>';
 }
 
-// Supabase helpers for admin
-async function sbGet(table,query=''){
-  try{const r=await fetch(\`\${SB}/rest/v1/\${table}\${query}\`,{headers:H});return r.ok?await r.json():null;}catch(e){return null;}
-}
-async function sbPost(table,data){
-  try{const r=await fetch(\`\${SB}/rest/v1/\${table}\`,{method:'POST',headers:H,body:JSON.stringify(data)});return r.ok;}catch(e){return false;}
-}
-async function sbPatch(table,query,data){
-  try{const r=await fetch(\`\${SB}/rest/v1/\${table}\${query}\`,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(data)});return r.ok;}catch(e){return false;}
-}
+// ═══════════════════════════
+// BACKUP
+// ═══════════════════════════
+function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30.json';a.click();toast('Exportado!');}
+function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Importado! Salve para publicar.');}catch{toast('Arquivo inválido','err');}};r.readAsText(f);}
 
-
-
-// ═══════════════════════════════════════
-// PERFECTPAY API INTEGRATION
-// ═══════════════════════════════════════
-async function loadPPToken() {
-  const rows = await sbGet('iaem30_secrets', '?key=eq.perfectpay_token&select=value');
-  const el = document.getElementById('pp-token-status');
-  if (rows && rows[0]?.value) {
-    if (el) { el.textContent = '✓ Configurado'; el.className = 'tag g'; }
-    // Show masked token
-    const input = document.getElementById('pp-token-input');
-    if (input) input.placeholder = '••••••••••••••• (já configurado)';
-  }
-}
-
-async function savePPToken() {
-  const token = document.getElementById('pp-token-input').value.trim();
-  if (!token) { toast('Cole o token da PerfectPay', 'error'); return; }
-
-  const rows = await sbGet('iaem30_secrets', '?key=eq.perfectpay_token');
-  let ok;
-  if (rows && rows.length) {
-    ok = await sbPatch('iaem30_secrets', '?key=eq.perfectpay_token', { value: token, updated_at: new Date().toISOString() });
-  } else {
-    ok = await sbPost('iaem30_secrets', { key: 'perfectpay_token', value: token });
-  }
-
-  if (ok) {
-    toast('✓ Token salvo com segurança no Supabase!');
-    document.getElementById('pp-token-input').value = '';
-    document.getElementById('pp-token-input').placeholder = '••••••••••••••• (já configurado)';
-    const el = document.getElementById('pp-token-status');
-    if (el) { el.textContent = '✓ Configurado'; el.className = 'tag g'; }
-  } else {
-    toast('Erro ao salvar token', 'error');
-  }
-}
-
-async function syncPPSales(all = false) {
-  const resultEl = document.getElementById('sync-result');
-  resultEl.style.display = 'block';
-  resultEl.innerHTML = '<span style="color:var(--accent2)">⏳ Sincronizando com a PerfectPay...</span>';
-
-  const body = { page: 1 };
-  if (!all) {
-    const from = document.getElementById('sync-from').value;
-    const to   = document.getElementById('sync-to').value;
-    if (from) body.date_from = from;
-    if (to)   body.date_to   = to;
-  }
-
-  try {
-    const res = await fetch(
-      'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/sync-perfectpay-sales',
-      { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': AK }, body: JSON.stringify(body) }
-    );
-    const data = await res.json();
-
-    if (data.ok) {
-      resultEl.innerHTML = `<span style="color:var(--green)">✓ ${data.synced} vendas sincronizadas! (${data.total_from_api} encontradas na API)</span>`;
-      toast(`✓ ${data.synced} vendas importadas da PerfectPay!`);
-      loadSales();
-    } else {
-      resultEl.innerHTML = `<span style="color:var(--red)">❌ ${data.error || 'Erro desconhecido'}</span>`;
-      toast(data.error || 'Erro ao sincronizar', 'error');
-    }
-  } catch (e) {
-    resultEl.innerHTML = `<span style="color:var(--red)">❌ Erro de conexão: ${e}</span>`;
-    toast('Erro de conexão', 'error');
-  }
-}
-
-// ═══════════════════════════════════════
-// SALES DASHBOARD
-// ═══════════════════════════════════════
-async function loadSales() {
-  const filter = document.getElementById('sales-filter')?.value || 'all';
-  
-  // Load all sales for KPIs
-  const allSales = await sbGet('iaem30_sales', '?order=created_at.desc&limit=500') || [];
-  const approved = allSales.filter(s => s.status === 'approved');
-
-  // KPI calculations
-  const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-  const weekStart  = new Date(now - 7*86400000).toISOString();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-
-  const calcKPI = (rows, from) => {
-    const filtered = rows.filter(s => s.created_at >= from);
-    return { total: filtered.reduce((s,r) => s + parseFloat(r.amount||0), 0), count: filtered.length };
-  };
-
-  const today = calcKPI(approved, todayStart);
-  const week  = calcKPI(approved, weekStart);
-  const month = calcKPI(approved, monthStart);
-  const total = { total: approved.reduce((s,r) => s + parseFloat(r.amount||0), 0), count: approved.length };
-
-  const fmt = v => 'R$' + v.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+,)/g, '$1.');
-  document.getElementById('s-today').textContent  = fmt(today.total);
-  document.getElementById('s-week').textContent   = fmt(week.total);
-  document.getElementById('s-month').textContent  = fmt(month.total);
-  document.getElementById('s-total').textContent  = fmt(total.total);
-  document.getElementById('s-today-count').textContent  = today.count + ' venda' + (today.count !== 1 ? 's' : '');
-  document.getElementById('s-week-count').textContent   = week.count  + ' venda' + (week.count  !== 1 ? 's' : '');
-  document.getElementById('s-month-count').textContent  = month.count + ' venda' + (month.count !== 1 ? 's' : '');
-  document.getElementById('s-total-count').textContent  = total.count + ' venda' + (total.count !== 1 ? 's' : '');
-
-  // Sales table
-  const tableEl = document.getElementById('sales-table');
-  const display = filter === 'all' ? allSales : allSales.filter(s => s.status === filter);
-  
-  if (!display.length) {
-    tableEl.innerHTML = '<div style="text-align:center;padding:32px;color:var(--muted2)">Nenhuma venda encontrada.<br><span style="font-size:12px">Configure o webhook da PerfectPay para receber vendas automaticamente.</span></div>';
-    return;
-  }
-
-  const statusBadge = s => {
-    const map = {
-      approved:  ['var(--green)',  '✓ Aprovada'],
-      refunded:  ['var(--red)',    '↩ Reembolso'],
-      cancelled: ['var(--muted)',  '✕ Cancelada'],
-      pending:   ['var(--gold)',   '⏳ Pendente'],
-    };
-    const [color, label] = map[s] || ['var(--muted)', s];
-    return `<span style="color:${color};font-size:12px;font-weight:600">${label}</span>`;
-  };
-
-  tableEl.innerHTML = `
-    <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="border-bottom:1px solid var(--border)">
-        ${['Data','Cliente','Email','Valor','Método','Status','Cupom'].map(h =>
-          `<th style="text-align:left;padding:8px 6px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${h}</th>`
-        ).join('')}
-      </tr></thead>
-      <tbody>
-        ${display.slice(0,50).map(s => `
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:10px 6px;font-size:12px;white-space:nowrap">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
-            <td style="padding:10px 6px;font-size:13px;font-weight:500">${s.customer_name || '—'}</td>
-            <td style="padding:10px 6px;font-size:12px;color:var(--muted)">${s.customer_email || '—'}</td>
-            <td style="padding:10px 6px;font-size:13px;font-weight:700;color:${s.status==='approved'?'var(--green)':'var(--muted)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</td>
-            <td style="padding:10px 6px;font-size:12px;color:var(--muted)">${s.payment_method || '—'}</td>
-            <td style="padding:10px 6px">${statusBadge(s.status)}</td>
-            <td style="padding:10px 6px;font-size:12px;color:var(--accent2)">${s.coupon_code || '—'}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>
-    ${display.length > 50 ? `<div style="text-align:center;padding:12px;font-size:12px;color:var(--muted2)">Mostrando 50 de ${display.length} vendas</div>` : ''}
-  `;
-}
-
-async function addManualSale() {
-  const name   = document.getElementById('ms-name').value.trim();
-  const email  = document.getElementById('ms-email').value.trim();
-  const amount = parseFloat(document.getElementById('ms-amount').value);
-  const method = document.getElementById('ms-method').value;
-  if (!email || !amount) { toast('Preencha email e valor', 'error'); return; }
-  const ok = await sbPost('iaem30_sales', {
-    order_id: 'manual_' + Date.now(),
-    customer_name: name, customer_email: email,
-    amount, status: 'approved', payment_method: method,
-    product_name: 'IA em 30 Dias',
-  });
-  if (ok) {
-    toast('✓ Venda registrada!');
-    ['ms-name','ms-email','ms-amount'].forEach(id => document.getElementById(id).value = '');
-    loadSales();
-  } else {
-    toast('Erro ao registrar venda', 'error');
-  }
-}
-
-function copyWebhook() {
-  const url = 'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook';
-  navigator.clipboard.writeText(url).then(() => toast('✓ URL copiada!'));
-}
-
-function exportCfg(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Config exportada!');}
-function importCfg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Config importada! Clique Salvar Tudo para publicar.');}catch{toast('Arquivo inválido.','error');}};r.readAsText(f);}
-
+// ═══════════════════════════
+// TOAST
+// ═══════════════════════════
 let _tt;
-function toast(msg,type='success'){
+function toast(msg,type='ok'){
   const el=document.getElementById('toast');
   el.className='show '+type;
-  document.getElementById('ti').textContent=type==='error'?'✕':'✓';
+  document.getElementById('ti').textContent=type==='err'?'✕':'✓';
   document.getElementById('tm').textContent=msg;
   clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),4000);
 }
