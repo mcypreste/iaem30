@@ -848,15 +848,17 @@ async function init(){
   fill();
 }
 
-const PTITLES={dashboard:'Dashboard',general:'Geral & Textos',hero:'Hero & CTA',benefits:'Benefícios',weeks:'Semanas & Conteúdo',monetize:'Monetização',testimonials:'Depoimentos',pricing:'Preço & Compra',faq:'FAQ',conversion:'Conversão & Urgência',fornotfor:'Para quem é',bonus:'Bônus',sales:'Vendas & Receita',analytics:'Analytics',settings:'Configurações'};
+const PTITLES={dashboard:'Dashboard',general:'Geral & Textos',hero:'Hero & CTA',benefits:'Benefícios',weeks:'Semanas & Conteúdo',monetize:'Monetização',testimonials:'Depoimentos',pricing:'Preço & Compra',faq:'FAQ',conversion:'Conversão & Urgência',fornotfor:'Para quem é',bonus:'Bônus',thankyou:'Página de Obrigado',coupons:'Cupons de Desconto',notifications:'Notif. de Vendas',sales:'Vendas & Receita',analytics:'Analytics',settings:'Configurações'};
 function showPanel(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   el.classList.add('active');
   document.getElementById('ptitle').textContent=PTITLES[id]||id;
-  if(id==='analytics') loadAnalytics();
-  if(id==='sales') { loadSales(); loadPPToken(); }
+  if(id==='analytics')     setTimeout(loadAnalytics,50);
+  if(id==='sales')         setTimeout(()=>{ loadSales(); loadPPToken(); },50);
+  if(id==='coupons')       setTimeout(loadCoupons,50);
+  if(id==='notifications') setTimeout(loadNotifications,50);
 }
 
 function fill(){
@@ -1190,15 +1192,7 @@ function cBonus(){const a=JSON.parse(JSON.stringify(C.bonusItems||[]));document.
 function addBonus(){C.bonusItems=cBonus();C.bonusItems.push({icon:'🎁',title:'Novo Bônus',desc:'Descrição.',value:'Valor: R$27'});rBonus(C.bonusItems);}
 function rmBonus(i){C.bonusItems=cBonus();C.bonusItems.splice(i,1);rBonus(C.bonusItems);}
 
-// Auto-load panels
-const _origShowPanel = showPanel;
-showPanel = function(id,el){
-  _origShowPanel(id,el);
-  if(id==='analytics') loadAnalytics();
-  if(id==='sales') { loadSales(); loadPPToken(); }
-  if(id==='coupons') loadCoupons();
-  if(id==='notifications') loadNotifications();
-};
+// Auto-load panels handled inside showPanel()
 
 // COUPONS
 async function createCoupon(){
