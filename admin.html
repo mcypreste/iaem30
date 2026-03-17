@@ -355,20 +355,46 @@
           <div class="sc"><div class="sl">Este mês</div><div class="sv" id="s-month">R$0</div><div class="ss" id="s-month-count">0 vendas</div></div>
           <div class="sc"><div class="sl">Total</div><div class="sv" id="s-total">R$0</div><div class="ss" id="s-total-count">0 vendas</div></div>
         </div>
-        <!-- Webhook info -->
-        <div class="card"><div class="card-h"><h3>🔗 URL do Webhook (PerfectPay)</h3></div><div class="card-b">
+        <!-- API Token config -->
+        <div class="card"><div class="card-h"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-token-status">Não configurado</span></div><div class="card-b">
           <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Cole esta URL nas configurações da PerfectPay em <strong style="color:var(--text)">Configurações → Webhook / Postback</strong>.<br>
-            A cada venda aprovada, reembolso ou cancelamento, a PerfectPay enviará os dados automaticamente.
+            Para buscar suas vendas automaticamente, gere um token em:<br>
+            <strong style="color:var(--text)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
+            Copie o token gerado e cole aqui. Ele é salvo com segurança no Supabase e nunca fica exposto.
           </div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <code id="webhook-url" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;flex:1;word-break:break-all">
+            <input type="password" id="pp-token-input" placeholder="eyJ0eXAiOiJKV1Qi..." style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:monospace;outline:none;min-width:200px">
+            <button class="btn-save" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
+          </div>
+        </div></div>
+
+        <!-- Sync card -->
+        <div class="card"><div class="card-h"><h3>🔄 Sincronizar Vendas da PerfectPay</h3></div><div class="card-b">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+            Busca todas as suas vendas diretamente da API da PerfectPay e salva no painel. Use os filtros para sincronizar um período específico ou clique em Sincronizar Tudo para puxar todas as vendas.
+          </div>
+          <div class="fr" style="margin-bottom:16px">
+            <div class="field"><label>Data início</label><input type="date" id="sync-from"></div>
+            <div class="field"><label>Data fim</label><input type="date" id="sync-to"></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn-save" style="width:fit-content" onclick="syncPPSales()">🔄 Sincronizar Período</button>
+            <button class="btn-save" style="width:fit-content;background:var(--surface2);border:1px solid var(--border2);color:var(--text)" onclick="syncPPSales(true)">⬇️ Sincronizar Tudo</button>
+          </div>
+          <div id="sync-result" style="margin-top:14px;font-size:13px;display:none"></div>
+        </div></div>
+
+        <!-- Webhook fallback -->
+        <div class="card"><div class="card-h"><h3>🔗 Webhook (automático a cada venda)</h3></div><div class="card-b">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
+            Configure também o webhook para receber vendas em tempo real sem precisar sincronizar manualmente.<br>
+            <strong style="color:var(--text)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <code style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;flex:1;word-break:break-all">
               https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook
             </code>
             <button class="btn-save" style="width:fit-content;padding:9px 16px" onclick="copyWebhook()">📋 Copiar</button>
-          </div>
-          <div style="margin-top:12px;font-size:12px;color:var(--muted2)">
-            Método: <strong style="color:var(--text)">POST</strong> &nbsp;|&nbsp; Formato: <strong style="color:var(--text)">JSON</strong> &nbsp;|&nbsp; Não requer autenticação adicional
           </div>
         </div></div>
         <!-- Sales table -->
@@ -554,20 +580,46 @@
           <div class="sc"><div class="sl">Este mês</div><div class="sv" id="s-month">R$0</div><div class="ss" id="s-month-count">0 vendas</div></div>
           <div class="sc"><div class="sl">Total</div><div class="sv" id="s-total">R$0</div><div class="ss" id="s-total-count">0 vendas</div></div>
         </div>
-        <!-- Webhook info -->
-        <div class="card"><div class="card-h"><h3>🔗 URL do Webhook (PerfectPay)</h3></div><div class="card-b">
+        <!-- API Token config -->
+        <div class="card"><div class="card-h"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-token-status">Não configurado</span></div><div class="card-b">
           <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-            Cole esta URL nas configurações da PerfectPay em <strong style="color:var(--text)">Configurações → Webhook / Postback</strong>.<br>
-            A cada venda aprovada, reembolso ou cancelamento, a PerfectPay enviará os dados automaticamente.
+            Para buscar suas vendas automaticamente, gere um token em:<br>
+            <strong style="color:var(--text)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
+            Copie o token gerado e cole aqui. Ele é salvo com segurança no Supabase e nunca fica exposto.
           </div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-            <code id="webhook-url" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:13px;flex:1;word-break:break-all">
+            <input type="password" id="pp-token-input" placeholder="eyJ0eXAiOiJKV1Qi..." style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;font-family:monospace;outline:none;min-width:200px">
+            <button class="btn-save" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
+          </div>
+        </div></div>
+
+        <!-- Sync card -->
+        <div class="card"><div class="card-h"><h3>🔄 Sincronizar Vendas da PerfectPay</h3></div><div class="card-b">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+            Busca todas as suas vendas diretamente da API da PerfectPay e salva no painel. Use os filtros para sincronizar um período específico ou clique em Sincronizar Tudo para puxar todas as vendas.
+          </div>
+          <div class="fr" style="margin-bottom:16px">
+            <div class="field"><label>Data início</label><input type="date" id="sync-from"></div>
+            <div class="field"><label>Data fim</label><input type="date" id="sync-to"></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn-save" style="width:fit-content" onclick="syncPPSales()">🔄 Sincronizar Período</button>
+            <button class="btn-save" style="width:fit-content;background:var(--surface2);border:1px solid var(--border2);color:var(--text)" onclick="syncPPSales(true)">⬇️ Sincronizar Tudo</button>
+          </div>
+          <div id="sync-result" style="margin-top:14px;font-size:13px;display:none"></div>
+        </div></div>
+
+        <!-- Webhook fallback -->
+        <div class="card"><div class="card-h"><h3>🔗 Webhook (automático a cada venda)</h3></div><div class="card-b">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.7">
+            Configure também o webhook para receber vendas em tempo real sem precisar sincronizar manualmente.<br>
+            <strong style="color:var(--text)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <code style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;flex:1;word-break:break-all">
               https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook
             </code>
             <button class="btn-save" style="width:fit-content;padding:9px 16px" onclick="copyWebhook()">📋 Copiar</button>
-          </div>
-          <div style="margin-top:12px;font-size:12px;color:var(--muted2)">
-            Método: <strong style="color:var(--text)">POST</strong> &nbsp;|&nbsp; Formato: <strong style="color:var(--text)">JSON</strong> &nbsp;|&nbsp; Não requer autenticação adicional
           </div>
         </div></div>
         <!-- Sales table -->
@@ -804,7 +856,7 @@ function showPanel(id,el){
   el.classList.add('active');
   document.getElementById('ptitle').textContent=PTITLES[id]||id;
   if(id==='analytics') loadAnalytics();
-  if(id==='sales') loadSales();
+  if(id==='sales') { loadSales(); loadPPToken(); }
 }
 
 function fill(){
@@ -1143,7 +1195,7 @@ const _origShowPanel = showPanel;
 showPanel = function(id,el){
   _origShowPanel(id,el);
   if(id==='analytics') loadAnalytics();
-  if(id==='sales') loadSales();
+  if(id==='sales') { loadSales(); loadPPToken(); }
   if(id==='coupons') loadCoupons();
   if(id==='notifications') loadNotifications();
 };
@@ -1276,6 +1328,78 @@ async function sbPatch(table,query,data){
   try{const r=await fetch(\`\${SB}/rest/v1/\${table}\${query}\`,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(data)});return r.ok;}catch(e){return false;}
 }
 
+
+
+// ═══════════════════════════════════════
+// PERFECTPAY API INTEGRATION
+// ═══════════════════════════════════════
+async function loadPPToken() {
+  const rows = await sbGet('iaem30_secrets', '?key=eq.perfectpay_token&select=value');
+  const el = document.getElementById('pp-token-status');
+  if (rows && rows[0]?.value) {
+    if (el) { el.textContent = '✓ Configurado'; el.className = 'tag g'; }
+    // Show masked token
+    const input = document.getElementById('pp-token-input');
+    if (input) input.placeholder = '••••••••••••••• (já configurado)';
+  }
+}
+
+async function savePPToken() {
+  const token = document.getElementById('pp-token-input').value.trim();
+  if (!token) { toast('Cole o token da PerfectPay', 'error'); return; }
+
+  const rows = await sbGet('iaem30_secrets', '?key=eq.perfectpay_token');
+  let ok;
+  if (rows && rows.length) {
+    ok = await sbPatch('iaem30_secrets', '?key=eq.perfectpay_token', { value: token, updated_at: new Date().toISOString() });
+  } else {
+    ok = await sbPost('iaem30_secrets', { key: 'perfectpay_token', value: token });
+  }
+
+  if (ok) {
+    toast('✓ Token salvo com segurança no Supabase!');
+    document.getElementById('pp-token-input').value = '';
+    document.getElementById('pp-token-input').placeholder = '••••••••••••••• (já configurado)';
+    const el = document.getElementById('pp-token-status');
+    if (el) { el.textContent = '✓ Configurado'; el.className = 'tag g'; }
+  } else {
+    toast('Erro ao salvar token', 'error');
+  }
+}
+
+async function syncPPSales(all = false) {
+  const resultEl = document.getElementById('sync-result');
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<span style="color:var(--accent2)">⏳ Sincronizando com a PerfectPay...</span>';
+
+  const body: any = { page: 1 };
+  if (!all) {
+    const from = document.getElementById('sync-from').value;
+    const to   = document.getElementById('sync-to').value;
+    if (from) body.date_from = from;
+    if (to)   body.date_to   = to;
+  }
+
+  try {
+    const res = await fetch(
+      'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/sync-perfectpay-sales',
+      { method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': AK }, body: JSON.stringify(body) }
+    );
+    const data = await res.json();
+
+    if (data.ok) {
+      resultEl.innerHTML = `<span style="color:var(--green)">✓ ${data.synced} vendas sincronizadas! (${data.total_from_api} encontradas na API)</span>`;
+      toast(`✓ ${data.synced} vendas importadas da PerfectPay!`);
+      loadSales();
+    } else {
+      resultEl.innerHTML = `<span style="color:var(--red)">❌ ${data.error || 'Erro desconhecido'}</span>`;
+      toast(data.error || 'Erro ao sincronizar', 'error');
+    }
+  } catch (e) {
+    resultEl.innerHTML = `<span style="color:var(--red)">❌ Erro de conexão: ${e}</span>`;
+    toast('Erro de conexão', 'error');
+  }
+}
 
 // ═══════════════════════════════════════
 // SALES DASHBOARD
