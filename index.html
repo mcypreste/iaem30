@@ -442,6 +442,7 @@
       <a href="#depoimentos">Depoimentos</a>
       <a href="#preco">Preço</a>
     </nav>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Alternar tema">🌙</button>
     <a href="#" class="nav-cta" id="header-cta-btn">Quero o Ebook</a>
   </div>
 </header>
@@ -579,6 +580,43 @@
   </div>
 </section>
 
+
+<!-- FOR / NOT FOR -->
+<section style="padding:80px 0;background:var(--surface)" id="para-quem">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Para quem é</span>
+      <h2 id="fnf-title">Este ebook é para você?</h2>
+    </div>
+    <div class="fornotfor-grid" id="fornotfor-grid"></div>
+  </div>
+</section>
+
+<!-- BONUS -->
+<section style="padding:80px 0" id="bonus">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Bônus exclusivos</span>
+      <h2 id="bonus-title">Comprando hoje você leva também</h2>
+      <p id="bonus-desc">Bônus disponíveis apenas nesta oferta especial</p>
+    </div>
+    <div class="bonus-grid" id="bonus-grid"></div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section id="video-section" style="padding:80px 0;display:none">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Apresentação</span>
+      <h2 id="video-title">Veja o que você vai receber</h2>
+    </div>
+    <div class="video-wrapper" id="video-wrapper">
+      <div class="video-placeholder"><div style="font-size:48px;margin-bottom:8px">▶️</div><p>Vídeo de apresentação</p></div>
+    </div>
+  </div>
+</section>
+
 <!-- PRICING -->
 <section class="pricing-section" id="preco">
   <div class="container">
@@ -604,50 +642,6 @@
       <div class="guarantee-row">
         <span>🛡️</span>
         <span id="guarantee-text">Garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% do seu dinheiro — sem perguntas.</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- FOR / NOT FOR -->
-<section style="padding:80px 0;background:var(--surface)" id="para-quem">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">Para quem é</span>
-      <h2 id="fnf-title">Este ebook é para você?</h2>
-    </div>
-    <div class="fornotfor-grid" id="fornotfor-grid">
-      <!-- populated by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- BONUS -->
-<section class="bonus-section" id="bonus">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">Bônus exclusivos</span>
-      <h2 id="bonus-title">Comprando hoje você leva também</h2>
-      <p id="bonus-desc">Bônus disponíveis apenas nesta oferta especial</p>
-    </div>
-    <div class="bonus-grid" id="bonus-grid">
-      <!-- populated by JS -->
-    </div>
-  </div>
-</section>
-
-<!-- VIDEO -->
-<section class="video-section" id="video-section" style="display:none">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">Apresentação</span>
-      <h2 id="video-title">Veja o que você vai receber</h2>
-    </div>
-    <div class="video-wrapper" id="video-wrapper">
-      <div class="video-placeholder">
-        <div class="vp-icon">▶️</div>
-        <p>Vídeo de apresentação</p>
       </div>
     </div>
   </div>
@@ -692,8 +686,16 @@
 </footer>
 
 
-<!-- ═══════ BARRA FLUTUANTE ═══════ -->
-<div id="sticky-bar" style="display:none">
+<!-- ═══════ URGENCY BAR ═══════ -->
+<div id="urgency-bar">
+  <span>⚡</span>
+  <span id="urgency-text">Oferta especial expira em</span>
+  <span id="countdown">00:00:00</span>
+  <span id="urgency-suffix">— garanta o preço antes que suba!</span>
+</div>
+
+<!-- ═══════ STICKY BAR ═══════ -->
+<div id="sticky-bar">
   <div class="sticky-inner">
     <div class="sticky-text">
       <strong id="sticky-title">IA em 30 Dias</strong>
@@ -705,12 +707,13 @@
   </div>
 </div>
 
-<!-- ═══════ TIMER DE URGÊNCIA ═══════ -->
-<div id="urgency-bar">
-  <span id="urgency-icon">⚡</span>
-  <span id="urgency-text">Oferta especial expira em</span>
-  <span id="countdown">00:00:00</span>
-  <span id="urgency-suffix">— garanta o preço antes que suba!</span>
+<!-- ═══════ SALE NOTIFICATION ═══════ -->
+<div id="sale-notif">
+  <span class="sale-notif-icon">✅</span>
+  <div class="sale-notif-text">
+    <strong id="sale-notif-name">Ana S.</strong> de <span id="sale-notif-city">São Paulo</span>
+    <span id="sale-notif-product"> acabou de comprar!</span>
+  </div>
 </div>
 
 <!-- ═══════ MODAL DE COMPRA ═══════ -->
@@ -727,12 +730,23 @@
     <div class="modal-price-row">
       <span class="modal-price-old" id="modal-price-old">R$47</span>
       <span class="modal-price-main">R$<strong id="modal-price-main">19</strong><span id="modal-price-cents">,90</span></span>
-      <span class="modal-discount">58% OFF</span>
+      <span class="modal-discount" id="modal-discount-badge">58% OFF</span>
+    </div>
+    <!-- Cupom -->
+    <div class="coupon-row">
+      <input type="text" id="coupon-input" placeholder="Tem um cupom? Digite aqui" oninput="this.value=this.value.toUpperCase()">
+      <button onclick="applyCoupon()">Aplicar</button>
+    </div>
+    <div id="coupon-msg"></div>
+    <!-- Email capture -->
+    <div class="email-capture" id="email-step">
+      <p class="email-label">Informe seu email para receber o acesso:</p>
+      <input type="email" id="modal-email" placeholder="seu@email.com">
+      <button class="btn-primary" style="width:100%;font-size:16px;justify-content:center;margin-top:10px" onclick="proceedToBuy()">
+        <span>🔒</span> <span id="modal-cta-text">Comprar com Segurança</span>
+      </button>
     </div>
     <ul class="modal-features" id="modal-features"></ul>
-    <a href="#" class="btn-primary" style="width:100%;font-size:17px;justify-content:center" id="modal-cta-btn" target="_blank" rel="noopener">
-      <span>🔒</span> <span id="modal-cta-text">Comprar com Segurança</span>
-    </a>
     <div class="modal-trust">
       <span>✅ Pagamento seguro</span>
       <span>⚡ Download imediato</span>
@@ -742,7 +756,7 @@
   </div>
 </div>
 
-<!-- ═══════ EXIT INTENT POPUP ═══════ -->
+<!-- ═══════ EXIT INTENT ═══════ -->
 <div id="exit-popup" onclick="if(event.target===this)closeExit()">
   <div class="exit-box">
     <button class="modal-close" onclick="closeExit()">✕</button>
@@ -756,13 +770,46 @@
   </div>
 </div>
 
+<!-- ═══════ PÁGINA DE OBRIGADO (hidden) ═══════ -->
+<div id="thankyou-page" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto">
+  <div style="max-width:600px;margin:0 auto;padding:60px 24px;text-align:center">
+    <div style="font-size:64px;margin-bottom:20px">🎉</div>
+    <h1 id="ty-title" style="font-size:36px;margin-bottom:16px">Obrigado pela sua compra!</h1>
+    <p id="ty-desc" style="color:var(--muted);font-size:17px;margin-bottom:32px">Verifique seu email para acessar o ebook. Caso não encontre, verifique o spam.</p>
+    <div style="background:var(--surface);border:1px solid rgba(124,92,252,0.3);border-radius:16px;padding:28px;margin-bottom:28px">
+      <h3 style="margin-bottom:16px;font-size:18px">📋 Próximos passos</h3>
+      <div id="ty-steps" style="text-align:left;display:flex;flex-direction:column;gap:12px;font-size:15px;color:var(--muted)"></div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" id="ty-share-text">Gostou? Compartilhe com um amigo criador 🙌</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="shareWhatsApp()" style="background:#25d366;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:600">📱 Compartilhar no WhatsApp</button>
+      <button onclick="document.getElementById('thankyou-page').style.display='none'" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:12px 24px;border-radius:10px;font-size:14px;cursor:pointer">Voltar ao site</button>
+    </div>
+  </div>
+</div>
+
 <style>
+/* ─── DARK/LIGHT MODE ─── */
+body.light-mode {
+  --bg:#f8f7ff; --surface:#ffffff; --surface2:#f0eeff; --border:rgba(0,0,0,0.08);
+  --border-hover:rgba(0,0,0,0.15); --text:#1a1830; --muted:#5a5670; --muted2:#9490a8;
+  --accent-glow:rgba(124,92,252,0.15);
+}
+body.light-mode header { background:rgba(248,247,255,0.9); }
+body.light-mode .book-card { background:linear-gradient(135deg,#e8e4ff,#d4c8ff); }
+.theme-toggle {
+  background:none; border:1px solid var(--border-hover); color:var(--text);
+  width:36px; height:36px; border-radius:8px; cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center; transition:all .2s;
+}
+.theme-toggle:hover { border-color:var(--accent); }
+
 /* ─── URGENCY BAR ─── */
 #urgency-bar {
-  background: linear-gradient(90deg,#7c5cfc,#a78bfa);
-  color:#fff; text-align:center; padding:10px 16px;
-  font-size:14px; font-weight:500; position:sticky; top:0; z-index:200;
+  background:linear-gradient(90deg,#7c5cfc,#a78bfa); color:#fff;
+  text-align:center; padding:10px 16px; font-size:14px; font-weight:500;
   display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap;
+  position:relative; z-index:200;
 }
 #countdown {
   font-family:'Syne',sans-serif; font-weight:800; font-size:16px;
@@ -773,82 +820,85 @@
 #sticky-bar {
   position:fixed; bottom:0; left:0; right:0; z-index:190;
   background:#12121a; border-top:1px solid rgba(124,92,252,0.3);
-  padding:12px 24px;
-  animation: slideUp .4s ease;
+  padding:12px 24px; display:none;
+  animation:slideUp .4s ease;
 }
+body.light-mode #sticky-bar { background:#fff; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
-.sticky-inner {
-  max-width:1100px; margin:0 auto;
-  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
-}
+.sticky-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
 .sticky-text { display:flex; flex-direction:column; }
 .sticky-text strong { font-family:'Syne',sans-serif; font-size:15px; }
 .sticky-text span { font-size:13px; color:#8b86a8; }
 
+/* ─── SALE NOTIFICATION ─── */
+#sale-notif {
+  position:fixed; bottom:80px; left:20px; z-index:188;
+  background:var(--surface); border:1px solid rgba(16,185,129,0.3);
+  border-radius:12px; padding:12px 16px;
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; max-width:280px;
+  transform:translateX(-320px); transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+}
+#sale-notif.show { transform:translateX(0); }
+.sale-notif-icon { font-size:20px; flex-shrink:0; }
+.sale-notif-text { color:var(--muted); line-height:1.4; }
+.sale-notif-text strong { color:var(--text); }
+
 /* ─── MODAL ─── */
 #buy-modal, #exit-popup {
   display:none; position:fixed; inset:0; z-index:999;
-  background:rgba(0,0,0,0.7); backdrop-filter:blur(6px);
+  background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
   align-items:center; justify-content:center; padding:20px;
 }
 #buy-modal.open, #exit-popup.open { display:flex; }
 .modal-box {
   background:#12121a; border:1px solid rgba(124,92,252,0.3);
-  border-radius:20px; padding:36px; width:100%; max-width:460px;
+  border-radius:20px; padding:36px; width:100%; max-width:480px;
   position:relative; animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);
+  max-height:90vh; overflow-y:auto;
 }
+body.light-mode .modal-box { background:#fff; }
 .exit-box {
   background:#12121a; border:1px solid rgba(124,92,252,0.3);
   border-radius:20px; padding:36px; width:100%; max-width:420px;
-  position:relative; animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);
-  text-align:center;
+  position:relative; animation:modalIn .3s cubic-bezier(.34,1.56,.64,1); text-align:center;
 }
+body.light-mode .exit-box { background:#fff; }
 @keyframes modalIn { from{transform:scale(.92);opacity:0} to{transform:scale(1);opacity:1} }
 .modal-close {
   position:absolute; top:16px; right:16px;
   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
   color:#8b86a8; width:32px; height:32px; border-radius:50%;
-  cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
-  transition:all .2s;
+  cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:all .2s;
 }
-.modal-close:hover { background:rgba(255,255,255,0.12); color:#f0eeff; }
+.modal-close:hover { color:#f0eeff; }
 .modal-header { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
 .modal-book-icon { font-size:40px; }
 .modal-header h3 { font-size:16px; margin-bottom:4px; }
 .modal-header p { font-size:13px; color:#8b86a8; }
-.modal-price-row { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.modal-price-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
 .modal-price-old { color:#5a5670; text-decoration:line-through; font-size:15px; }
 .modal-price-main { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; }
 .modal-price-main strong { font-size:48px; }
-.modal-discount {
-  background:rgba(16,185,129,0.15); color:#10b981;
-  border:1px solid rgba(16,185,129,0.3); border-radius:6px;
-  padding:3px 10px; font-size:13px; font-weight:700;
-}
-.modal-features {
-  list-style:none; margin-bottom:24px;
-  display:flex; flex-direction:column; gap:8px;
-}
-.modal-features li { display:flex; align-items:center; gap:10px; font-size:14px; }
-.modal-features li::before {
-  content:'✓'; min-width:20px; height:20px;
-  background:rgba(16,185,129,0.15); color:#10b981;
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  font-size:11px; font-weight:700; flex-shrink:0;
-}
-.modal-trust {
-  display:flex; justify-content:center; gap:16px; flex-wrap:wrap;
-  margin-top:14px; font-size:12px; color:#8b86a8;
-}
-.modal-viewers {
-  text-align:center; margin-top:12px;
-  font-size:12px; color:#8b86a8;
-  display:flex; align-items:center; justify-content:center; gap:6px;
-}
-.modal-dot {
-  width:8px; height:8px; border-radius:50%; background:#10b981;
-  animation:pulse 1.5s infinite;
-}
+.modal-discount { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:3px 10px; font-size:13px; font-weight:700; }
+.coupon-row { display:flex; gap:8px; margin-bottom:8px; }
+.coupon-row input { flex:1; background:var(--surface2); border:1px solid var(--border-hover); border-radius:8px; padding:9px 12px; color:var(--text); font-size:14px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+.coupon-row input:focus { border-color:var(--accent); }
+.coupon-row button { background:var(--accent); color:#fff; border:none; border-radius:8px; padding:9px 16px; cursor:pointer; font-size:13px; font-weight:600; transition:all .2s; }
+.coupon-row button:hover { background:#8b6dfd; }
+#coupon-msg { font-size:12px; margin-bottom:10px; min-height:16px; }
+#coupon-msg.ok { color:#10b981; }
+#coupon-msg.err { color:#ef4444; }
+.email-label { font-size:13px; color:var(--muted); margin-bottom:8px; }
+.email-capture input { width:100%; background:var(--surface2); border:1px solid var(--border-hover); border-radius:8px; padding:10px 14px; color:var(--text); font-size:15px; font-family:'DM Sans',sans-serif; outline:none; transition:border-color .2s; }
+.email-capture input:focus { border-color:var(--accent); }
+.modal-features { list-style:none; margin:14px 0; display:flex; flex-direction:column; gap:7px; }
+.modal-features li { display:flex; align-items:center; gap:8px; font-size:13px; }
+.modal-features li::before { content:'✓'; min-width:18px; height:18px; background:rgba(16,185,129,0.15); color:#10b981; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; flex-shrink:0; }
+.modal-trust { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:12px; font-size:12px; color:#8b86a8; }
+.modal-viewers { text-align:center; margin-top:10px; font-size:12px; color:#8b86a8; display:flex; align-items:center; justify-content:center; gap:6px; }
+.modal-dot { width:8px; height:8px; border-radius:50%; background:#10b981; animation:pulse 1.5s infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
 /* ─── EXIT POPUP ─── */
@@ -856,57 +906,46 @@
 .exit-box h3 { font-size:20px; margin-bottom:10px; }
 .exit-box p { color:#8b86a8; font-size:14px; line-height:1.6; margin-bottom:20px; }
 
-/* ─── LIVE COUNTER BADGE ─── */
-.live-badge {
-  display:inline-flex; align-items:center; gap:6px;
-  background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25);
-  color:#10b981; border-radius:100px; padding:5px 12px; font-size:13px; font-weight:500;
-  margin-bottom:16px;
-}
-.live-badge .live-dot { width:7px; height:7px; border-radius:50%; background:#10b981; animation:pulse 1.5s infinite; }
+/* ─── LIVE BADGE ─── */
+.live-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:#10b981; border-radius:100px; padding:5px 12px; font-size:13px; font-weight:500; margin-bottom:16px; }
+.live-dot { width:7px; height:7px; border-radius:50%; background:#10b981; animation:pulse 1.5s infinite; }
 
-/* ─── FOR / NOT FOR ─── */
-.fornotfor-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:8px; }
-.fornotfor-card {
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:16px; padding:24px;
-}
+/* ─── FOR/NOT FOR ─── */
+.fornotfor-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.fornotfor-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
 .fornotfor-card.for { border-color:rgba(16,185,129,0.2); }
 .fornotfor-card.notfor { border-color:rgba(239,68,68,0.15); }
-.fornotfor-card h3 { font-size:16px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.fornotfor-card h3 { font-size:16px; margin-bottom:14px; }
 .fornotfor-card ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
-.fornotfor-card ul li { font-size:14px; color:var(--muted); display:flex; align-items:flex-start; gap:10px; }
+.fornotfor-card ul li { font-size:14px; color:var(--muted); display:flex; gap:10px; }
 .fornotfor-card.for ul li::before { content:'✓'; color:#10b981; font-weight:700; flex-shrink:0; }
 .fornotfor-card.notfor ul li::before { content:'✕'; color:#ef4444; font-weight:700; flex-shrink:0; }
 
-/* ─── BONUS SECTION ─── */
-.bonus-section { padding:80px 0; }
+/* ─── BONUS ─── */
 .bonus-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-.bonus-card {
-  background:var(--surface); border:1px solid rgba(245,158,11,0.2);
-  border-radius:16px; padding:24px; position:relative; overflow:hidden;
-}
+.bonus-card { background:var(--surface); border:1px solid rgba(245,158,11,0.2); border-radius:16px; padding:24px; position:relative; overflow:hidden; }
 .bonus-card::before { content:'BÔNUS'; position:absolute; top:12px; right:12px; background:rgba(245,158,11,0.15); color:#f59e0b; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; letter-spacing:.1em; }
 .bonus-card .bonus-icon { font-size:32px; margin-bottom:12px; }
 .bonus-card h3 { font-size:15px; margin-bottom:6px; }
 .bonus-card p { font-size:13px; color:var(--muted); }
-.bonus-value { margin-top:12px; font-size:12px; color:#f59e0b; font-weight:600; }
+.bonus-value { margin-top:10px; font-size:12px; color:#f59e0b; font-weight:600; }
 
-/* ─── VIDEO SECTION ─── */
-.video-section { padding:80px 0; }
-.video-wrapper {
-  max-width:720px; margin:0 auto;
-  background:var(--surface); border:1px solid var(--border);
-  border-radius:16px; overflow:hidden; aspect-ratio:16/9;
-  display:flex; align-items:center; justify-content:center;
-}
+/* ─── VIDEO ─── */
+.video-wrapper { max-width:720px; margin:0 auto; background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; }
 .video-placeholder { text-align:center; color:var(--muted); }
-.video-placeholder .vp-icon { font-size:48px; margin-bottom:12px; }
+
+/* ─── ANIMATIONS ON SCROLL ─── */
+.fade-up { opacity:0; transform:translateY(30px); transition:opacity .6s ease, transform .6s ease; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+
+/* ─── 404 PAGE ─── */
+#page-404 { display:none; position:fixed; inset:0; z-index:9998; background:var(--bg); align-items:center; justify-content:center; text-align:center; flex-direction:column; gap:16px; }
 
 @media(max-width:768px) {
   .fornotfor-grid { grid-template-columns:1fr; }
   .bonus-grid { grid-template-columns:1fr; }
-  #sticky-bar .sticky-text span { display:none; }
+  .sticky-text span { display:none; }
+  #sale-notif { max-width:240px; font-size:12px; }
 }
 </style>
 <script>
@@ -915,83 +954,93 @@
 // ═══════════════════════════════════════
 const SB_URL  = 'https://ihylwxjxjajtdhsnlrfm.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
-const SB_H    = { apikey: SB_ANON, Authorization: 'Bearer ' + SB_ANON, 'Content-Type': 'application/json' };
+const SB_H    = { apikey:SB_ANON, Authorization:'Bearer '+SB_ANON, 'Content-Type':'application/json' };
+const SESSION_ID = Math.random().toString(36).slice(2)+Date.now();
+const pageStart  = Date.now();
 
-async function fetchRemoteConfig() {
+async function sbGet(table, query='') {
   try {
-    const res = await fetch(`${SB_URL}/rest/v1/iaem30_config?id=eq.1&select=config`, { headers: SB_H });
-    const rows = await res.json();
-    const cfg  = rows?.[0]?.config;
-    return (cfg && Object.keys(cfg).length > 0) ? cfg : null;
+    const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {headers:SB_H});
+    return r.ok ? await r.json() : null;
   } catch(e) { return null; }
 }
+async function sbPost(table, data) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}`, {method:'POST',headers:SB_H,body:JSON.stringify(data)});
+    return r.ok;
+  } catch(e) { return false; }
+}
+async function sbPatch(table, query, data) {
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/${table}${query}`, {method:'PATCH',headers:{...SB_H,Prefer:'return=minimal'},body:JSON.stringify(data)});
+    return r.ok;
+  } catch(e) { return false; }
+}
 
-// ── Tracking ──
-const SESSION_ID = Math.random().toString(36).slice(2) + Date.now();
-const startTime  = Date.now();
+async function fetchRemoteConfig() {
+  const rows = await sbGet('iaem30_config','?id=eq.1&select=config');
+  const cfg = rows?.[0]?.config;
+  return (cfg && Object.keys(cfg).length>0) ? cfg : null;
+}
 
+// ─── Tracking ───
 async function trackVisit() {
-  const params = new URLSearchParams(location.search);
-  await fetch(`${SB_URL}/rest/v1/iaem30_visitors`, {
-    method: 'POST', headers: SB_H,
-    body: JSON.stringify({
-      session_id:   SESSION_ID,
-      page_path:    location.pathname,
-      referrer:     document.referrer || null,
-      utm_source:   params.get('utm_source'),
-      utm_medium:   params.get('utm_medium'),
-      utm_campaign: params.get('utm_campaign'),
-      device:       /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-    })
+  const p = new URLSearchParams(location.search);
+  await sbPost('iaem30_visitors', {
+    session_id:SESSION_ID, page_path:location.pathname, referrer:document.referrer||null,
+    utm_source:p.get('utm_source'), utm_medium:p.get('utm_medium'), utm_campaign:p.get('utm_campaign'),
+    device:/Mobi|Android/i.test(navigator.userAgent)?'mobile':'desktop'
   });
 }
-
-async function trackCTA(buttonId) {
-  await fetch(`${SB_URL}/rest/v1/iaem30_cta_clicks`, {
-    method: 'POST', headers: SB_H,
-    body: JSON.stringify({ session_id: SESSION_ID, button_id: buttonId })
-  });
-  // Update time_on_page and clicked_cta
-  await fetch(`${SB_URL}/rest/v1/iaem30_visitors?session_id=eq.${SESSION_ID}`, {
-    method: 'PATCH', headers: SB_H,
-    body: JSON.stringify({ clicked_cta: true, time_on_page: Math.round((Date.now() - startTime) / 1000) })
-  });
+async function trackCTA(btnId) {
+  await sbPost('iaem30_cta_clicks',{session_id:SESSION_ID,button_id:btnId});
+  await sbPatch('iaem30_visitors','?session_id=eq.'+SESSION_ID,{clicked_cta:true,time_on_page:Math.round((Date.now()-pageStart)/1000)});
 }
 
-// ── Live viewer count (random realistic sim) ──
+// ─── Live count ───
 function updateLiveCount() {
-  const base = 23;
-  const n = base + Math.floor(Math.sin(Date.now() / 30000) * 8 + Math.random() * 6);
-  const c = Math.max(12, n);
-  const el1 = document.getElementById('live-count');
-  const el2 = document.getElementById('modal-viewers-count');
-  if (el1) el1.textContent = c;
-  if (el2) el2.textContent = c;
+  const n = Math.max(12, 23+Math.floor(Math.sin(Date.now()/30000)*8+Math.random()*6));
+  ['live-count','modal-viewers-count'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=n;});
 }
-setInterval(updateLiveCount, 8000);
+setInterval(updateLiveCount, 9000);
+
+// ─── Sale notifications ───
+let saleNotifs = [];
+async function loadSaleNotifs() {
+  const rows = await sbGet('iaem30_sale_notifications','?select=name,city&order=created_at.desc&limit=20');
+  if(rows && rows.length) saleNotifs = rows;
+  else saleNotifs = [{name:'Ana S.',city:'São Paulo'},{name:'Carlos M.',city:'Rio de Janeiro'},{name:'Juliana R.',city:'Curitiba'}];
+}
+function showNextSaleNotif() {
+  if(!saleNotifs.length) return;
+  const n = saleNotifs[Math.floor(Math.random()*saleNotifs.length)];
+  const el = document.getElementById('sale-notif');
+  document.getElementById('sale-notif-name').textContent = n.name;
+  document.getElementById('sale-notif-city').textContent = n.city;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 4000);
+}
 
 // ═══════════════════════════════════════
 // DEFAULTS
 // ═══════════════════════════════════════
 const DEFAULTS = {
-  productLink: 'https://go.perfectpay.com.br/PPU38CQ4TBC',
-  heroTitle: 'Como Ganhar Dinheiro com <span class="highlight">IA em 30 Dias</span>',
-  heroSubtitle: 'O ebook completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA de forma ética e estratégica.',
-  heroBadge: '🔥 Mais de 1.200 criadores já transformaram',
-  heroCtaText: 'Quero Meu Ebook por R$19,90',
-  bookTitle: 'Como Ganhar Dinheiro com IA em 30 Dias',
-  bookSub: 'Guia Prático para Criadores Independentes',
-  bookPriceBadge: 'R$19,90',
-  stat1Num:'1.200+', stat1Label:'criadores impactados',
-  stat2Num:'⭐ 4.9', stat2Label:'avaliação média',
-  stat3Num:'7 dias',  stat3Label:'de garantia total',
-  stat4Num:'30 dias', stat4Label:'para transformação',
+  productLink:'https://go.perfectpay.com.br/PPU38CQ4TBC',
+  heroTitle:'Como Ganhar Dinheiro com <span class="highlight">IA em 30 Dias</span>',
+  heroSubtitle:'O ebook completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA de forma ética e estratégica.',
+  heroBadge:'🔥 Mais de 1.200 criadores já transformaram',
+  heroCtaText:'Quero Meu Ebook por R$19,90',
+  bookTitle:'Como Ganhar Dinheiro com IA em 30 Dias',
+  bookSub:'Guia Prático para Criadores Independentes',
+  bookPriceBadge:'R$19,90',
+  stat1Num:'1.200+',stat1Label:'criadores impactados',
+  stat2Num:'⭐ 4.9',stat2Label:'avaliação média',
+  stat3Num:'7 dias',stat3Label:'de garantia total',
+  stat4Num:'30 dias',stat4Label:'para transformação',
   whyTitle:'IA: Sua Aliada Criativa',
   whySubtitle:'A Inteligência Artificial está mudando o jogo. Artistas ao redor do mundo já estão usando IA para criar mais rápido, vender melhor e alcançar públicos maiores.',
-  learnTitle:'O que você vai aprender',
-  learnDesc:'Um método estruturado semana a semana para você sair do zero à sua primeira renda com IA.',
-  monetizeTitle:'Transforme Sua Criação em Renda Real',
-  monetizeDesc:'Descubra 5 caminhos comprovados para monetizar seu talento criativo usando IA.',
+  learnTitle:'O que você vai aprender', learnDesc:'Um método estruturado semana a semana para você sair do zero à sua primeira renda com IA.',
+  monetizeTitle:'Transforme Sua Criação em Renda Real', monetizeDesc:'Descubra 5 caminhos comprovados para monetizar seu talento criativo usando IA.',
   testimonialsTitle:'O que dizem nossos leitores',
   priceOld:'R$47', priceMain:'19', priceCents:',90',
   pricingCtaText:'Quero Meu Ebook Agora →',
@@ -1000,177 +1049,172 @@ const DEFAULTS = {
   ctaFinalDesc:'Ser criador independente hoje não é apenas criar — é empreender a própria arte. A IA amplifica sua voz.',
   ctaFinalText:'Começar Minha Transformação →',
   footerBrand:'IA em 30',
-  urgencyMinutes: 47,
-  showUrgencyBar: true,
-  showVideoSection: false,
-  videoUrl: '',
-  videoTitle: 'Veja o que você vai receber',
-  liveText: 'pessoas vendo agora',
-  modalCtaText: 'Comprar com Segurança',
-  exitTitle: 'Espera! Não vai perder essa oportunidade...',
-  exitDesc: 'Você estava prestes a sair sem garantir seu acesso. O preço especial pode subir a qualquer momento.',
-  exitCta: 'Quero garantir meu ebook agora →',
-  fnfTitle: 'Este ebook é para você?',
-  forItems: ['Quer monetizar sua criação de forma independente','Está disposto a aprender ferramentas de IA','Busca liberdade financeira e criativa','Quer aproveitar a revolução da IA'],
-  notForItems: ['Busca dinheiro fácil sem esforço','Quer usar IA para copiar estilos alheios','Não está disposto a criar e divulgar'],
-  bonusTitle: 'Comprando hoje você leva também',
-  bonusDesc: 'Bônus disponíveis apenas nesta oferta especial',
-  bonusItems: [
-    { icon:'📋', title:'Checklist de Ferramentas', desc:'Lista completa das melhores ferramentas gratuitas e pagas para cada tipo de criação.' , value:'Valor: R$27' },
-    { icon:'🎯', title:'Guia de Nicho Rápido', desc:'Template para definir seu nicho e posicionamento em menos de 30 minutos.', value:'Valor: R$19' },
-    { icon:'📱', title:'Scripts para Redes Sociais', desc:'10 roteiros prontos para criar conteúdo viral e atrair compradores.', value:'Valor: R$37' },
+  urgencyMinutes:47, showUrgencyBar:true,
+  showVideoSection:false, videoUrl:'', videoTitle:'Veja o que você vai receber',
+  liveText:'pessoas vendo agora',
+  modalCtaText:'Comprar com Segurança',
+  exitTitle:'Espera! Não vai perder essa oportunidade...',
+  exitDesc:'Você estava prestes a sair sem garantir seu acesso. O preço especial pode subir a qualquer momento.',
+  exitCta:'Quero garantir meu ebook agora →',
+  fnfTitle:'Este ebook é para você?',
+  forItems:['Quer monetizar sua criação de forma independente','Está disposto a aprender ferramentas de IA','Busca liberdade financeira e criativa','Quer aproveitar a revolução da IA'],
+  notForItems:['Busca dinheiro fácil sem esforço','Quer usar IA para copiar estilos alheios','Não está disposto a criar e divulgar'],
+  bonusTitle:'Comprando hoje você leva também', bonusDesc:'Bônus disponíveis apenas nesta oferta especial',
+  bonusItems:[
+    {icon:'📋',title:'Checklist de Ferramentas',desc:'Lista completa das melhores ferramentas gratuitas e pagas.',value:'Valor: R$27'},
+    {icon:'🎯',title:'Guia de Nicho Rápido',desc:'Template para definir seu nicho em menos de 30 minutos.',value:'Valor: R$19'},
+    {icon:'📱',title:'Scripts para Redes Sociais',desc:'10 roteiros prontos para criar conteúdo viral.',value:'Valor: R$37'},
   ],
-  stickyCtaText: 'Quero Agora →',
+  stickyCtaText:'Quero Agora →',
+  tyTitle:'Obrigado pela sua compra! 🎉',
+  tyDesc:'Verifique seu email para acessar o ebook. Caso não encontre, verifique o spam.',
+  tySteps:['1. Acesse seu email e procure a mensagem da PerfectPay','2. Clique no link de download do ebook','3. Salve o PDF no seu dispositivo','4. Comece pelo Módulo 1 — leva apenas 20 minutos!'],
+  tyShareText:'Gostou? Compartilhe com um amigo criador 🙌',
+  showSaleNotifications:true, saleNotifInterval:25,
   benefits:[
-    {icon:'🧠',title:'Remove Bloqueios Criativos',desc:'Supere o bloqueio com ideias instantâneas e variações ilimitadas para sua criação.'},
-    {icon:'⚡',title:'Acelera Seus Processos',desc:'Produza em horas o que levaria dias ou semanas manualmente. Mais tempo para criar.'},
-    {icon:'💰',title:'Reduz Seus Custos',desc:'Elimine gastos com ferramentas caras e terceirização. IA democratiza a produção.'},
-    {icon:'🎨',title:'Profissionaliza Sua Marca',desc:'Crie uma identidade visual forte e consistente para sua marca criativa.'},
-    {icon:'🛠️',title:'Ferramentas para Cada Criação',desc:'Midjourney, ChatGPT, Soundraw, CapCut IA — tudo explicado passo a passo.'},
-    {icon:'🤝',title:'IA Como Aliada',desc:'Você continua sendo o criador. A IA é sua assistente que amplifica sua visão única.'},
+    {icon:'🧠',title:'Remove Bloqueios Criativos',desc:'Supere o bloqueio com ideias instantâneas e variações ilimitadas.'},
+    {icon:'⚡',title:'Acelera Seus Processos',desc:'Produza em horas o que levaria dias ou semanas manualmente.'},
+    {icon:'💰',title:'Reduz Seus Custos',desc:'Elimine gastos com ferramentas caras e terceirização.'},
+    {icon:'🎨',title:'Profissionaliza Sua Marca',desc:'Crie uma identidade visual forte e consistente.'},
+    {icon:'🛠️',title:'Ferramentas para Cada Criação',desc:'Midjourney, ChatGPT, Soundraw, CapCut IA — passo a passo.'},
+    {icon:'🤝',title:'IA Como Aliada',desc:'Você continua sendo o criador. A IA amplifica sua visão.'},
   ],
   learnItems:['5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo (ChatGPT, Midjourney, Soundraw)','Plano de ação de 30 dias completo','Como posicionar e vender produtos digitais','Estratégias de conteúdo para crescer nas redes','Ética e direitos autorais no uso de IA'],
   weeks:[{num:'01',title:'Base Criativa',desc:'Defina identidade, escolha nicho e configure ferramentas.'},{num:'02',title:'Produto Digital',desc:'Desenvolva seu produto principal e construa identidade visual.'},{num:'03',title:'Visibilidade',desc:'Produza conteúdo promocional e feche suas primeiras vendas.'},{num:'04',title:'Escala Real',desc:'Melhore qualidade, crie pacotes premium e automatize.'}],
   monetizeItems:[{num:'01',title:'Venda da Própria Criação',desc:'Música autoral, ilustrações digitais, fotografias e NFTs.'},{num:'02',title:'Serviços Personalizados',desc:'Capas de álbum, artes para redes sociais e trilhas.'},{num:'03',title:'Produtos Digitais',desc:'Ebooks artísticos, packs de artes e prompts criativos.'},{num:'04',title:'Conteúdo Monetizado',desc:'YouTube, TikTok, Reels e plataformas como Patreon.'},{num:'05',title:'Ensino e Consultoria',desc:'Cursos sobre seu processo e mentorias para criadores.'},{num:'06',title:'Pacotes Premium',desc:'Serviços completos com entrega profissional e recorrente.'}],
-  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas já estava vendendo artes digitais no Instagram. O método é claro e direto ao ponto!"',name:'Ana Silva',role:'Ilustradora Digital',avatar:'🎨'},{stars:5,text:'"Como músico, achei que IA ia competir comigo. Mas esse ebook mostrou como usar como ferramenta. Já ganhei R$1.800 num mês!"',name:'Carlos M.',role:'Produtor Musical',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias. A parte de monetização com conteúdo foi um divisor de águas para minha carreira."',name:'Juliana R.',role:'Designer Gráfica',avatar:'✨'}],
+  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas já estava vendendo artes digitais no Instagram!"',name:'Ana Silva',role:'Ilustradora Digital',avatar:'🎨'},{stars:5,text:'"Como músico, achei que IA ia competir comigo. Mas esse ebook mostrou como usar. Já ganhei R$1.800 num mês!"',name:'Carlos M.',role:'Produtor Musical',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias. A parte de monetização foi um divisor de águas na minha carreira."',name:'Juliana R.',role:'Designer Gráfica',avatar:'✨'}],
   pricingFeatures:['Ebook completo em PDF (180+ páginas)','5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo','Plano de ação de 30 dias completo','Dicas de ética e direitos autorais','Download imediato + Acesso vitalício'],
-  faqs:[{q:'Preciso ter conhecimento prévio em IA?',a:'Não! O ebook foi feito do zero ao avançado, com tutoriais passo a passo fáceis de seguir.'},{q:'Funciona para qualquer tipo de artista?',a:'Sim! Abordamos ferramentas específicas para músicos, ilustradores, designers, escritores, fotógrafos e videomakers.'},{q:'Usar IA não vai tirar minha autenticidade?',a:'Pelo contrário. IA é uma ferramenta para acelerar sua produção técnica, permitindo que você foque mais na sua essência criativa.'},{q:'Quanto tempo leva para ter resultados?',a:'O plano é estruturado para 30 dias. Muitos leitores relatam resultados nas primeiras 2 semanas de aplicação.'}]
+  faqs:[{q:'Preciso ter conhecimento prévio em IA?',a:'Não! O ebook foi feito do zero ao avançado, com tutoriais passo a passo fáceis de seguir.'},{q:'Funciona para qualquer tipo de artista?',a:'Sim! Abordamos ferramentas específicas para músicos, ilustradores, designers, escritores, fotógrafos e videomakers.'},{q:'Usar IA não vai tirar minha autenticidade?',a:'Pelo contrário. IA é uma ferramenta para acelerar sua produção técnica, permitindo que você foque mais na sua essência criativa.'},{q:'Quanto tempo leva para ter resultados?',a:'O plano é estruturado para 30 dias. Muitos leitores relatam resultados nas primeiras 2 semanas.'}]
 };
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let CFG = {...DEFAULTS};
+let currentDiscount = 0;
+let capturedEmail   = '';
 
 // ═══════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════
 function applyConfig(cfg) {
+  CFG = cfg;
   const link = cfg.productLink || DEFAULTS.productLink;
 
-  // Modal CTA link
-  const mBtn = document.getElementById('modal-cta-btn');
-  if(mBtn) mBtn.href = link;
-
   // Simple text fields
-  const fields = {
-    'hero-badge':'heroBadge','hero-title':'heroTitle','hero-subtitle':'heroSubtitle',
-    'hero-cta-text':'heroCtaText','book-title':'bookTitle','book-sub':'bookSub',
-    'book-price-badge':'bookPriceBadge',
-    'stat-1-num':'stat1Num','stat-1-label':'stat1Label',
-    'stat-2-num':'stat2Num','stat-2-label':'stat2Label',
-    'stat-3-num':'stat3Num','stat-3-label':'stat3Label',
-    'stat-4-num':'stat4Num','stat-4-label':'stat4Label',
-    'why-title':'whyTitle','why-subtitle':'whySubtitle',
-    'learn-title':'learnTitle','learn-desc':'learnDesc',
-    'monetize-title':'monetizeTitle','monetize-desc':'monetizeDesc',
-    'testimonials-title':'testimonialsTitle',
+  const F = {
+    'hero-badge':'heroBadge','hero-title':'heroTitle','hero-subtitle':'heroSubtitle','hero-cta-text':'heroCtaText',
+    'book-title':'bookTitle','book-sub':'bookSub','book-price-badge':'bookPriceBadge',
+    'stat-1-num':'stat1Num','stat-1-label':'stat1Label','stat-2-num':'stat2Num','stat-2-label':'stat2Label',
+    'stat-3-num':'stat3Num','stat-3-label':'stat3Label','stat-4-num':'stat4Num','stat-4-label':'stat4Label',
+    'why-title':'whyTitle','why-subtitle':'whySubtitle','learn-title':'learnTitle','learn-desc':'learnDesc',
+    'monetize-title':'monetizeTitle','monetize-desc':'monetizeDesc','testimonials-title':'testimonialsTitle',
     'price-old':'priceOld','price-main':'priceMain','price-cents':'priceCents',
     'pricing-cta-text':'pricingCtaText','guarantee-text':'guaranteeText',
-    'cta-final-title':'ctaFinalTitle','cta-final-desc':'ctaFinalDesc',
-    'cta-final-text':'ctaFinalText','footer-brand':'footerBrand',
-    'live-text':'liveText',
-    'modal-cta-text':'modalCtaText',
+    'cta-final-title':'ctaFinalTitle','cta-final-desc':'ctaFinalDesc','cta-final-text':'ctaFinalText','footer-brand':'footerBrand',
+    'live-text':'liveText','modal-cta-text':'modalCtaText','modal-viewers-text':'liveText',
     'modal-price-old':'priceOld','modal-price-main':'priceMain','modal-price-cents':'priceCents',
-    'modal-viewers-text':'liveText',
     'exit-title':'exitTitle','exit-desc':'exitDesc','exit-cta':'exitCta',
-    'fnf-title':'fnfTitle',
-    'bonus-title':'bonusTitle','bonus-desc':'bonusDesc',
-    'video-title':'videoTitle',
-    'sticky-cta-text':'stickyCtaText',
-    'sticky-title':'bookTitle',
+    'fnf-title':'fnfTitle','bonus-title':'bonusTitle','bonus-desc':'bonusDesc','video-title':'videoTitle',
+    'sticky-cta-text':'stickyCtaText','sticky-title':'bookTitle',
+    'ty-title':'tyTitle','ty-desc':'tyDesc','ty-share-text':'tyShareText',
   };
-  for(const [id,key] of Object.entries(fields)){
-    const el=document.getElementById(id); if(el&&cfg[key]!=null) el.innerHTML=cfg[key];
-  }
+  for(const[id,k]of Object.entries(F)){const el=document.getElementById(id);if(el&&cfg[k]!=null)el.innerHTML=cfg[k];}
 
   // Sticky price label
-  const spl = document.getElementById('sticky-price-label');
-  if(spl) spl.textContent = `R$${cfg.priceMain||'19'}${cfg.priceCents||',90'} — oferta por tempo limitado`;
+  const spl=document.getElementById('sticky-price-label');
+  if(spl) spl.textContent=`R$${cfg.priceMain||'19'}${cfg.priceCents||',90'} — oferta por tempo limitado`;
 
-  // All CTA buttons (except modal which has its own href)
+  // Discount badge
+  const badge=document.getElementById('modal-discount-badge');
+  if(badge&&cfg.priceOld&&cfg.priceMain){
+    const old=parseFloat((cfg.priceOld||'47').replace('R$','').replace(',','.'));
+    const now=parseFloat((cfg.priceMain||'19').replace(',','.')+'.'+(cfg.priceCents||',90').replace(',',''));
+    const pct=Math.round((1-now/old)*100);
+    badge.textContent=pct+'% OFF';
+  }
+
+  // Thank you steps
+  const tySteps=document.getElementById('ty-steps');
+  if(tySteps&&cfg.tySteps) tySteps.innerHTML=(cfg.tySteps||[]).map(s=>`<div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green)">✓</span><span>${s}</span></div>`).join('');
+
+  // CTA buttons → open modal
   ['hero-cta-btn','header-cta-btn','pricing-cta-btn','cta-final-btn'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.onclick = (e)=>{ e.preventDefault(); openModal(id); };
+    const el=document.getElementById(id); if(el){el.href='#';el.onclick=e=>{e.preventDefault();openModal(id);};}
   });
 
-  // Benefits
+  // Lists
   const bEl=document.getElementById('benefits-grid');
-  if(bEl&&cfg.benefits) bEl.innerHTML=cfg.benefits.map(b=>`
-    <div class="benefit-card"><div class="benefit-icon">${b.icon}</div><h3>${b.title}</h3><p>${b.desc}</p></div>`).join('');
-
-  // Learn list
+  if(bEl&&cfg.benefits) bEl.innerHTML=cfg.benefits.map(b=>`<div class="benefit-card fade-up"><div class="benefit-icon">${b.icon}</div><h3>${b.title}</h3><p>${b.desc}</p></div>`).join('');
   const lEl=document.getElementById('learn-list');
   if(lEl&&cfg.learnItems) lEl.innerHTML=cfg.learnItems.map(i=>`<li>${i}</li>`).join('');
-
-  // Weeks
   const wEl=document.getElementById('weeks-grid');
-  if(wEl&&cfg.weeks) wEl.innerHTML=cfg.weeks.map(w=>`
-    <div class="week-card"><div class="week-num">${w.num}</div><div><h4>${w.title}</h4><p>${w.desc}</p></div></div>`).join('');
-
-  // Monetize
+  if(wEl&&cfg.weeks) wEl.innerHTML=cfg.weeks.map(w=>`<div class="week-card fade-up"><div class="week-num">${w.num}</div><div><h4>${w.title}</h4><p>${w.desc}</p></div></div>`).join('');
   const mEl=document.getElementById('monetize-grid');
-  if(mEl&&cfg.monetizeItems) mEl.innerHTML=cfg.monetizeItems.map(m=>`
-    <div class="monetize-card"><span class="m-num">${m.num}</span><h3>${m.title}</h3><p>${m.desc}</p></div>`).join('');
-
-  // Testimonials
+  if(mEl&&cfg.monetizeItems) mEl.innerHTML=cfg.monetizeItems.map(m=>`<div class="monetize-card fade-up"><span class="m-num">${m.num}</span><h3>${m.title}</h3><p>${m.desc}</p></div>`).join('');
   const tEl=document.getElementById('testimonials-grid');
-  if(tEl&&cfg.testimonials) tEl.innerHTML=cfg.testimonials.map(t=>`
-    <div class="testimonial-card"><div class="stars">${'★'.repeat(t.stars)}</div><p class="testimonial-text">${t.text}</p>
-    <div class="testimonial-author"><div class="author-avatar">${t.avatar}</div>
-    <div><div class="author-name">${t.name}</div><div class="author-role">${t.role}</div></div></div></div>`).join('');
-
-  // Pricing features
+  if(tEl&&cfg.testimonials) tEl.innerHTML=cfg.testimonials.map(t=>`<div class="testimonial-card fade-up"><div class="stars">${'★'.repeat(t.stars)}</div><p class="testimonial-text">${t.text}</p><div class="testimonial-author"><div class="author-avatar">${t.avatar}</div><div><div class="author-name">${t.name}</div><div class="author-role">${t.role}</div></div></div></div>`).join('');
   const pfEl=document.getElementById('pricing-features');
   if(pfEl&&cfg.pricingFeatures) pfEl.innerHTML=cfg.pricingFeatures.map(f=>`<li>${f}</li>`).join('');
-
-  // Modal features
   const mfEl=document.getElementById('modal-features');
   if(mfEl&&cfg.pricingFeatures) mfEl.innerHTML=cfg.pricingFeatures.slice(0,5).map(f=>`<li>${f}</li>`).join('');
-
-  // FAQs
   const faqEl=document.getElementById('faq-grid');
-  if(faqEl&&cfg.faqs) faqEl.innerHTML=cfg.faqs.map((f,i)=>`
-    <div class="faq-item" id="faq-${i}">
-      <div class="faq-q" onclick="toggleFaq(${i})">${f.q}<span class="faq-icon">+</span></div>
-      <div class="faq-a">${f.a}</div></div>`).join('');
+  if(faqEl&&cfg.faqs) faqEl.innerHTML=cfg.faqs.map((f,i)=>`<div class="faq-item" id="faq-${i}"><div class="faq-q" onclick="toggleFaq(${i})">${f.q}<span class="faq-icon">+</span></div><div class="faq-a">${f.a}</div></div>`).join('');
 
-  // For / Not For
+  // For/Not for
   const fnfEl=document.getElementById('fornotfor-grid');
   if(fnfEl){
-    const fi=(cfg.forItems||DEFAULTS.forItems).map(i=>`<li>${i}</li>`).join('');
-    const ni=(cfg.notForItems||DEFAULTS.notForItems).map(i=>`<li>${i}</li>`).join('');
-    fnfEl.innerHTML=`
-      <div class="fornotfor-card for"><h3>✅ É para você se...</h3><ul>${fi}</ul></div>
-      <div class="fornotfor-card notfor"><h3>❌ NÃO é para você se...</h3><ul>${ni}</ul></div>`;
+    const fi=(cfg.forItems||[]).map(i=>`<li>${i}</li>`).join('');
+    const ni=(cfg.notForItems||[]).map(i=>`<li>${i}</li>`).join('');
+    fnfEl.innerHTML=`<div class="fornotfor-card for fade-up"><h3>✅ É para você se...</h3><ul>${fi}</ul></div><div class="fornotfor-card notfor fade-up"><h3>❌ NÃO é para você se...</h3><ul>${ni}</ul></div>`;
   }
 
   // Bonus
   const bonusEl=document.getElementById('bonus-grid');
-  if(bonusEl){
-    const items=cfg.bonusItems||DEFAULTS.bonusItems;
-    bonusEl.innerHTML=items.map(b=>`
-      <div class="bonus-card">
-        <div class="bonus-icon">${b.icon}</div>
-        <h3>${b.title}</h3><p>${b.desc}</p>
-        <div class="bonus-value">${b.value}</div>
-      </div>`).join('');
-  }
+  if(bonusEl&&cfg.bonusItems) bonusEl.innerHTML=cfg.bonusItems.map(b=>`<div class="bonus-card fade-up"><div class="bonus-icon">${b.icon}</div><h3>${b.title}</h3><p>${b.desc}</p><div class="bonus-value">${b.value}</div></div>`).join('');
 
-  // Video section
+  // Video
   const vs=document.getElementById('video-section');
   if(vs) vs.style.display=(cfg.showVideoSection&&cfg.videoUrl)?'block':'none';
-  if(cfg.videoUrl&&cfg.showVideoSection){
+  if(cfg.showVideoSection&&cfg.videoUrl){
+    const yt=cfg.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^&\n?]+)/);
     const vw=document.getElementById('video-wrapper');
-    // Convert YouTube URL to embed
-    const ytMatch=cfg.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([^&\n?]+)/);
-    if(ytMatch&&vw){
-      vw.innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen style="border:none"></iframe>`;
-    }
+    if(yt&&vw) vw.innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allowfullscreen style="border:none"></iframe>`;
   }
 
-  // Urgency bar
+  // Urgency
   if(cfg.showUrgencyBar===false) document.getElementById('urgency-bar').style.display='none';
-  else startCountdown(cfg.urgencyMinutes||47);
+  else {
+    const urgText=document.getElementById('urgency-text');
+    const urgSuffix=document.getElementById('urgency-suffix');
+    if(urgText&&cfg.urgencyText) urgText.textContent=cfg.urgencyText;
+    if(urgSuffix&&cfg.urgencySuffix) urgSuffix.textContent=cfg.urgencySuffix;
+    startCountdown(cfg.urgencyMinutes||47);
+  }
+
+  // Sale notifications
+  if(cfg.showSaleNotifications!==false){
+    setTimeout(showNextSaleNotif, 8000);
+    setInterval(showNextSaleNotif, (cfg.saleNotifInterval||25)*1000);
+  }
+
+  // Scroll animations
+  setTimeout(initScrollAnimations, 100);
 
   document.getElementById('footer-year').textContent=new Date().getFullYear();
 }
 
 function toggleFaq(i) { document.getElementById('faq-'+i).classList.toggle('open'); }
+
+// ═══════════════════════════════════════
+// SCROLL ANIMATIONS
+// ═══════════════════════════════════════
+function initScrollAnimations() {
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+}
 
 // ═══════════════════════════════════════
 // MODAL
@@ -1186,24 +1230,68 @@ function closeModal() {
 }
 
 // ═══════════════════════════════════════
+// COUPON
+// ═══════════════════════════════════════
+async function applyCoupon() {
+  const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+  const msg  = document.getElementById('coupon-msg');
+  if(!code){ msg.textContent='Digite um cupom.'; msg.className='err'; return; }
+  msg.textContent='Verificando...'; msg.className='';
+  const rows = await sbGet('iaem30_coupons',`?code=eq.${code}&active=eq.true&select=*`);
+  if(!rows||!rows.length){ msg.textContent='Cupom inválido ou expirado.'; msg.className='err'; return; }
+  const coupon = rows[0];
+  if(coupon.uses>=coupon.max_uses){ msg.textContent='Cupom esgotado.'; msg.className='err'; return; }
+  currentDiscount = coupon.discount_percent;
+  // Update price display
+  const basePrice = parseFloat((CFG.priceMain||'19').replace(',','.'));
+  const newPrice  = (basePrice*(1-currentDiscount/100)).toFixed(2).replace('.',',');
+  const [int,dec] = newPrice.split(',');
+  document.getElementById('modal-price-main').textContent=int;
+  document.getElementById('modal-price-cents').textContent=','+dec;
+  document.getElementById('modal-discount-badge').textContent=currentDiscount+'% OFF';
+  document.getElementById('modal-price-old').textContent=`R$${CFG.priceMain}${CFG.priceCents}`;
+  msg.textContent=`✓ Cupom aplicado! ${currentDiscount}% de desconto.`; msg.className='ok';
+  // Increment coupon uses
+  await sbPatch('iaem30_coupons',`?code=eq.${code}`,{uses:coupon.uses+1});
+}
+
+// ═══════════════════════════════════════
+// EMAIL CAPTURE + PROCEED TO BUY
+// ═══════════════════════════════════════
+async function proceedToBuy() {
+  const email = document.getElementById('modal-email').value.trim();
+  const btn   = document.querySelector('#email-step .btn-primary');
+  if(!email||!email.includes('@')){ document.getElementById('modal-email').style.borderColor='#ef4444'; return; }
+  document.getElementById('modal-email').style.borderColor='';
+  capturedEmail = email;
+  if(btn){ btn.disabled=true; btn.textContent='Redirecionando...'; }
+  // Save email to Supabase
+  await sbPost('iaem30_emails',{email, source:'modal'});
+  // Open product link
+  const link = CFG.productLink || DEFAULTS.productLink;
+  window.open(link, '_blank');
+  closeModal();
+  // Show thank you page after 3s (simulate post-purchase)
+  // In production, PerfectPay webhook would trigger this
+}
+
+// ═══════════════════════════════════════
 // EXIT INTENT
 // ═══════════════════════════════════════
-let exitShown=false;
+let exitShown = false;
 document.addEventListener('mouseleave', e=>{
-  if(e.clientY<=0 && !exitShown){
+  if(e.clientY<=0&&!exitShown&&!document.getElementById('buy-modal').classList.contains('open')){
     exitShown=true;
     document.getElementById('exit-popup').classList.add('open');
     document.body.style.overflow='hidden';
   }
 });
-// Mobile: show exit intent after 60s of inactivity
-let mobileExitTimer=setTimeout(()=>{
-  if(!exitShown && /Mobi|Android/i.test(navigator.userAgent)){
+setTimeout(()=>{
+  if(!exitShown&&/Mobi|Android/i.test(navigator.userAgent)){
     exitShown=true;
     document.getElementById('exit-popup').classList.add('open');
   }
-}, 60000);
-
+},60000);
 function closeExit() {
   document.getElementById('exit-popup').classList.remove('open');
   document.body.style.overflow='';
@@ -1213,38 +1301,66 @@ function closeExit() {
 // STICKY BAR
 // ═══════════════════════════════════════
 window.addEventListener('scroll',()=>{
-  const bar=document.getElementById('sticky-bar');
-  bar.style.display = window.scrollY > 600 ? 'block' : 'none';
+  document.getElementById('sticky-bar').style.display=window.scrollY>600?'block':'none';
 });
 
 // ═══════════════════════════════════════
-// COUNTDOWN TIMER
+// COUNTDOWN
 // ═══════════════════════════════════════
 function startCountdown(minutes) {
-  const key='iaem30_timer_end';
+  const key='iaem30_te';
   let end=sessionStorage.getItem(key);
-  if(!end || Date.now()>Number(end)){
-    end=Date.now()+(minutes*60*1000);
-    sessionStorage.setItem(key,end);
-  }
-  function tick(){
-    const diff=Number(end)-Date.now();
-    if(diff<=0){ sessionStorage.removeItem(key); startCountdown(minutes); return; }
-    const h=Math.floor(diff/3600000);
-    const m=Math.floor((diff%3600000)/60000);
-    const s=Math.floor((diff%60000)/1000);
+  if(!end||Date.now()>Number(end)){ end=Date.now()+minutes*60000; sessionStorage.setItem(key,end); }
+  const tick=()=>{
+    const d=Number(end)-Date.now();
+    if(d<=0){sessionStorage.removeItem(key);startCountdown(minutes);return;}
+    const h=Math.floor(d/3600000),m=Math.floor((d%3600000)/60000),s=Math.floor((d%60000)/1000);
     const el=document.getElementById('countdown');
     if(el) el.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  }
+  };
   tick(); setInterval(tick,1000);
+}
+
+// ═══════════════════════════════════════
+// THEME TOGGLE
+// ═══════════════════════════════════════
+function toggleTheme() {
+  const light = document.body.classList.toggle('light-mode');
+  localStorage.setItem('iaem30_theme', light?'light':'dark');
+  document.getElementById('theme-btn').textContent = light?'🌙':'☀️';
+}
+function initTheme() {
+  const saved = localStorage.getItem('iaem30_theme');
+  if(saved==='light'){ document.body.classList.add('light-mode'); document.getElementById('theme-btn').textContent='🌙'; }
+  else document.getElementById('theme-btn').textContent='☀️';
+}
+
+// ═══════════════════════════════════════
+// THANK YOU PAGE
+// ═══════════════════════════════════════
+function showThankYou() {
+  document.getElementById('thankyou-page').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function shareWhatsApp() {
+  const link = CFG.productLink || DEFAULTS.productLink;
+  const text = encodeURIComponent(`Acabei de comprar o ebook "IA em 30 Dias" e recomendo muito! 🚀 ${link}`);
+  window.open(`https://wa.me/?text=${text}`,'_blank');
+}
+
+// Check if coming from purchase (URL param ?purchased=1)
+if(new URLSearchParams(location.search).get('purchased')==='1') {
+  window.addEventListener('load',()=>setTimeout(showThankYou,500));
 }
 
 // ═══════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════
 (async()=>{
-  const remote=await fetchRemoteConfig();
+  initTheme();
+  const remote = await fetchRemoteConfig();
   applyConfig(remote?{...DEFAULTS,...remote}:DEFAULTS);
+  await loadSaleNotifs();
   trackVisit();
   updateLiveCount();
 })();
