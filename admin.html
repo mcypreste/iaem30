@@ -1112,114 +1112,6 @@ function cFaq(){const a=JSON.parse(JSON.stringify(C.faqs||[]));document.querySel
 function addFaq(){C.faqs=cFaq();C.faqs.push({q:'Nova pergunta?',a:'Resposta aqui.'});rFaq(C.faqs);}
 function rmFaq(i){C.faqs=cFaq();C.faqs.splice(i,1);rFaq(C.faqs);}
 
-
-// BONUS LIST EDITOR
-function rBonus(items){
-  const el=document.getElementById('bonus-editor'); if(!el)return;
-  el.innerHTML=items.map((b,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:grid;grid-template-columns:64px 1fr 1fr;gap:8px">
-        <input placeholder="Emoji" value="${esc(b.icon)}" data-k="icon" data-i="${i}">
-        <input placeholder="Título" value="${esc(b.title)}" data-k="title" data-i="${i}">
-        <input placeholder="Valor ex: Valor: R$27" value="${esc(b.value)}" data-k="value" data-i="${i}">
-      </div>
-      <input placeholder="Descrição" value="${esc(b.desc)}" data-k="desc" data-i="${i}">
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmBonus(${i})">✕</button></div></div>`).join('');
-}
-function cBonus(){
-  const items=JSON.parse(JSON.stringify(C.bonusItems||[]));
-  document.querySelectorAll('#bonus-editor input').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(items[i])items[i][k]=x.value;});
-  return items;
-}
-function addBonus(){C.bonusItems=cBonus();C.bonusItems.push({icon:'🎁',title:'Novo Bônus',desc:'Descrição do bônus.',value:'Valor: R$27'});rBonus(C.bonusItems);}
-function rmBonus(i){C.bonusItems=cBonus();C.bonusItems.splice(i,1);rBonus(C.bonusItems);}
-
-// ANALYTICS
-async function loadAnalytics(){
-  try {
-    // Fetch visitors last 24h
-    const since=new Date(Date.now()-86400000).toISOString();
-    const [vRes,cRes]=await Promise.all([
-      fetch(`${SB}/rest/v1/iaem30_visitors?created_at=gte.${since}&select=*&order=created_at.desc&limit=100`,{headers:H}),
-      fetch(`${SB}/rest/v1/iaem30_cta_clicks?created_at=gte.${since}&select=*`,{headers:H}),
-    ]);
-    const visitors=await vRes.json();
-    const ctas=await cRes.json();
-
-    // Stats
-    const total=visitors.length;
-    const ctaCount=ctas.length;
-    const rate=total?Math.round(ctaCount/total*100):0;
-    const mobile=visitors.filter(v=>v.device==='mobile').length;
-    const desktop=total-mobile;
-
-    document.getElementById('an-visitors').textContent=total;
-    document.getElementById('an-cta').textContent=ctaCount;
-    document.getElementById('an-rate').textContent=rate+'%';
-    document.getElementById('an-device').textContent=`📱${mobile} 💻${desktop}`;
-
-    // Table
-    const tableEl=document.getElementById('analytics-table');
-    if(tableEl){
-      if(!visitors.length){ tableEl.innerHTML='<span style="color:var(--muted2)">Nenhuma visita nas últimas 24h.</span>'; }
-      else {
-        tableEl.innerHTML=`<table style="width:100%;border-collapse:collapse">
-          <thead><tr style="border-bottom:1px solid var(--border)">
-            <th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em">Hora</th>
-            <th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em">Dispositivo</th>
-            <th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em">Fonte</th>
-            <th style="text-align:left;padding:8px 4px;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em">CTA</th>
-          </tr></thead>
-          <tbody>${visitors.slice(0,20).map(v=>`
-            <tr style="border-bottom:1px solid var(--border)">
-              <td style="padding:8px 4px;font-size:12px">${new Date(v.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
-              <td style="padding:8px 4px;font-size:12px">${v.device==='mobile'?'📱':'💻'} ${v.device||'—'}</td>
-              <td style="padding:8px 4px;font-size:12px">${v.utm_source||v.referrer?.split('/')[2]||'Direto'}</td>
-              <td style="padding:8px 4px">${v.clicked_cta?'<span style="color:var(--green);font-size:12px">✓ Clicou</span>':'<span style="color:var(--muted2);font-size:12px">—</span>'}</td>
-            </tr>`).join('')}
-          </tbody></table>`;
-      }
-    }
-
-    // Sources
-    const srcEl=document.getElementById('analytics-sources');
-    if(srcEl){
-      const srcMap={};
-      visitors.forEach(v=>{ const s=v.utm_source||v.referrer?.split('/')[2]||'Direto'; srcMap[s]=(srcMap[s]||0)+1; });
-      const sorted=Object.entries(srcMap).sort((a,b)=>b[1]-a[1]);
-      if(!sorted.length){ srcEl.innerHTML='<span style="color:var(--muted2)">Sem dados ainda.</span>'; }
-      else {
-        srcEl.innerHTML=sorted.map(([src,cnt])=>`
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-            <span style="font-size:13px;min-width:140px;color:var(--text)">${src}</span>
-            <div style="flex:1;background:var(--surface2);border-radius:4px;height:8px">
-              <div style="background:var(--accent);height:8px;border-radius:4px;width:${Math.round(cnt/total*100)}%"></div>
-            </div>
-            <span style="font-size:12px;color:var(--muted);min-width:50px;text-align:right">${cnt} (${Math.round(cnt/total*100)}%)</span>
-          </div>`).join('');
-      }
-    }
-  } catch(e){ console.error(e); toast('Erro ao carregar analytics','error'); }
-}
-
-
-// BONUS LIST EDITOR
-function rBonus(items){
-  const el=document.getElementById('bonus-editor'); if(!el)return;
-  el.innerHTML=items.map((b,i)=>`
-    <div class="li"><div class="li-body">
-      <div style="display:grid;grid-template-columns:60px 1fr 1fr;gap:8px">
-        <input placeholder="Emoji" value="${esc(b.icon)}" data-k="icon" data-i="${i}">
-        <input placeholder="Título" value="${esc(b.title)}" data-k="title" data-i="${i}">
-        <input placeholder="Valor ex: Valor: R$27" value="${esc(b.value)}" data-k="value" data-i="${i}">
-      </div>
-      <input placeholder="Descrição" value="${esc(b.desc)}" data-k="desc" data-i="${i}">
-    </div><div class="li-acts"><button class="btn-ic d" onclick="rmBonus(${i})">✕</button></div></div>`).join('');
-}
-function cBonus(){const a=JSON.parse(JSON.stringify(C.bonusItems||[]));document.querySelectorAll('#bonus-editor input').forEach(x=>{const i=+x.dataset.i,k=x.dataset.k;if(a[i])a[i][k]=x.value;});return a;}
-function addBonus(){C.bonusItems=cBonus();C.bonusItems.push({icon:'🎁',title:'Novo Bônus',desc:'Descrição.',value:'Valor: R$27'});rBonus(C.bonusItems);}
-function rmBonus(i){C.bonusItems=cBonus();C.bonusItems.splice(i,1);rBonus(C.bonusItems);}
-
 // Auto-load panels handled inside showPanel()
 
 // COUPONS
@@ -1394,7 +1286,7 @@ async function syncPPSales(all = false) {
   resultEl.style.display = 'block';
   resultEl.innerHTML = '<span style="color:var(--accent2)">⏳ Sincronizando com a PerfectPay...</span>';
 
-  const body: any = { page: 1 };
+  const body = { page: 1 };
   if (!all) {
     const from = document.getElementById('sync-from').value;
     const to   = document.getElementById('sync-to').value;
