@@ -830,7 +830,9 @@
   </div>
 </section>
 
+<!-- NICHE GENERATOR ANCHOR -->
 <!-- FAQ -->
+<!-- ═ NICHE GENERATOR SECTION ═ -->
 <section class="faq-section" id="faq">
   <div class="container">
     <div class="section-header">
@@ -1400,6 +1402,213 @@ body.light-mode .exit-box { background:#fff; }
   cursor: pointer; font-family: 'DM Sans', sans-serif;
 }
 .cw-back:hover { color: #7e7a96; }
+
+
+/* ─── AI CHAT BUBBLE ─── */
+#ai-chat-bubble {
+  position: fixed; bottom: 100px; right: 24px; z-index: 170;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c5cfc, #06b6d4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 24px;
+  box-shadow: 0 4px 20px rgba(124,92,252,.5);
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  animation: aiPulse 3s ease-in-out infinite;
+}
+@keyframes aiPulse { 0%,100%{box-shadow:0 4px 20px rgba(124,92,252,.5)} 50%{box-shadow:0 4px 36px rgba(124,92,252,.8),0 0 0 8px rgba(124,92,252,.1)} }
+#ai-chat-bubble:hover { transform: scale(1.1); }
+#ai-chat-bubble.open { animation: none; box-shadow: 0 4px 20px rgba(124,92,252,.5); }
+.aicb-icon { position: absolute; transition: all .2s; }
+.aicb-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: var(--r); color: #fff; font-size: 10px; font-weight: 700;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg);
+}
+
+/* ─── AI CHAT WINDOW ─── */
+#ai-chat-window {
+  position: fixed; bottom: 170px; right: 24px; z-index: 169;
+  width: 340px; max-height: 500px;
+  background: #0f0f18; border: 1px solid rgba(124,92,252,.3);
+  border-radius: 20px; display: none; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(124,92,252,.1);
+  overflow: hidden;
+  animation: chatSlideIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+#ai-chat-window.open { display: flex; }
+@keyframes chatSlideIn { from{transform:translateY(20px) scale(.95);opacity:0} to{transform:none;opacity:1} }
+.aiw-header {
+  padding: 14px 16px; background: linear-gradient(135deg, rgba(124,92,252,.2), rgba(6,182,212,.1));
+  border-bottom: 1px solid rgba(124,92,252,.2);
+  display: flex; align-items: center; gap: 10px;
+}
+.aiw-avatar { font-size: 28px; }
+.aiw-info { flex: 1; }
+.aiw-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; }
+.aiw-status { font-size: 11px; color: var(--g); display: flex; align-items: center; gap: 5px; }
+.aiw-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--g); animation: pulse 1.5s infinite; }
+.aiw-close { background: none; border: none; color: var(--m); cursor: pointer; font-size: 16px; padding: 4px; transition: color .2s; }
+.aiw-close:hover { color: var(--t); }
+.aiw-messages {
+  flex: 1; overflow-y: auto; padding: 14px; display: flex;
+  flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--m2) transparent;
+}
+.aiw-msg { display: flex; }
+.aiw-msg.user { justify-content: flex-end; }
+.aiw-msg.assistant { justify-content: flex-start; }
+.aiw-bubble {
+  max-width: 85%; padding: 10px 14px; border-radius: 14px;
+  font-size: 13px; line-height: 1.6;
+}
+.aiw-msg.assistant .aiw-bubble {
+  background: rgba(255,255,255,.06); color: var(--t);
+  border-radius: 4px 14px 14px 14px;
+}
+.aiw-msg.user .aiw-bubble {
+  background: linear-gradient(135deg, #7c5cfc, #5b3ddb); color: #fff;
+  border-radius: 14px 14px 4px 14px;
+}
+.aiw-suggestions { display: flex; flex-direction: column; gap: 6px; }
+.aiw-suggestions button {
+  background: rgba(124,92,252,.1); border: 1px solid rgba(124,92,252,.25);
+  color: var(--a2); border-radius: 8px; padding: 8px 12px;
+  font-size: 12px; cursor: pointer; text-align: left; transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.aiw-suggestions button:hover { background: rgba(124,92,252,.2); }
+.aiw-typing { padding: 0 14px 10px; }
+.typing-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--m); margin: 0 2px;
+  animation: typingBounce 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+.aiw-input-row {
+  padding: 10px 12px; border-top: 1px solid rgba(255,255,255,.07);
+  display: flex; gap: 8px; align-items: center;
+}
+#aiw-input {
+  flex: 1; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; padding: 9px 12px; color: var(--t); font-size: 13px;
+  font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s;
+}
+#aiw-input:focus { border-color: rgba(124,92,252,.5); }
+#aiw-send {
+  background: linear-gradient(135deg,#7c5cfc,#06b6d4); border: none; color: #fff;
+  width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: opacity .2s; flex-shrink: 0;
+}
+#aiw-send:hover { opacity: .85; }
+#aiw-send:disabled { opacity: .4; cursor: wait; }
+
+/* ─── NICHE GENERATOR ─── */
+.niche-widget {
+  max-width: 680px; margin: 0 auto;
+  background: var(--surface); border: 1px solid rgba(124,92,252,.2);
+  border-radius: 20px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(124,92,252,.1);
+}
+.niche-step { padding: 36px; }
+.niche-input-wrap {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 12px; padding: 8px 8px 8px 16px;
+  transition: border-color .2s;
+}
+.niche-input-wrap:focus-within { border-color: var(--accent); }
+.niche-emoji { font-size: 20px; flex-shrink: 0; }
+.niche-input-wrap input {
+  flex: 1; background: none; border: none; color: var(--text);
+  font-size: 15px; font-family: 'DM Sans', sans-serif; outline: none;
+}
+.niche-input-wrap button {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 9px; padding: 11px 20px; cursor: pointer;
+  font-size: 13.5px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  transition: all .2s; white-space: nowrap; flex-shrink: 0;
+}
+.niche-input-wrap button:hover { background: #8b6dfd; }
+.niche-input-wrap button:disabled { opacity: .6; cursor: wait; }
+.niche-examples {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+}
+.niche-examples span {
+  background: rgba(124,92,252,.1); border: 1px solid rgba(124,92,252,.2);
+  color: var(--accent2); border-radius: 20px; padding: 5px 14px;
+  font-size: 12px; cursor: pointer; transition: all .2s;
+}
+.niche-examples span:hover { background: rgba(124,92,252,.2); }
+.niche-loading { text-align: center; padding: 20px; }
+.niche-spinner {
+  width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 16px;
+  border: 3px solid rgba(124,92,252,.2);
+  border-top-color: #7c5cfc; animation: coSpin 1s linear infinite;
+}
+.niche-loading p { color: var(--muted); font-size: 14px; }
+.niche-email-gate { text-align: center; }
+.niche-gate-icon { font-size: 48px; margin-bottom: 12px; }
+.niche-email-gate h3 { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 8px; }
+.niche-email-gate p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+.niche-email-row {
+  display: flex; gap: 10px; max-width: 400px; margin: 0 auto 10px;
+}
+.niche-email-row input {
+  flex: 1; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 11px 14px; color: var(--text);
+  font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none;
+  transition: border-color .2s;
+}
+.niche-email-row input:focus { border-color: var(--accent); }
+.niche-email-row button {
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: 11px 20px; cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif;
+  white-space: nowrap; transition: all .2s;
+}
+.niche-email-row button:hover { background: #8b6dfd; }
+.niche-skip { font-size: 12px; color: var(--muted2); cursor: pointer; }
+.niche-skip:hover { color: var(--muted); text-decoration: underline; }
+
+/* Result */
+.niche-result { animation: fadeUp .5s ease; }
+.niche-result-header { text-align: center; margin-bottom: 24px; }
+.niche-result-headline { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg,#a78bfa,#67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.niche-result-intro { color: var(--muted); font-size: 14px; line-height: 1.7; }
+.niche-steps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+.niche-step-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.niche-step-card .week { font-size: 10px; font-weight: 700; color: var(--accent2); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+.niche-step-card .stitle { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.niche-step-card .action { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.niche-tools { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0; }
+.niche-tool { background: rgba(6,182,212,.1); border: 1px solid rgba(6,182,212,.25); color: #06b6d4; border-radius: 6px; padding: 4px 10px; font-size: 12px; }
+.niche-potential {
+  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25);
+  border-radius: 10px; padding: 14px; text-align: center; margin: 16px 0;
+}
+.niche-potential .pot-label { font-size: 11px; color: var(--g); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 4px; }
+.niche-potential .pot-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--g); }
+.niche-result-cta {
+  text-align: center; padding-top: 16px; border-top: 1px solid var(--border);
+}
+.niche-result-cta p { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+.niche-result-cta .btn-primary { width: 100%; justify-content: center; }
+
+@media(max-width:600px) {
+  .niche-steps-grid { grid-template-columns: 1fr; }
+  .niche-input-wrap { flex-wrap: wrap; }
+  .niche-input-wrap button { width: 100%; justify-content: center; }
+  #ai-chat-window { width: calc(100vw - 32px); right: 16px; bottom: 160px; }
+  #ai-chat-bubble { right: 16px; bottom: 90px; }
+}
 
 </style>
 <script>
@@ -2104,6 +2313,203 @@ window.addEventListener('load', () => {
   hide();
 });
 
+
+
+// ═══════════════════════════════════════
+// AI CHAT
+// ═══════════════════════════════════════
+const AI_SESSION = SESSION_ID;
+let aiHistory = [];
+let aiOpen = false;
+
+function toggleAIChat() {
+  aiOpen = !aiOpen;
+  const win = document.getElementById('ai-chat-window');
+  const bubble = document.getElementById('ai-chat-bubble');
+  const badge = document.getElementById('aicb-badge');
+  win.classList.toggle('open', aiOpen);
+  bubble.classList.toggle('open', aiOpen);
+  bubble.querySelector('.aicb-default').style.display = aiOpen ? 'none' : 'block';
+  bubble.querySelector('.aicb-close').style.display = aiOpen ? 'block' : 'none';
+  if (aiOpen) {
+    badge.style.display = 'none';
+    document.getElementById('aiw-input').focus();
+    scrollAIChat();
+  }
+}
+
+function scrollAIChat() {
+  const msgs = document.getElementById('aiw-messages');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addAIMessage(role, content) {
+  const msgs = document.getElementById('aiw-messages');
+  const div = document.createElement('div');
+  div.className = 'aiw-msg ' + role;
+  div.innerHTML = '<div class="aiw-bubble">' + content.replace(/\n/g,'<br>') + '</div>';
+  msgs.appendChild(div);
+  scrollAIChat();
+}
+
+async function sendAIMessage(text) {
+  const input = document.getElementById('aiw-input');
+  const sendBtn = document.getElementById('aiw-send');
+  const msg = text || input.value.trim();
+  if (!msg) return;
+
+  // Hide suggestions on first message
+  const sugg = document.querySelector('.aiw-suggestions');
+  if (sugg) sugg.remove();
+
+  input.value = '';
+  addAIMessage('user', msg);
+  sendBtn.disabled = true;
+
+  // Show typing
+  const typing = document.getElementById('aiw-typing');
+  typing.style.display = 'block';
+  scrollAIChat();
+
+  try {
+    const r = await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/ai-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
+      body: JSON.stringify({ message: msg, session_id: AI_SESSION, history: aiHistory })
+    });
+    const data = await r.json();
+    typing.style.display = 'none';
+
+    if (data.reply) {
+      addAIMessage('assistant', data.reply);
+      aiHistory.push({ role: 'user', content: msg });
+      aiHistory.push({ role: 'assistant', content: data.reply });
+      if (aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
+    } else {
+      addAIMessage('assistant', 'Desculpe, ocorreu um erro. Tente novamente! 😊');
+    }
+  } catch(e) {
+    typing.style.display = 'none';
+    addAIMessage('assistant', 'Erro de conexão. Tente novamente em instantes.');
+  }
+
+  sendBtn.disabled = false;
+  if (!text) input.focus();
+}
+
+// Show chat badge after 30 seconds to grab attention
+setTimeout(() => {
+  if (!aiOpen) {
+    const badge = document.getElementById('aicb-badge');
+    if (badge) badge.style.display = 'flex';
+  }
+}, 30000);
+
+// ═══════════════════════════════════════
+// NICHE GENERATOR
+// ═══════════════════════════════════════
+let _nichePlan = null;
+
+async function generateNiche() {
+  const prof = document.getElementById('niche-profession').value.trim();
+  if (!prof) {
+    document.getElementById('niche-profession').focus();
+    return;
+  }
+  // Show loading
+  document.getElementById('niche-step-1').style.display = 'none';
+  document.getElementById('niche-step-loading').style.display = 'block';
+
+  try {
+    const r = await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/ai-niche-generator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
+      body: JSON.stringify({ profession: prof })
+    });
+    const data = await r.json();
+    if (data.ok && data.plan) {
+      _nichePlan = data.plan;
+      _nichePlan._profession = prof;
+      document.getElementById('niche-step-loading').style.display = 'none';
+      document.getElementById('niche-step-email').style.display = 'block';
+    } else throw new Error(data.error || 'Erro');
+  } catch(e) {
+    document.getElementById('niche-step-loading').style.display = 'none';
+    document.getElementById('niche-step-1').style.display = 'block';
+    document.getElementById('niche-profession').placeholder = 'Erro. Tente novamente...';
+  }
+}
+
+async function revealNiche(skip = false) {
+  const email = document.getElementById('niche-email').value.trim();
+  if (!skip && (!email || !email.includes('@'))) {
+    document.getElementById('niche-email').style.borderColor = 'var(--r)';
+    document.getElementById('niche-email').focus();
+    return;
+  }
+
+  // Save email if provided
+  if (email) {
+    await sbPost('iaem30_emails', { email, source: 'niche_generator' });
+    // Re-call with email to save lead
+    fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/ai-niche-generator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
+      body: JSON.stringify({ profession: _nichePlan?._profession || '', email })
+    });
+  }
+
+  document.getElementById('niche-step-email').style.display = 'none';
+  renderNichePlan(_nichePlan);
+  document.getElementById('niche-step-result').style.display = 'block';
+}
+
+function renderNichePlan(p) {
+  const el = document.getElementById('niche-result-content');
+  const steps = (p.steps || []).map(s => `
+    <div class="niche-step-card">
+      <div class="week">${s.week || ''}</div>
+      <div class="stitle">${s.title || ''}</div>
+      <div class="action">${s.action || ''}</div>
+    </div>`).join('');
+  const tools = (p.tools || []).map(t => `<span class="niche-tool">⚡ ${t}</span>`).join('');
+
+  el.innerHTML = `
+    <div class="niche-result-header">
+      <div class="niche-result-headline">${p.headline || ''}</div>
+      <div class="niche-result-intro">${p.intro || ''}</div>
+    </div>
+    <div class="niche-steps-grid">${steps}</div>
+    <div class="niche-tools">${tools}</div>
+    <div class="niche-potential">
+      <div class="pot-label">💰 Potencial de ganho</div>
+      <div class="pot-value">${p.potential || ''}</div>
+    </div>
+    <div class="niche-result-cta">
+      <p>${p.cta || 'Aprenda o método completo no ebook!'}</p>
+      <a href="#" class="btn-primary" onclick="openModal('niche-cta')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Quero o Ebook por R$19,90 →
+      </a>
+      <div style="margin-top:12px">
+        <button onclick="resetNiche()" style="background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer">↺ Testar outra profissão</button>
+      </div>
+    </div>`;
+}
+
+function resetNiche() {
+  _nichePlan = null;
+  ['niche-step-loading','niche-step-email','niche-step-result'].forEach(id => document.getElementById(id).style.display='none');
+  document.getElementById('niche-step-1').style.display = 'block';
+  document.getElementById('niche-profession').value = '';
+  document.getElementById('niche-profession').focus();
+}
+
+// Allow Enter key in niche input
+document.getElementById('niche-profession')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') generateNiche();
+});
+
 </script>
 
 
@@ -2143,5 +2549,104 @@ window.addEventListener('load', () => {
   <a href="#" class="cw-btn" target="_blank">🔒 Abrir pagamento novamente</a>
   <button class="cw-back" onclick="closeCheckoutWaiting()">← Voltar ao site</button>
 </div>
+
+<!-- ═══════ AI CHAT ═══════ -->
+<div id="ai-chat-bubble" onclick="toggleAIChat()" title="Chat com IA">
+  <div class="aicb-icon aicb-default">🤖</div>
+  <div class="aicb-icon aicb-close" style="display:none">✕</div>
+  <div class="aicb-badge" id="aicb-badge" style="display:none">1</div>
+</div>
+
+<div id="ai-chat-window">
+  <div class="aiw-header">
+    <div class="aiw-avatar">🤖</div>
+    <div class="aiw-info">
+      <div class="aiw-name">Assistente IA em 30 Dias</div>
+      <div class="aiw-status"><span class="aiw-dot"></span> Online agora</div>
+    </div>
+    <button class="aiw-close" onclick="toggleAIChat()">✕</button>
+  </div>
+  <div class="aiw-messages" id="aiw-messages">
+    <div class="aiw-msg assistant">
+      <div class="aiw-bubble">
+        Olá! 👋 Sou o assistente do <strong>IA em 30 Dias</strong>. Posso responder qualquer dúvida sobre o ebook!<br><br>
+        Como posso te ajudar? 😊
+      </div>
+    </div>
+    <div class="aiw-suggestions">
+      <button onclick="sendAIMessage('O que está incluso no ebook?')">📚 O que está incluso?</button>
+      <button onclick="sendAIMessage('Qual é o preço e tem garantia?')">💰 Preço e garantia</button>
+      <button onclick="sendAIMessage('Para quem é este ebook?')">👤 Para quem é?</button>
+    </div>
+  </div>
+  <div class="aiw-typing" id="aiw-typing" style="display:none">
+    <div class="aiw-bubble">
+      <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+    </div>
+  </div>
+  <div class="aiw-input-row">
+    <input type="text" id="aiw-input" placeholder="Digite sua dúvida..." onkeydown="if(event.key==='Enter')sendAIMessage()">
+    <button onclick="sendAIMessage()" id="aiw-send">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════ GERADOR DE NICHO IA ═══════ -->
+<section id="gerador-nicho" style="padding:80px 0;background:var(--bg)">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">🤖 Powered by IA</span>
+      <h2>Descubra Seu Potencial com IA</h2>
+      <p>Digite sua profissão e a IA gera um plano personalizado de como você pode ganhar dinheiro em 30 dias</p>
+    </div>
+    <div class="niche-widget">
+      <!-- Input step -->
+      <div id="niche-step-1" class="niche-step">
+        <div class="niche-input-wrap">
+          <span class="niche-emoji">✨</span>
+          <input type="text" id="niche-profession" placeholder="Ex: músico, designer, fotógrafo, escritor..." maxlength="80">
+          <button onclick="generateNiche()" id="niche-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Gerar Meu Plano
+          </button>
+        </div>
+        <div class="niche-examples">
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">músico</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">designer gráfico</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">fotógrafo</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">escritor</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">ilustrador</span>
+        </div>
+      </div>
+      <!-- Loading step -->
+      <div id="niche-step-loading" class="niche-step" style="display:none">
+        <div class="niche-loading">
+          <div class="niche-spinner"></div>
+          <p>A IA está criando seu plano personalizado...</p>
+        </div>
+      </div>
+      <!-- Email capture step -->
+      <div id="niche-step-email" class="niche-step" style="display:none">
+        <div class="niche-email-gate">
+          <div class="niche-gate-icon">🎯</div>
+          <h3>Seu plano está pronto!</h3>
+          <p>Informe seu email para ver o plano completo e receber dicas exclusivas</p>
+          <div class="niche-email-row">
+            <input type="email" id="niche-email" placeholder="seu@email.com">
+            <button onclick="revealNiche()">Ver Meu Plano →</button>
+          </div>
+          <span class="niche-skip" onclick="revealNiche(true)">Pular e ver mesmo assim</span>
+        </div>
+      </div>
+      <!-- Result step -->
+      <div id="niche-step-result" class="niche-step" style="display:none">
+        <div class="niche-result" id="niche-result-content"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 </body>
 </html>

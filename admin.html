@@ -931,6 +931,67 @@ input[type=date] { color-scheme:dark; }
       </div>
     </div>
 
+
+    <!-- AI CONFIG -->
+    <div class="panel" id="p-ai-config">
+      <div class="pg">
+        <div class="card"><div class="card-head"><h3>🔑 Chave da API Anthropic (Claude)</h3><span class="tag" id="ai-key-status">Não configurada</span></div><div class="card-body">
+          <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.8">
+            Para ativar o Chat de IA e o Gerador de Nicho, você precisa de uma chave da API da Anthropic.<br>
+            <strong style="color:var(--t)">1.</strong> Acesse <a href="https://console.anthropic.com" target="_blank" style="color:var(--a2)">console.anthropic.com</a><br>
+            <strong style="color:var(--t)">2.</strong> Vá em <strong style="color:var(--t)">API Keys → Create Key</strong><br>
+            <strong style="color:var(--t)">3.</strong> Cole a chave abaixo — ela é salva como variável de ambiente no Supabase
+          </div>
+          <div class="field" style="margin-bottom:14px">
+            <label>API Key</label>
+            <input type="password" id="ai-key-input" placeholder="sk-ant-api03-...">
+          </div>
+          <button class="btn-sm primary" onclick="saveAIKey()">Salvar Chave</button>
+          <div id="ai-key-msg" style="margin-top:10px;font-size:13px"></div>
+        </div></div>
+        <div class="card"><div class="card-head"><h3>📊 Estatísticas de IA</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadAIStats()">↺</button></div><div class="card-body">
+          <div id="ai-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
+        </div></div>
+        <div class="card"><div class="card-head"><h3>🎯 Prompt do Chat (contexto do produto)</h3></div><div class="card-body">
+          <div style="font-size:12px;color:var(--m2);margin-bottom:10px">O prompt do assistente está configurado diretamente na Edge Function <code>ai-chat</code> no Supabase. Para editar, acesse o painel do Supabase → Edge Functions → ai-chat.</div>
+          <a href="https://supabase.com/dashboard/project/ihylwxjxjajtdhsnlrfm/functions" target="_blank" class="btn-sm ghost">Abrir Edge Functions ↗</a>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- AI CHATS -->
+    <div class="panel" id="p-ai-chats">
+      <div class="pg">
+        <div class="kpis">
+          <div class="kpi purple"><div class="kpi-icon">💬</div><div class="kpi-label">Total mensagens</div><div class="kpi-val" id="aic-total">—</div></div>
+          <div class="kpi green"><div class="kpi-icon">👥</div><div class="kpi-label">Sessões únicas</div><div class="kpi-val" id="aic-sessions">—</div></div>
+          <div class="kpi gold"><div class="kpi-icon">🤖</div><div class="kpi-label">Respostas da IA</div><div class="kpi-val" id="aic-ai">—</div></div>
+          <div class="kpi cyan"><div class="kpi-icon">📅</div><div class="kpi-label">Hoje</div><div class="kpi-val" id="aic-today">—</div></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>Conversas recentes</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadAIChats()">↺</button></div>
+          <div class="card-body"><div id="ai-chats-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI LEADS (NICHE) -->
+    <div class="panel" id="p-ai-leads">
+      <div class="pg">
+        <div class="kpis">
+          <div class="kpi purple"><div class="kpi-icon">🎯</div><div class="kpi-label">Total gerados</div><div class="kpi-val" id="nil-total">—</div></div>
+          <div class="kpi green"><div class="kpi-icon">📧</div><div class="kpi-label">Com email</div><div class="kpi-val" id="nil-email">—</div></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>Leads do Gerador de Nicho</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadNicheLeads()">↺</button>
+            <button class="btn-sm primary" style="padding:5px 10px;font-size:11px" onclick="exportNicheLeads()">📥 CSV</button>
+          </div>
+        </div>
+          <div class="card-body"><div id="niche-leads-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="panel" id="p-e-config">
       <div class="pg2" style="max-width:700px">
@@ -1714,6 +1775,135 @@ function copyWebhook(){navigator.clipboard.writeText('https://ihylwxjxjajtdhsnlr
 // ══════════════════════════════════════
 // BACKUP
 // ══════════════════════════════════════
+
+// ═══════════════════════════════════════
+// AI ADMIN
+// ═══════════════════════════════════════
+async function saveAIKey() {
+  const key = document.getElementById('ai-key-input').value.trim();
+  const msg = document.getElementById('ai-key-msg');
+  if (!key || !key.startsWith('sk-')) {
+    msg.innerHTML = '<span style="color:var(--r)">❌ Chave inválida. Deve começar com sk-ant-...</span>';
+    return;
+  }
+  // Save to Supabase secrets table
+  const rows = await sbGet('iaem30_secrets', '?key=eq.anthropic_key');
+  const ok = rows?.length
+    ? await sbPatch('iaem30_secrets', '?key=eq.anthropic_key', {value: key, updated_at: new Date().toISOString()})
+    : await sbPost('iaem30_secrets', {key: 'anthropic_key', value: key});
+
+  if (ok) {
+    msg.innerHTML = '<span style="color:var(--g)">✓ Chave salva! Agora configure como variável de ambiente no Supabase.</span>';
+    const st = document.getElementById('ai-key-status');
+    if (st) { st.textContent = '✓ Configurada'; st.className = 'tag green'; }
+    document.getElementById('ai-key-input').value = '';
+    // Show instructions
+    setTimeout(() => {
+      msg.innerHTML += '<br><span style="font-size:12px;color:var(--m)">⚠️ Para ativar: Supabase → Edge Functions → Secrets → adicione <code>ANTHROPIC_API_KEY</code> com o valor da chave.</span>';
+    }, 1000);
+  } else {
+    msg.innerHTML = '<span style="color:var(--r)">❌ Erro ao salvar.</span>';
+  }
+}
+
+async function loadAIStats() {
+  const rows = await sbGet('iaem30_ai_chats', '?select=session_id,role,created_at');
+  const leads = await sbGet('iaem30_niche_leads', '?select=id');
+  const el = document.getElementById('ai-stats');
+  if (!el) return;
+  if (!rows) { el.innerHTML = 'Sem dados ainda.'; return; }
+  const sessions = new Set(rows.map(r => r.session_id)).size;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayMsgs = rows.filter(r => new Date(r.created_at) >= today).length;
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      ${[
+        ['Total mensagens', rows.length],
+        ['Sessões únicas', sessions],
+        ['Respostas IA', rows.filter(r=>r.role==='assistant').length],
+        ['Leads de nicho', (leads||[]).length],
+      ].map(([l,v]) => `<div class="kpi" style="padding:14px"><div class="kpi-label">${l}</div><div class="kpi-val" style="font-size:20px">${v}</div></div>`).join('')}
+    </div>`;
+  // Update KPI elements
+  ['aic-total','aic-sessions','aic-ai','aic-today'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = [rows.length, sessions, rows.filter(r=>r.role==='assistant').length, todayMsgs][i];
+  });
+}
+
+async function loadAIChats() {
+  loadAIStats();
+  const rows = await sbGet('iaem30_ai_chats', '?order=created_at.desc&limit=200');
+  const el = document.getElementById('ai-chats-list');
+  if (!el) return;
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">💬</div>Nenhuma conversa ainda.</div>'; return; }
+
+  // Group by session
+  const sessions = {};
+  rows.forEach(r => {
+    if (!sessions[r.session_id]) sessions[r.session_id] = [];
+    sessions[r.session_id].push(r);
+  });
+
+  const html = Object.entries(sessions).slice(0,20).map(([sid, msgs]) => `
+    <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden">
+      <div style="background:var(--bg);padding:10px 14px;font-size:11px;color:var(--m2);display:flex;justify-content:space-between">
+        <span>Sessão: ${sid.slice(0,16)}...</span>
+        <span>${msgs.length} mensagens · ${new Date(msgs[msgs.length-1].created_at).toLocaleDateString('pt-BR')}</span>
+      </div>
+      ${msgs.slice(0,4).map(m => `
+        <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-start">
+          <span style="font-size:16px;flex-shrink:0">${m.role==='user'?'👤':'🤖'}</span>
+          <span style="font-size:12px;color:${m.role==='user'?'var(--t)':'var(--m)'};">${m.content.slice(0,120)}${m.content.length>120?'...':''}</span>
+        </div>`).join('')}
+    </div>`).join('');
+  el.innerHTML = html || '<div class="empty">Nenhuma conversa.</div>';
+}
+
+async function loadNicheLeads() {
+  const rows = await sbGet('iaem30_niche_leads', '?order=created_at.desc&limit=100');
+  const el = document.getElementById('niche-leads-list');
+  if (!el) return;
+  const withEmail = (rows||[]).filter(r=>r.email);
+  ['nil-total','nil-email'].forEach((id,i) => {
+    const e = document.getElementById(id);
+    if (e) e.textContent = [rows?.length||0, withEmail.length][i];
+  });
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">🎯</div>Nenhum lead ainda.</div>'; return; }
+  el.innerHTML = `<table class="tbl"><thead><tr>${['Data','Profissão','Email','Plano'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(r=>`<tr>
+      <td style="white-space:nowrap">${new Date(r.created_at).toLocaleDateString('pt-BR')}</td>
+      <td style="font-weight:500">${r.profession||'—'}</td>
+      <td style="color:var(--m)">${r.email||'<span style="color:var(--m2)">Não informado</span>'}</td>
+      <td><button onclick="viewNichePlan(this)" data-plan='${JSON.stringify(r.niche_plan).replace(/'/g,"&#39;")}' class="btn-sm ghost" style="padding:4px 10px;font-size:11px">Ver plano</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function viewNichePlan(btn) {
+  try {
+    const plan = JSON.parse(btn.dataset.plan || '{}');
+    const parsed = typeof plan === 'string' ? JSON.parse(plan) : plan;
+    alert(JSON.stringify(parsed, null, 2));
+  } catch { alert('Erro ao carregar plano'); }
+}
+
+function exportNicheLeads() {
+  sbGet('iaem30_niche_leads', '?order=created_at.desc').then(rows => {
+    if (!rows?.length) { toast('Nenhum lead para exportar','err'); return; }
+    const csv = 'data,profissao,email\n' + rows.map(r => `${r.created_at?.slice(0,10)},${r.profession||''},${r.email||''}`).join('\n');
+    const a = document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+    a.download='leads-nicho-ia.csv'; a.click();
+    toast('✓ CSV exportado!');
+  });
+}
+
+async function loadAIKeyStatus() {
+  const rows = await sbGet('iaem30_secrets', '?key=eq.anthropic_key&select=value');
+  const el = document.getElementById('ai-key-status');
+  if (rows?.[0]?.value && el) { el.textContent = '✓ Configurada'; el.className = 'tag green'; }
+}
+
 function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Exportado!');}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Importado! Salve para publicar.');}catch{toast('Arquivo inválido','err');}};r.readAsText(f);}
 
