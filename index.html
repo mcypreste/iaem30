@@ -2326,11 +2326,7 @@ function mdToHtml(text) {
 /g, '<br>');
 }
 
-const DEFAULT_REPLY = `Obrigado pela pergunta! 😊 Não encontrei uma resposta exata para isso.
-
-Para mais informações, entre em contato:<br>
-📧 <strong>contato@iaem30.com.br</strong><br><br>
-Ou, se quiser, aproveite nossa oferta especial de <strong>R$19,90</strong> com garantia de 7 dias! 🛡️`;
+const DEFAULT_REPLY = 'Obrigado pela pergunta! 😊 Não encontrei uma resposta.<br><br>📧 <strong>contato@iaem30.com.br</strong><br><br>Aproveite: <strong>R$19,90</strong> com garantia 7 dias! 🛡️';
 
 async function sendAIMessage(text) {
   const input = document.getElementById('aiw-input');
@@ -2444,37 +2440,34 @@ async function revealNiche(skip = false) {
 
 function renderNichePlan(p) {
   const el = document.getElementById('niche-result-content');
-  const steps = (p.steps || []).map(s => `
-    <div class="niche-step-card">
-      <div class="week">${s.week || ''}</div>
-      <div class="stitle">${s.title || ''}</div>
-      <div class="action">${s.action || ''}</div>
-    </div>`).join('');
-  const tools = (p.tools || []).map(t => `<span class="niche-tool">⚡ ${t}</span>`).join('');
-
-  el.innerHTML = `
-    <div class="niche-result-header">
-      <div class="niche-result-headline">${p.headline || ''}</div>
-      <div class="niche-result-intro">${p.intro || ''}</div>
-    </div>
-    <div class="niche-steps-grid">${steps}</div>
-    <div class="niche-tools">${tools}</div>
-    <div class="niche-potential">
-      <div class="pot-label">💰 Potencial de ganho</div>
-      <div class="pot-value">${p.potential || ''}</div>
-    </div>
-    <div class="niche-result-cta">
-      <p>${p.cta || 'Aprenda o método completo no ebook!'}</p>
-      <a href="#" class="btn-primary" onclick="openModal('niche-cta')">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-        Quero o Ebook por R$19,90 →
-      </a>
-      <div style="margin-top:12px">
-        <button onclick="resetNiche()" style="background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer">↺ Testar outra profissão</button>
-      </div>
-    </div>`;
+  const steps = (p.steps || []).map(function(s) {
+    return '<div class="niche-step-card"><div class="week">' + (s.week||'') + '</div><div class="stitle">' + (s.title||'') + '</div><div class="action">' + (s.action||'') + '</div></div>';
+  }).join('');
+  const tools = (p.tools || []).map(function(t) {
+    return '<span class="niche-tool">⚡ ' + t + '</span>';
+  }).join('');
+  el.innerHTML =
+    '<div class="niche-result-header">' +
+      '<div class="niche-result-headline">' + (p.headline||'') + '</div>' +
+      '<div class="niche-result-intro">' + (p.intro||'') + '</div>' +
+    '</div>' +
+    '<div class="niche-steps-grid">' + steps + '</div>' +
+    '<div class="niche-tools">' + tools + '</div>' +
+    '<div class="niche-potential">' +
+      '<div class="pot-label">💰 Potencial de ganho</div>' +
+      '<div class="pot-value">' + (p.potential||'') + '</div>' +
+    '</div>' +
+    '<div class="niche-result-cta">' +
+      '<p>' + (p.cta||'Aprenda o método completo no ebook!') + '</p>' +
+      '<a href="#" class="btn-primary" onclick="openModal('niche-cta')">' +
+        '<svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" d="M12 4v16m8-8H4"/></svg>' +
+        ' Quero o Ebook por R$19,90 →' +
+      '</a>' +
+      '<div style="margin-top:12px">' +
+        '<button onclick="resetNiche()" style="background:none;border:none;color:var(--muted2);font-size:12px;cursor:pointer">↺ Testar outra profissão</button>' +
+      '</div>' +
+    '</div>';
 }
-
 function resetNiche() {
   _nichePlan = null;
   ['niche-step-loading','niche-step-email','niche-step-result'].forEach(id => document.getElementById(id).style.display='none');
