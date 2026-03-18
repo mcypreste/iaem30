@@ -1825,8 +1825,8 @@ const isMobile = () => /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || 
 
 function openCheckoutPopup(url) {
   if (isMobile()) {
-    // Mobile: mostra tela de espera com botão para abrir em nova aba
-    showCheckoutWaiting(url);
+    // Mobile: abre o link direto na mesma aba
+    window.location.href = url;
     return;
   }
 
