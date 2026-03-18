@@ -688,6 +688,18 @@
       <a href="#" class="btn-primary" style="width:100%; font-size:17px;" id="pricing-cta-btn">
         <span id="pricing-cta-text">Quero Meu Ebook Agora →</span>
       </a>
+      <!-- Selos de pagamento -->
+      <div class="payment-seals">
+        <div class="payment-methods">
+          <span class="payment-badge">💳 Cartão</span>
+          <span class="payment-badge">⚡ PIX</span>
+          <span class="payment-badge">📄 Boleto</span>
+        </div>
+        <div class="security-seal">
+          <span>🔒</span>
+          <span>Compra 100% Segura — Criptografia SSL</span>
+        </div>
+      </div>
       <div class="guarantee-row">
         <span>🛡️</span>
         <span id="guarantee-text">Garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% do seu dinheiro — sem perguntas.</span>
@@ -735,6 +747,12 @@
 </footer>
 
 
+<!-- ═══════ WHATSAPP FLOAT ═══════ -->
+<a id="whatsapp-float" href="https://wa.me/5511999999999?text=Oi!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20ebook%20IA%20em%2030%20Dias" target="_blank" rel="noopener" title="Tire suas dúvidas no WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <span>Dúvidas?</span>
+</a>
+
 <!-- ═══════ URGENCY BAR ═══════ -->
 <div id="urgency-bar">
   <span>⚡</span>
@@ -761,7 +779,8 @@
   <span class="sale-notif-icon">✅</span>
   <div class="sale-notif-text">
     <strong id="sale-notif-name">Ana S.</strong> de <span id="sale-notif-city">São Paulo</span>
-    <span id="sale-notif-product"> acabou de comprar!</span>
+    <span> acabou de comprar!</span>
+    <span id="sale-notif-time" style="display:block;font-size:11px;color:var(--muted2);margin-top:2px">há 12 min</span>
   </div>
 </div>
 
@@ -990,6 +1009,29 @@ body.light-mode .exit-box { background:#fff; }
 /* ─── 404 PAGE ─── */
 #page-404 { display:none; position:fixed; inset:0; z-index:9998; background:var(--bg); align-items:center; justify-content:center; text-align:center; flex-direction:column; gap:16px; }
 
+/* ─── PAYMENT SEALS ─── */
+.payment-seals { margin:14px 0 8px; display:flex; flex-direction:column; gap:8px; }
+.payment-methods { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.payment-badge { background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:6px; padding:5px 12px; font-size:12px; color:var(--muted); }
+.security-seal { display:flex; align-items:center; justify-content:center; gap:6px; font-size:12px; color:var(--muted2); }
+
+/* ─── WHATSAPP FLOAT ─── */
+#whatsapp-float {
+  position:fixed; bottom:28px; right:24px; z-index:180;
+  background:#25d366; color:#fff;
+  display:flex; align-items:center; gap:8px;
+  padding:12px 18px; border-radius:50px;
+  font-size:13px; font-weight:600; text-decoration:none;
+  box-shadow:0 4px 20px rgba(37,211,102,.4);
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  animation:waBounce 3s ease-in-out infinite;
+}
+#whatsapp-float:hover { transform:scale(1.07); box-shadow:0 6px 28px rgba(37,211,102,.5); }
+@keyframes waBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+/* ─── ANIMATED COUNTER ─── */
+.proof-num { display:inline-block; transition:all .3s; }
+
 @media(max-width:768px) {
   .fornotfor-grid { grid-template-columns:1fr; }
   .bonus-grid { grid-template-columns:1fr; }
@@ -1047,27 +1089,93 @@ async function trackCTA(btnId) {
 }
 
 // ─── Live count ───
-function updateLiveCount() {
-  const n = Math.max(12, 23+Math.floor(Math.sin(Date.now()/30000)*8+Math.random()*6));
-  ['live-count','modal-viewers-count'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=n;});
+// Contador REAL de visitantes ativos (últimos 30 minutos no Supabase)
+let _liveCount = 0;
+async function updateLiveCount() {
+  try {
+    const since = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    const r = await fetch(
+      SB_URL + '/rest/v1/iaem30_visitors?created_at=gte.' + since + '&select=session_id',
+      { headers: SB_H }
+    );
+    if (r.ok) {
+      const rows = await r.json();
+      // Conta sessões únicas nos últimos 30 min, mínimo 1 (o visitante atual)
+      _liveCount = Math.max(1, rows.length);
+      ['live-count', 'modal-viewers-count'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = _liveCount;
+      });
+    }
+  } catch(e) {
+    // fallback silencioso
+  }
 }
-setInterval(updateLiveCount, 9000);
+// Atualiza imediatamente e depois a cada 2 minutos
+updateLiveCount();
+setInterval(updateLiveCount, 2 * 60 * 1000);
 
-// ─── Sale notifications ───
+// ─── Sale notifications — exibe a cada 5 minutos ───
 let saleNotifs = [];
+let saleNotifIndex = 0;
+
 async function loadSaleNotifs() {
-  const rows = await sbGet('iaem30_sale_notifications','?select=name,city&order=created_at.desc&limit=20');
-  if(rows && rows.length) saleNotifs = rows;
-  else saleNotifs = [{name:'Ana S.',city:'São Paulo'},{name:'Carlos M.',city:'Rio de Janeiro'},{name:'Juliana R.',city:'Curitiba'}];
+  try {
+    // Busca primeiros compradores reais do banco
+    const r = await fetch(
+      SB_URL + '/rest/v1/iaem30_sales?status=eq.approved&is_test=eq.false&select=customer_name,customer_email,created_at&order=created_at.desc&limit=30',
+      { headers: SB_H }
+    );
+    if (r.ok) {
+      const rows = await r.json();
+      // Monta lista de notificações com compradores reais
+      const real = rows
+        .filter(s => s.customer_name)
+        .map(s => {
+          const name = s.customer_name.split(' ');
+          // Ex: "João Silva" → "João S."
+          const displayName = name[0] + (name[1] ? ' ' + name[1][0] + '.' : '');
+          return { name: displayName, city: 'Brasil', real: true };
+        });
+      if (real.length >= 3) {
+        saleNotifs = real;
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: dados cadastrados manualmente no admin
+  const rows = await sbGet('iaem30_sale_notifications', '?select=name,city&order=created_at.desc&limit=30');
+  if (rows && rows.length) {
+    saleNotifs = rows;
+  } else {
+    saleNotifs = [
+      {name:'Ana S.',city:'São Paulo'},
+      {name:'Carlos M.',city:'Rio de Janeiro'},
+      {name:'Juliana R.',city:'Curitiba'},
+      {name:'Fernanda O.',city:'Belo Horizonte'},
+      {name:'Diego S.',city:'Fortaleza'},
+    ];
+  }
 }
+
 function showNextSaleNotif() {
-  if(!saleNotifs.length) return;
-  const n = saleNotifs[Math.floor(Math.random()*saleNotifs.length)];
+  if (!saleNotifs.length) return;
+  // Percorre em sequência, não aleatório (mais credível)
+  const n = saleNotifs[saleNotifIndex % saleNotifs.length];
+  saleNotifIndex++;
   const el = document.getElementById('sale-notif');
-  document.getElementById('sale-notif-name').textContent = n.name;
-  document.getElementById('sale-notif-city').textContent = n.city;
+  const nameEl = document.getElementById('sale-notif-name');
+  const cityEl = document.getElementById('sale-notif-city');
+  if (!el || !nameEl || !cityEl) return;
+  nameEl.textContent = n.name;
+  cityEl.textContent = n.city;
+  // Adiciona tempo relativo aleatório realista
+  const mins = Math.floor(Math.random() * 55) + 5; // 5 a 59 min atrás
+  const timeEl = document.getElementById('sale-notif-time');
+  if (timeEl) timeEl.textContent = mins < 60 ? `há ${mins} min` : 'hoje';
   el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'), 4000);
+  setTimeout(() => el.classList.remove('show'), 5000);
 }
 
 // ═══════════════════════════════════════
@@ -1243,12 +1351,14 @@ function applyConfig(cfg) {
 
   // Sale notifications
   if(cfg.showSaleNotifications!==false){
-    setTimeout(showNextSaleNotif, 8000);
-    setInterval(showNextSaleNotif, (cfg.saleNotifInterval||25)*1000);
+    // Primeira exibição após 12 segundos, depois a cada 5 minutos
+    setTimeout(showNextSaleNotif, 12000);
+    setInterval(showNextSaleNotif, 5 * 60 * 1000); // 5 minutos fixo
   }
 
   // Scroll animations
   setTimeout(initScrollAnimations, 100);
+  setTimeout(initStatCounters, 200);
 
   document.getElementById('footer-year').textContent=new Date().getFullYear();
 }
@@ -1258,6 +1368,45 @@ function toggleFaq(i) { document.getElementById('faq-'+i).classList.toggle('open
 // ═══════════════════════════════════════
 // SCROLL ANIMATIONS
 // ═══════════════════════════════════════
+// ─── ANIMATED STAT COUNTERS ───
+function animateCounter(el, target, suffix='') {
+  const isFloat = target % 1 !== 0;
+  const duration = 1800;
+  const start = performance.now();
+  const startVal = 0;
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 4);
+    const val = startVal + (target - startVal) * ease;
+    el.textContent = (isFloat ? val.toFixed(1) : Math.floor(val)) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = (isFloat ? target.toFixed(1) : target) + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+function initStatCounters() {
+  const statEls = [
+    {id:'stat-1-num', target:1200, suffix:'+'},
+    {id:'stat-2-num', target:null, prefix:'⭐ ', raw:'4.9'},
+    {id:'stat-3-num', target:null, raw:'7 dias'},
+    {id:'stat-4-num', target:null, raw:'30 dias'},
+  ];
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !e.target.dataset.animated) {
+        e.target.dataset.animated = '1';
+        const stat = statEls.find(s => s.id === e.target.id);
+        if (stat?.target) animateCounter(e.target, stat.target, stat.suffix||'');
+      }
+    });
+  }, { threshold: 0.5 });
+  statEls.forEach(s => {
+    const el = document.getElementById(s.id);
+    if (el && s.target) obs.observe(el);
+  });
+}
+
 function initScrollAnimations() {
   const obs = new IntersectionObserver(entries=>{
     entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
