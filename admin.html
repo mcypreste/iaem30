@@ -3,110 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — IA em 30</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<title>IA em 30 — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#0a0a0f;--s:#12121a;--s2:#1a1a26;--b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.12);--a:#7c5cfc;--a2:#a78bfa;--t:#f0eeff;--m:#8b86a8;--m2:#5a5670;--g:#10b981;--r:#ef4444;--gold:#f59e0b;--W:260px}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--t);font-family:'DM Sans',sans-serif;font-size:15px}
-h1,h2,h3{font-family:'Syne',sans-serif;font-weight:700}
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root {
+  --bg:     #08080e;
+  --card:   #0f0f18;
+  --card2:  #14141f;
+  --border: rgba(255,255,255,.07);
+  --b2:     rgba(255,255,255,.12);
+  --a:      #7c5cfc;
+  --a2:     #a78bfa;
+  --ag:     rgba(124,92,252,.18);
+  --t:      #eeeaf8;
+  --m:      #7e7a96;
+  --m2:     #4a4762;
+  --g:      #10b981;
+  --r:      #f43f5e;
+  --gold:   #f59e0b;
+  --cyan:   #06b6d4;
+  --W:      72px;   /* collapsed sidebar icon width */
+  --WX:     240px;  /* expanded sidebar width */
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--t); font-family:'DM Sans',sans-serif; font-size:14px; line-height:1.6; overflow-x:hidden; }
+h1,h2,h3,h4 { font-family:'Syne',sans-serif; }
 
-/* LOGIN */
-#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,rgba(124,92,252,.1),transparent 60%)}
-.lcard{width:400px;background:var(--s);border:1px solid var(--b2);border-radius:20px;padding:48px}
-.llogo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:6px}
-.llogo span{color:var(--a)}
-.lsub{text-align:center;color:var(--m);font-size:14px;margin-bottom:32px}
-.fg{margin-bottom:18px}
-.fg label{display:block;font-size:12px;color:var(--m);margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
-.fg input{width:100%;padding:12px 16px;background:var(--s2);border:1px solid var(--b2);border-radius:10px;color:var(--t);font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
-.fg input:focus{border-color:var(--a)}
-.btnl{width:100%;padding:13px;background:var(--a);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;transition:background .2s}
-.btnl:hover{background:#8b6dfd}
-.btnl:disabled{opacity:.6;cursor:wait}
-.lerr{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--r);border-radius:8px;padding:10px 14px;font-size:13px;margin-top:14px;display:none}
-.lhint{text-align:center;color:var(--m2);font-size:12px;margin-top:14px}
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar { width:4px; height:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--m2); border-radius:4px; }
 
-/* ADMIN LAYOUT */
-#admin{display:none;min-height:100vh}
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--W);background:var(--s);border-right:1px solid var(--b);display:flex;flex-direction:column;z-index:50}
-.shead{padding:22px 18px;border-bottom:1px solid var(--b)}
-.slogo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
-.slogo span{color:var(--a)}
-.srole{font-size:11px;color:var(--m2);margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
-.sconn{display:flex;align-items:center;gap:5px;font-size:10px;margin-top:5px;color:var(--m2)}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--m2)}
-.sdot.ok{background:var(--g)}
-.snav{flex:1;padding:14px 10px;overflow-y:auto}
-.nsec{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--m2);padding:8px 8px 5px;font-weight:600}
-.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--m);font-size:13.5px;transition:all .15s;margin-bottom:1px;border:none;background:none;width:100%;text-align:left}
-.ni:hover{background:var(--s2);color:var(--t)}
-.ni.on{background:rgba(124,92,252,.12);color:var(--a2);font-weight:500}
-.sfoot{padding:14px 10px;border-top:1px solid var(--b);display:flex;flex-direction:column;gap:6px}
-.sbtn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:13px;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;width:100%;transition:all .15s}
-.sbtn.site{color:var(--a2)}.sbtn.site:hover{background:rgba(124,92,252,.1)}
-.sbtn.out{color:var(--r)}.sbtn.out:hover{background:rgba(239,68,68,.08)}
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
+#login {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,92,252,.15) 0%, transparent 70%);
+}
+.lbox {
+  width:400px; background:var(--card); border:1px solid var(--border);
+  border-radius:24px; padding:48px;
+  box-shadow: 0 40px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(124,92,252,.1);
+}
+.llogo { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; text-align:center; margin-bottom:6px; }
+.llogo em { color:var(--a); font-style:normal; }
+.lsub { text-align:center; color:var(--m); font-size:13px; margin-bottom:36px; }
+.fg { margin-bottom:16px; }
+.fg label { display:block; font-size:11px; font-weight:600; color:var(--m); text-transform:uppercase; letter-spacing:.08em; margin-bottom:7px; }
+.fg input {
+  width:100%; padding:11px 15px; background:var(--card2); border:1px solid var(--b2);
+  border-radius:10px; color:var(--t); font-size:14px; font-family:'DM Sans',sans-serif;
+  outline:none; transition:border-color .2s;
+}
+.fg input:focus { border-color:var(--a); }
+.btnl {
+  width:100%; padding:13px; background:var(--a); color:#fff; border:none;
+  border-radius:10px; cursor:pointer; font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+  transition:all .2s; letter-spacing:.01em;
+}
+.btnl:hover { background:#8b6dfd; box-shadow:0 0 30px var(--ag); }
+.btnl:disabled { opacity:.6; cursor:wait; }
+.lerr { background:rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.3); color:var(--r); border-radius:8px; padding:9px 13px; font-size:13px; margin-top:14px; display:none; }
+.lhint { text-align:center; color:var(--m2); font-size:11px; margin-top:14px; }
+.lhint code { background:var(--card2); padding:2px 6px; border-radius:4px; }
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+#admin { display:none; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  position:fixed; top:0; left:0; bottom:0; width:var(--WX);
+  background:var(--card); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; z-index:100;
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.sidebar.collapsed { width:var(--W); }
+.sb-top {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 16px; border-bottom:1px solid var(--border); min-height:64px; flex-shrink:0;
+}
+.sb-logo { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; white-space:nowrap; overflow:hidden; }
+.sb-logo em { color:var(--a); font-style:normal; }
+.sb-toggle { background:none; border:none; color:var(--m); cursor:pointer; font-size:18px; flex-shrink:0; padding:2px; transition:color .2s; }
+.sb-toggle:hover { color:var(--t); }
+.sidebar.collapsed .sb-logo { opacity:0; width:0; }
+
+.sb-tabs {
+  display:flex; border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.sbt {
+  flex:1; padding:10px 8px; background:none; border:none; color:var(--m);
+  font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; cursor:pointer;
+  text-transform:uppercase; letter-spacing:.07em; transition:all .2s; white-space:nowrap;
+  border-bottom:2px solid transparent; display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.sbt:hover { color:var(--t); }
+.sbt.on { color:var(--a2); border-bottom-color:var(--a); }
+.sidebar.collapsed .sbt span { display:none; }
+
+.sb-nav { flex:1; padding:10px 8px; overflow-y:auto; overflow-x:hidden; }
+.nsec {
+  font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--m2); padding:10px 8px 5px; white-space:nowrap; overflow:hidden;
+}
+.sidebar.collapsed .nsec { opacity:0; }
+.ni {
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
+  cursor:pointer; color:var(--m); font-size:13px; transition:all .15s; margin-bottom:1px;
+  border:none; background:none; width:100%; text-align:left; white-space:nowrap;
+}
+.ni:hover { background:rgba(255,255,255,.05); color:var(--t); }
+.ni.on { background:rgba(124,92,252,.15); color:var(--a2); font-weight:500; }
+.ni .ico { font-size:15px; flex-shrink:0; width:20px; text-align:center; }
+.ni .lbl { overflow:hidden; transition:all .2s; }
+.sidebar.collapsed .ni .lbl { width:0; opacity:0; }
+.ni .badge {
+  margin-left:auto; background:var(--r); color:#fff; font-size:9px; font-weight:700;
+  padding:1px 5px; border-radius:10px; flex-shrink:0;
+}
+.sidebar.collapsed .ni .badge { display:none; }
+
+.sb-foot { padding:12px 8px; border-top:1px solid var(--border); flex-shrink:0; }
+.sb-foot .ni { color:var(--m); font-size:12px; }
+.sb-foot .ni.danger:hover { color:var(--r); background:rgba(244,63,94,.08); }
 
 /* MAIN */
-.main{margin-left:var(--W);min-height:100vh;display:flex;flex-direction:column}
-.topbar{position:sticky;top:0;z-index:40;background:rgba(10,10,15,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);padding:15px 28px;display:flex;align-items:center;justify-content:space-between}
-.tbtitle{font-size:16px;font-weight:600}
-.tbacts{display:flex;gap:10px;align-items:center}
-.bsave{display:flex;align-items:center;gap:7px;background:var(--a);color:#fff;border:none;border-radius:8px;padding:9px 18px;cursor:pointer;font-family:'Syne',sans-serif;font-size:13.5px;font-weight:700;transition:background .2s}
-.bsave:hover{background:#8b6dfd}
-.bsave:disabled{opacity:.6;cursor:wait}
-.breset{background:none;border:1px solid var(--b2);color:var(--m);padding:9px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:all .2s}
-.breset:hover{border-color:var(--r);color:var(--r)}
+.main { margin-left:var(--WX); min-height:100vh; display:flex; flex-direction:column; transition:margin-left .25s cubic-bezier(.4,0,.2,1); }
+.main.collapsed { margin-left:var(--W); }
+
+.topbar {
+  position:sticky; top:0; z-index:50;
+  background:rgba(8,8,14,.85); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:0 28px; height:64px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.tb-left { display:flex; align-items:center; gap:12px; }
+.tb-title { font-family:'Syne',sans-serif; font-size:16px; font-weight:700; }
+.tb-right { display:flex; align-items:center; gap:10px; }
+.tb-sync { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--m); }
+.sync-dot { width:6px; height:6px; border-radius:50%; background:var(--m2); animation:pulse 2s infinite; }
+.sync-dot.live { background:var(--g); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.btn-sm {
+  display:flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px;
+  font-size:12.5px; font-weight:600; cursor:pointer; border:none; transition:all .2s;
+  font-family:'DM Sans',sans-serif;
+}
+.btn-sm.primary { background:var(--a); color:#fff; }
+.btn-sm.primary:hover { background:#8b6dfd; }
+.btn-sm.primary:disabled { opacity:.6; cursor:wait; }
+.btn-sm.ghost { background:rgba(255,255,255,.06); color:var(--m); border:1px solid var(--border); }
+.btn-sm.ghost:hover { color:var(--t); border-color:var(--b2); }
+.btn-sm.danger { background:rgba(244,63,94,.1); color:var(--r); border:1px solid rgba(244,63,94,.2); }
+.btn-sm.danger:hover { background:rgba(244,63,94,.2); }
 
 /* PANELS */
-.panel{display:none;padding:28px;flex:1}
-.panel.on{display:block}
-.pg{display:grid;gap:20px}
-.card{background:var(--s);border:1px solid var(--b);border-radius:14px;overflow:hidden}
-.ch{padding:16px 22px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
-.ch h3{font-size:14.5px}
-.cb{padding:22px;display:flex;flex-direction:column;gap:18px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:11.5px;font-weight:600;color:var(--m);text-transform:uppercase;letter-spacing:.06em}
-.field input,.field textarea,.field select{background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13.5px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical}
-.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--a)}
-.field .hint{font-size:11px;color:var(--m2)}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.le{display:flex;flex-direction:column;gap:8px}
-.li{display:flex;gap:8px;align-items:flex-start;background:var(--s2);border:1px solid var(--b);border-radius:9px;padding:12px}
-.lib{flex:1;display:flex;flex-direction:column;gap:7px}
-.lib input,.lib textarea{background:var(--bg);border:1px solid var(--b);border-radius:6px;padding:8px 11px;color:var(--t);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;resize:vertical;width:100%;transition:border-color .2s}
-.lib input:focus,.lib textarea:focus{border-color:var(--a)}
-.lacts{display:flex;flex-direction:column;gap:5px}
-.bic{background:none;border:1px solid var(--b);color:var(--m);border-radius:6px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0}
-.bic:hover{border-color:var(--b2);color:var(--t)}
-.bic.d:hover{border-color:var(--r);color:var(--r)}
-.badd{display:flex;align-items:center;justify-content:center;gap:7px;background:none;border:1px dashed var(--b2);color:var(--m);border-radius:9px;padding:9px;cursor:pointer;font-size:13px;transition:all .2s;width:100%}
-.badd:hover{border-color:var(--a2);color:var(--a2)}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
-.kpi{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px}
-.kpi .kl{font-size:11px;color:var(--m);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
-.kpi .kv{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
-.kpi .ks{font-size:11.5px;color:var(--m2);margin-top:3px}
-.tag{display:inline-flex;align-items:center;background:rgba(124,92,252,.1);color:var(--a2);border:1px solid rgba(124,92,252,.2);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:500}
-.tag.g{background:rgba(16,185,129,.1);color:var(--g);border-color:rgba(16,185,129,.2)}
-.stars{display:flex;gap:3px}
-.star{background:none;border:none;cursor:pointer;font-size:17px;color:var(--m2);padding:1px;transition:color .15s}
-.star.on{color:var(--gold)}
-#toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--s2);border:1px solid var(--b2);border-radius:11px;padding:13px 18px;display:flex;align-items:center;gap:9px;font-size:13.5px;transform:translateY(80px);opacity:0;transition:all .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:340px}
-#toast.show{transform:translateY(0);opacity:1}
-#toast.ok{border-color:rgba(16,185,129,.4)}
-#toast.err{border-color:rgba(239,68,68,.4)}
-code{background:var(--s2);padding:2px 7px;border-radius:5px;font-size:12px;word-break:break-all}
-@media(max-width:1024px){.kpis{grid-template-columns:1fr 1fr}}
+.panel { display:none; padding:28px; flex:1; max-width:1400px; width:100%; }
+.panel.on { display:block; }
+
+/* CARDS */
+.card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+}
+.card-head {
+  padding:16px 20px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.card-head h3 { font-size:14px; font-weight:700; }
+.card-body { padding:20px; }
+.pg { display:grid; gap:18px; }
+.pg2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.pg3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; }
+
+/* KPI CARDS */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.kpi {
+  background:var(--card); border:1px solid var(--border); border-radius:14px;
+  padding:18px 20px; position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.kpi:hover { border-color:var(--b2); transform:translateY(-2px); }
+.kpi::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.kpi.purple::before { background:linear-gradient(90deg,var(--a),var(--a2)); }
+.kpi.green::before { background:linear-gradient(90deg,var(--g),#34d399); }
+.kpi.gold::before { background:linear-gradient(90deg,var(--gold),#fbbf24); }
+.kpi.cyan::before { background:linear-gradient(90deg,var(--cyan),#22d3ee); }
+.kpi.red::before { background:linear-gradient(90deg,var(--r),#fb7185); }
+.kpi-label { font-size:11px; font-weight:600; color:var(--m); text-transform:uppercase; letter-spacing:.07em; margin-bottom:10px; }
+.kpi-val { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; line-height:1; margin-bottom:5px; }
+.kpi-sub { font-size:11.5px; color:var(--m2); }
+.kpi-icon { position:absolute; right:16px; top:16px; font-size:22px; opacity:.4; }
+
+/* FIELDS */
+.field { display:flex; flex-direction:column; gap:6px; }
+.field label { font-size:11px; font-weight:600; color:var(--m); text-transform:uppercase; letter-spacing:.07em; }
+.field input, .field textarea, .field select {
+  background:var(--card2); border:1px solid var(--b2); border-radius:8px;
+  padding:10px 12px; color:var(--t); font-size:13.5px; font-family:'DM Sans',sans-serif;
+  outline:none; transition:border-color .2s; resize:vertical;
+}
+.field input:focus, .field textarea:focus, .field select:focus { border-color:var(--a); }
+.field .hint { font-size:11px; color:var(--m2); }
+.fr { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.fr3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+
+/* LIST EDITOR */
+.le { display:flex; flex-direction:column; gap:8px; }
+.li {
+  display:flex; gap:8px; align-items:flex-start;
+  background:var(--bg); border:1px solid var(--border); border-radius:9px; padding:12px;
+  transition:border-color .2s;
+}
+.li:hover { border-color:var(--b2); }
+.lib { flex:1; display:flex; flex-direction:column; gap:7px; }
+.lib input, .lib textarea {
+  background:var(--card2); border:1px solid var(--border); border-radius:6px;
+  padding:8px 11px; color:var(--t); font-size:13px; font-family:'DM Sans',sans-serif;
+  outline:none; resize:vertical; width:100%; transition:border-color .2s;
+}
+.lib input:focus, .lib textarea:focus { border-color:var(--a); }
+.lacts { display:flex; flex-direction:column; gap:4px; }
+.bic {
+  background:none; border:1px solid var(--border); color:var(--m);
+  border-radius:6px; width:26px; height:26px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:12px;
+  transition:all .15s; flex-shrink:0;
+}
+.bic:hover { color:var(--t); border-color:var(--b2); }
+.bic.d:hover { color:var(--r); border-color:rgba(244,63,94,.4); }
+.badd {
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  background:none; border:1px dashed var(--b2); color:var(--m);
+  border-radius:9px; padding:9px; cursor:pointer; font-size:13px;
+  transition:all .2s; width:100%;
+}
+.badd:hover { border-color:var(--a2); color:var(--a2); }
+
+/* TAGS & BADGES */
+.tag { display:inline-flex; align-items:center; gap:4px; background:rgba(124,92,252,.12); color:var(--a2); border:1px solid rgba(124,92,252,.2); border-radius:6px; padding:2px 8px; font-size:11px; font-weight:600; }
+.tag.green { background:rgba(16,185,129,.12); color:var(--g); border-color:rgba(16,185,129,.25); }
+.tag.red { background:rgba(244,63,94,.1); color:var(--r); border-color:rgba(244,63,94,.2); }
+.tag.gold { background:rgba(245,158,11,.1); color:var(--gold); border-color:rgba(245,158,11,.2); }
+.tag.gray { background:rgba(255,255,255,.06); color:var(--m); border-color:var(--border); }
+
+/* STARS */
+.stars { display:flex; gap:3px; }
+.star { background:none; border:none; cursor:pointer; font-size:16px; color:var(--m2); padding:1px; transition:color .15s; }
+.star.on { color:var(--gold); }
+
+/* TABLE */
+.tbl { width:100%; border-collapse:collapse; }
+.tbl th { text-align:left; padding:8px 10px; font-size:10.5px; font-weight:600; color:var(--m2); text-transform:uppercase; letter-spacing:.07em; border-bottom:1px solid var(--border); white-space:nowrap; }
+.tbl td { padding:11px 10px; font-size:13px; border-bottom:1px solid var(--border); }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:rgba(255,255,255,.02); }
+
+/* CHART */
+.chart-wrap { position:relative; height:260px; }
+
+/* EMPTY STATE */
+.empty { text-align:center; padding:40px 20px; color:var(--m2); font-size:13px; }
+.empty .eico { font-size:36px; margin-bottom:10px; opacity:.6; }
+
+/* TOAST */
+#toast {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  background:var(--card2); border:1px solid var(--border);
+  border-radius:12px; padding:13px 18px;
+  display:flex; align-items:center; gap:10px; font-size:13.5px;
+  transform:translateY(80px); opacity:0;
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none; max-width:340px;
+  box-shadow:0 16px 40px rgba(0,0,0,.4);
+}
+#toast.show { transform:translateY(0); opacity:1; }
+#toast.ok  { border-color:rgba(16,185,129,.4); }
+#toast.err { border-color:rgba(244,63,94,.4); }
+
+/* DIVIDER */
+.divider { height:1px; background:var(--border); margin:4px 0; }
+
+/* CODE */
+code {
+  background:var(--card2); border:1px solid var(--border);
+  padding:3px 8px; border-radius:5px; font-size:12px;
+  word-break:break-all; display:inline-block;
+}
+
+/* DATE PICKER DARK */
+input[type=date] { color-scheme:dark; }
+
+@media(max-width:1200px) { .kpi-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:900px)  { .pg2,.pg3,.fr,.fr3 { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- ══════════ LOGIN ══════════ -->
 <div id="login">
-  <div class="lcard">
-    <div class="llogo">IA<span>em30</span></div>
+  <div class="lbox">
+    <div class="llogo">IA<em>em30</em></div>
     <div class="lsub">Painel de Administração</div>
     <div class="fg"><label>Usuário</label><input id="lu" type="text" placeholder="admin" autocomplete="username"></div>
     <div class="fg"><label>Senha</label><input id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
@@ -116,402 +324,565 @@ code{background:var(--s2);padding:2px 7px;border-radius:5px;font-size:12px;word-
   </div>
 </div>
 
-<!-- ADMIN -->
+<!-- ══════════ ADMIN ══════════ -->
 <div id="admin">
-  <div class="sidebar">
-    <div class="shead">
-      <div class="slogo">IA<span>em30</span></div>
-      <div class="srole">Admin</div>
-      <div class="sconn"><span class="sdot" id="sdot"></span><span id="stxt">Verificando...</span></div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sb">
+    <div class="sb-top">
+      <div class="sb-logo">IA<em>em30</em></div>
+      <button class="sb-toggle" onclick="toggleSb()" title="Recolher">☰</button>
     </div>
-    <nav class="snav">
-      <div class="nsec">Geral</div>
-      <button class="ni on" onclick="go('dash',this)">📊 Dashboard</button>
-      <button class="ni" onclick="go('geral',this)">📝 Textos & Geral</button>
-      <button class="ni" onclick="go('hero',this)">🏠 Hero & CTA</button>
-      <button class="ni" onclick="go('preco',this)">💰 Preço & Compra</button>
-      <div class="nsec" style="margin-top:14px">Conteúdo</div>
-      <button class="ni" onclick="go('beneficios',this)">✅ Benefícios</button>
-      <button class="ni" onclick="go('semanas',this)">📅 Semanas & Aprend.</button>
-      <button class="ni" onclick="go('monetize',this)">💡 Monetização</button>
-      <button class="ni" onclick="go('depoimentos',this)">💬 Depoimentos</button>
-      <button class="ni" onclick="go('faq',this)">❓ FAQ</button>
-      <div class="nsec" style="margin-top:14px">Conversão</div>
-      <button class="ni" onclick="go('conversion',this)">⚡ Urgência & Popups</button>
-      <button class="ni" onclick="go('paraquem',this)">👥 Para quem é</button>
-      <button class="ni" onclick="go('bonus',this)">🎁 Bônus</button>
-      <button class="ni" onclick="go('obrigado',this)">🎉 Pág. Obrigado</button>
-      <div class="nsec" style="margin-top:14px">Dados</div>
-      <button class="ni" onclick="go('vendas',this)">💳 Vendas</button>
-      <button class="ni" onclick="go('cupons',this)">🎟️ Cupons</button>
-      <button class="ni" onclick="go('notifs',this)">🔔 Notif. Vendas</button>
-      <button class="ni" onclick="go('analytics',this)">📈 Analytics</button>
-      <div class="nsec" style="margin-top:14px">Sistema</div>
-      <button class="ni" onclick="go('config',this)">⚙️ Configurações</button>
+
+    <!-- TAB SWITCHER -->
+    <div class="sb-tabs">
+      <button class="sbt on" id="tab-vendas" onclick="switchTab('vendas')">📊 <span>Vendas</span></button>
+      <button class="sbt" id="tab-edit" onclick="switchTab('edit')">✏️ <span>Editar</span></button>
+    </div>
+
+    <!-- VENDAS NAV -->
+    <nav class="sb-nav" id="nav-vendas">
+      <div class="nsec">Visão Geral</div>
+      <button class="ni on" onclick="go('overview',this)"><span class="ico">🏠</span><span class="lbl">Dashboard</span></button>
+      <div class="nsec">Financeiro</div>
+      <button class="ni" onclick="go('vendas',this)"><span class="ico">💳</span><span class="lbl">Vendas</span></button>
+      <button class="ni" onclick="go('extrato',this)"><span class="ico">🏦</span><span class="lbl">Extrato</span></button>
+      <button class="ni" onclick="go('comissoes',this)"><span class="ico">🤝</span><span class="lbl">Comissões</span></button>
+      <button class="ni" onclick="go('produtos',this)"><span class="ico">📦</span><span class="lbl">Produtos</span></button>
+      <div class="nsec">Marketing</div>
+      <button class="ni" onclick="go('analytics',this)"><span class="ico">📈</span><span class="lbl">Analytics</span></button>
+      <button class="ni" onclick="go('cupons',this)"><span class="ico">🎟️</span><span class="lbl">Cupons</span></button>
+      <button class="ni" onclick="go('emails',this)"><span class="ico">📧</span><span class="lbl">Emails</span></button>
+      <button class="ni" onclick="go('notifs',this)"><span class="ico">🔔</span><span class="lbl">Notif. Vendas</span></button>
+      <div class="nsec">Integrações</div>
+      <button class="ni" onclick="go('perfectpay',this)"><span class="ico">⚙️</span><span class="lbl">PerfectPay API</span></button>
     </nav>
-    <div class="sfoot">
-      <a href="index.html" target="_blank" class="sbtn site">↗ Ver Site</a>
-      <button class="sbtn out" onclick="doLogout()">← Sair</button>
+
+    <!-- EDITAR NAV -->
+    <nav class="sb-nav" id="nav-edit" style="display:none">
+      <div class="nsec">Principal</div>
+      <button class="ni" onclick="go('e-geral',this)"><span class="ico">🌐</span><span class="lbl">Geral & Marca</span></button>
+      <button class="ni" onclick="go('e-hero',this)"><span class="ico">🏠</span><span class="lbl">Hero & CTA</span></button>
+      <button class="ni" onclick="go('e-preco',this)"><span class="ico">💰</span><span class="lbl">Preço & Compra</span></button>
+      <div class="nsec">Seções</div>
+      <button class="ni" onclick="go('e-ben',this)"><span class="ico">✅</span><span class="lbl">Benefícios</span></button>
+      <button class="ni" onclick="go('e-semanas',this)"><span class="ico">📅</span><span class="lbl">Semanas</span></button>
+      <button class="ni" onclick="go('e-monetize',this)"><span class="ico">💡</span><span class="lbl">Monetização</span></button>
+      <button class="ni" onclick="go('e-depos',this)"><span class="ico">💬</span><span class="lbl">Depoimentos</span></button>
+      <button class="ni" onclick="go('e-faq',this)"><span class="ico">❓</span><span class="lbl">FAQ</span></button>
+      <div class="nsec">Conversão</div>
+      <button class="ni" onclick="go('e-conv',this)"><span class="ico">⚡</span><span class="lbl">Urgência & Popups</span></button>
+      <button class="ni" onclick="go('e-paraquem',this)"><span class="ico">👥</span><span class="lbl">Para quem é</span></button>
+      <button class="ni" onclick="go('e-bonus',this)"><span class="ico">🎁</span><span class="lbl">Bônus</span></button>
+      <button class="ni" onclick="go('e-obrigado',this)"><span class="ico">🎉</span><span class="lbl">Pág. Obrigado</span></button>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="divider"></div>
+      <button class="ni" onclick="go('e-config',this)"><span class="ico">🔧</span><span class="lbl">Configurações</span></button>
+      <a href="index.html" target="_blank" class="ni" style="text-decoration:none"><span class="ico">↗</span><span class="lbl">Ver Site</span></a>
+      <button class="ni danger" onclick="doLogout()"><span class="ico">←</span><span class="lbl">Sair</span></button>
     </div>
   </div>
 
-  <div class="main">
+  <!-- MAIN -->
+  <div class="main" id="main">
     <div class="topbar">
-      <div class="tbtitle" id="ptitle">Dashboard</div>
-      <div class="tbacts">
-        <button class="breset" onclick="confirmReset()">Resetar Padrões</button>
-        <button class="bsave" id="bsave" onclick="saveAll()">💾 Salvar Tudo</button>
+      <div class="tb-left">
+        <div class="tb-title" id="ptitle">Dashboard</div>
+      </div>
+      <div class="tb-right">
+        <div class="tb-sync">
+          <span class="sync-dot" id="sync-dot"></span>
+          <span id="sync-txt">Verificando...</span>
+        </div>
+        <button class="btn-sm ghost" onclick="confirmReset()" id="btn-reset" style="display:none">↺ Resetar</button>
+        <button class="btn-sm primary" onclick="saveAll()" id="btn-save" style="display:none">💾 Salvar</button>
       </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div class="panel on" id="p-dash">
-      <div class="kpis">
-        <div class="kpi"><div class="kl">Preço</div><div class="kv" id="kp">R$19,90</div></div>
-        <div class="kpi"><div class="kl">Benefícios</div><div class="kv" id="kb">6</div></div>
-        <div class="kpi"><div class="kl">Depoimentos</div><div class="kv" id="kd">3</div></div>
-        <div class="kpi"><div class="kl">Último save</div><div class="kv" style="font-size:13px;padding-top:5px" id="ks">—</div></div>
+    <!-- ══ OVERVIEW (DASHBOARD) ══ -->
+    <div class="panel on" id="p-overview">
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi purple"><div class="kpi-icon">💳</div><div class="kpi-label">Receita hoje</div><div class="kpi-val" id="k-hoje">R$0</div><div class="kpi-sub" id="k-hoje-c">0 vendas</div></div>
+        <div class="kpi green"><div class="kpi-icon">📅</div><div class="kpi-label">Esta semana</div><div class="kpi-val" id="k-sem">R$0</div><div class="kpi-sub" id="k-sem-c">0 vendas</div></div>
+        <div class="kpi gold"><div class="kpi-icon">📆</div><div class="kpi-label">Este mês</div><div class="kpi-val" id="k-mes">R$0</div><div class="kpi-sub" id="k-mes-c">0 vendas</div></div>
+        <div class="kpi cyan"><div class="kpi-icon">🏆</div><div class="kpi-label">Total geral</div><div class="kpi-val" id="k-tot">R$0</div><div class="kpi-sub" id="k-tot-c">0 vendas</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
-        <div class="card"><div class="ch"><h3>Link do Produto</h3><span class="tag g">Principal</span></div>
-          <div class="cb">
-            <div class="field"><label>URL de Compra</label><input type="url" id="d-link" placeholder="https://..."><span class="hint">Todos os botões apontam para este link.</span></div>
-            <button class="bsave" style="width:fit-content" onclick="saveLinkNow()">Salvar Link Agora</button>
+      <!-- Charts + Quick Info -->
+      <div class="pg2" style="margin-bottom:18px">
+        <div class="card">
+          <div class="card-head"><h3>📊 Receita dos últimos 30 dias</h3>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadOverview()">↺</button>
           </div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="chart-revenue"></canvas></div></div>
         </div>
-        <div class="card"><div class="ch"><h3>Site ao vivo</h3></div>
-          <div class="cb">
-            <div style="text-align:center;padding:16px;color:var(--m)">
-              <div style="font-size:32px;margin-bottom:10px">🌐</div>
-              <div style="font-size:13px;margin-bottom:12px">Alterações aparecem instantaneamente no site após salvar.</div>
-              <a href="index.html" target="_blank" style="color:var(--a2);font-size:13px;text-decoration:none">Abrir site ↗</a>
+        <div class="card">
+          <div class="card-head"><h3>📦 Por método de pagamento</h3></div>
+          <div class="card-body"><div class="chart-wrap" style="height:220px"><canvas id="chart-methods"></canvas></div></div>
+        </div>
+      </div>
+      <div class="pg3">
+        <div class="card">
+          <div class="card-head"><h3>🔥 Últimas vendas</h3></div>
+          <div class="card-body"><div id="dash-recent-sales" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📈 Visitantes 24h</h3></div>
+          <div class="card-body">
+            <div class="kpi-grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0">
+              <div class="kpi" style="padding:14px"><div class="kpi-label">Visitantes</div><div class="kpi-val" style="font-size:22px" id="an-v">—</div></div>
+              <div class="kpi" style="padding:14px"><div class="kpi-label">Cliques CTA</div><div class="kpi-val" style="font-size:22px" id="an-c">—</div></div>
+              <div class="kpi" style="padding:14px"><div class="kpi-label">Taxa Clique</div><div class="kpi-val" style="font-size:22px" id="an-r">—</div></div>
+              <div class="kpi" style="padding:14px"><div class="kpi-label">Emails</div><div class="kpi-val" style="font-size:22px" id="an-e">—</div></div>
             </div>
           </div>
         </div>
+        <div class="card">
+          <div class="card-head"><h3>🌐 Dispositivos & Fontes</h3></div>
+          <div class="card-body"><div id="an-devs" style="font-size:13px;color:var(--m)">—</div></div>
+        </div>
       </div>
     </div>
 
+    <!-- ══ VENDAS ══ -->
+    <div class="panel" id="p-vendas">
+      <div class="kpi-grid">
+        <div class="kpi purple"><div class="kpi-icon">💳</div><div class="kpi-label">Hoje</div><div class="kpi-val" id="sv-hj">R$0</div><div class="kpi-sub" id="sv-hjc">0 vendas</div></div>
+        <div class="kpi green"><div class="kpi-icon">📅</div><div class="kpi-label">Semana</div><div class="kpi-val" id="sv-sm">R$0</div><div class="kpi-sub" id="sv-smc">0 vendas</div></div>
+        <div class="kpi gold"><div class="kpi-icon">📆</div><div class="kpi-label">Mês</div><div class="kpi-val" id="sv-ms">R$0</div><div class="kpi-sub" id="sv-msc">0 vendas</div></div>
+        <div class="kpi cyan"><div class="kpi-icon">🏆</div><div class="kpi-label">Total</div><div class="kpi-val" id="sv-tt">R$0</div><div class="kpi-sub" id="sv-ttc">0 vendas</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Histórico de Vendas</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="date" id="vf-from" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <input type="date" id="vf-to" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <select id="vf-status" onchange="loadVendas()" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+              <option value="all">Todos</option><option value="approved">Aprovadas</option>
+              <option value="refunded">Reembolsos</option><option value="pending">Pendentes</option><option value="cancelled">Canceladas</option>
+            </select>
+            <button class="btn-sm ghost" style="padding:6px 12px;font-size:12px" onclick="loadVendas()">↺ Filtrar</button>
+            <button class="btn-sm primary" style="padding:6px 12px;font-size:12px" onclick="syncPP(false)">🔄 Sincronizar</button>
+          </div>
+        </div>
+        <div class="card-body"><div id="sv-tbl" style="overflow-x:auto">Carregando...</div></div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><h3>➕ Registrar Venda Manualmente</h3></div>
+        <div class="card-body">
+          <div class="fr3">
+            <div class="field"><label>Nome</label><input id="ms-n" placeholder="João Silva"></div>
+            <div class="field"><label>Email</label><input type="email" id="ms-e" placeholder="joao@email.com"></div>
+            <div class="field"><label>Valor R$</label><input type="number" id="ms-v" step="0.01" placeholder="19.90"></div>
+          </div>
+          <div style="margin-top:12px"><button class="btn-sm primary" onclick="addSaleManual()">Registrar</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXTRATO ══ -->
+    <div class="panel" id="p-extrato">
+      <div class="kpi-grid">
+        <div class="kpi green"><div class="kpi-icon">💰</div><div class="kpi-label">Disponível</div><div class="kpi-val" id="ex-disp">—</div><div class="kpi-sub">Para saque</div></div>
+        <div class="kpi gold"><div class="kpi-icon">⏳</div><div class="kpi-label">A receber</div><div class="kpi-val" id="ex-pend">—</div><div class="kpi-sub">Em processamento</div></div>
+        <div class="kpi cyan"><div class="kpi-icon">📤</div><div class="kpi-label">Próximo pgto</div><div class="kpi-val" id="ex-prox" style="font-size:16px;padding-top:4px">—</div><div class="kpi-sub">Data estimada</div></div>
+        <div class="kpi purple"><div class="kpi-icon">📊</div><div class="kpi-label">Total sacado</div><div class="kpi-val" id="ex-sac">—</div><div class="kpi-sub">Histórico</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Extrato Financeiro</h3>
+          <div style="display:flex;gap:8px">
+            <input type="date" id="ex-from" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <input type="date" id="ex-to" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <button class="btn-sm primary" style="padding:6px 12px;font-size:12px" onclick="loadExtrato()">↺ Buscar</button>
+          </div>
+        </div>
+        <div class="card-body"><div id="ex-tbl" style="overflow-x:auto">Configure o token da PerfectPay para ver o extrato.</div></div>
+      </div>
+    </div>
+
+    <!-- ══ COMISSOES ══ -->
+    <div class="panel" id="p-comissoes">
+      <div class="kpi-grid">
+        <div class="kpi purple"><div class="kpi-icon">🤝</div><div class="kpi-label">Total comissões</div><div class="kpi-val" id="co-tot">—</div><div class="kpi-sub" id="co-tot-c">—</div></div>
+        <div class="kpi green"><div class="kpi-icon">👥</div><div class="kpi-label">Afiliados ativos</div><div class="kpi-val" id="co-af">—</div><div class="kpi-sub">este mês</div></div>
+        <div class="kpi gold"><div class="kpi-icon">⭐</div><div class="kpi-label">Top afiliado</div><div class="kpi-val" id="co-top" style="font-size:15px;padding-top:4px">—</div><div class="kpi-sub" id="co-top-v">—</div></div>
+        <div class="kpi cyan"><div class="kpi-icon">📊</div><div class="kpi-label">Ticket médio</div><div class="kpi-val" id="co-tkt">—</div><div class="kpi-sub">por comissão</div></div>
+      </div>
+      <div class="pg2">
+        <div class="card">
+          <div class="card-head"><h3>Ranking de Afiliados</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadComissoes()">↺</button></div>
+          <div class="card-body"><div id="co-rank" style="font-size:13px">Carregando...</div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Histórico de Comissões</h3></div>
+          <div class="card-body"><div id="co-tbl" style="overflow-x:auto;font-size:13px">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PRODUTOS ══ -->
+    <div class="panel" id="p-produtos">
+      <div class="card">
+        <div class="card-head"><h3>Seus Produtos na PerfectPay</h3><button class="btn-sm primary" style="padding:6px 12px;font-size:12px" onclick="loadProdutos()">🔄 Sincronizar</button></div>
+        <div class="card-body"><div id="prod-list">Configure o token da PerfectPay para ver os produtos.</div></div>
+      </div>
+    </div>
+
+    <!-- ══ ANALYTICS ══ -->
+    <div class="panel" id="p-analytics">
+      <div class="kpi-grid">
+        <div class="kpi purple"><div class="kpi-icon">👁️</div><div class="kpi-label">Visitantes 24h</div><div class="kpi-val" id="a-v">—</div></div>
+        <div class="kpi green"><div class="kpi-icon">🖱️</div><div class="kpi-label">Cliques CTA</div><div class="kpi-val" id="a-c">—</div></div>
+        <div class="kpi gold"><div class="kpi-icon">📊</div><div class="kpi-label">Taxa de Clique</div><div class="kpi-val" id="a-r">—</div></div>
+        <div class="kpi cyan"><div class="kpi-icon">📧</div><div class="kpi-label">Emails</div><div class="kpi-val" id="a-e">—</div></div>
+      </div>
+      <div class="pg2">
+        <div class="card">
+          <div class="card-head"><h3>📊 Visitantes por hora (24h)</h3></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="chart-visitors"></canvas></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>🌍 Origens de tráfego</h3></div>
+          <div class="card-body"><div id="a-sources">Carregando...</div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <div class="card-head"><h3>Visitas recentes</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadAnalytics()">↺</button></div>
+        <div class="card-body"><div id="a-tbl" style="overflow-x:auto">Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- ══ CUPONS ══ -->
+    <div class="panel" id="p-cupons">
+      <div class="pg2">
+        <div class="card">
+          <div class="card-head"><h3>Criar Cupom</h3></div>
+          <div class="card-body">
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field"><label>Código</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
+              <div class="field"><label>Desconto %</label><input type="number" id="cp-p" value="20" min="1" max="99"></div>
+            </div>
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>Máx. Usos</label><input type="number" id="cp-m" value="999"></div>
+              <div class="field"><label>Validade</label><input type="date" id="cp-exp"></div>
+            </div>
+            <button class="btn-sm primary" onclick="createCoupon()">Criar Cupom</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Cupons Ativos</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadCupons()">↺</button></div>
+          <div class="card-body"><div id="cp-lst">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EMAILS ══ -->
+    <div class="panel" id="p-emails">
+      <div class="card">
+        <div class="card-head"><h3>📧 Leads Capturados</h3>
+          <div style="display:flex;gap:8px">
+            <span class="tag green" id="emails-count">0 emails</span>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadEmails()">↺</button>
+            <button class="btn-sm primary" style="padding:5px 10px;font-size:11px" onclick="exportEmails()">📥 Exportar CSV</button>
+          </div>
+        </div>
+        <div class="card-body"><div id="em-tbl" style="overflow-x:auto">Carregando...</div></div>
+      </div>
+    </div>
+
+    <!-- ══ NOTIFS ══ -->
+    <div class="panel" id="p-notifs">
+      <div class="pg2">
+        <div class="card">
+          <div class="card-head"><h3>Adicionar Notificação</h3></div>
+          <div class="card-body">
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field"><label>Nome</label><input id="nt-n" placeholder="João S."></div>
+              <div class="field"><label>Cidade</label><input id="nt-c" placeholder="São Paulo"></div>
+            </div>
+            <button class="btn-sm primary" onclick="addNotif()">Adicionar</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Notificações Cadastradas</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadNotifs()">↺</button></div>
+          <div class="card-body"><div id="nt-lst">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PERFECTPAY CONFIG ══ -->
+    <div class="panel" id="p-perfectpay">
+      <div class="pg2">
+        <div class="card">
+          <div class="card-head"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-st">Não configurado</span></div>
+          <div class="card-body">
+            <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.7">
+              Gere o token em: <strong style="color:var(--t)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
+              O token é salvo criptografado no Supabase e nunca fica exposto no frontend.
+            </div>
+            <div class="field" style="margin-bottom:14px">
+              <label>Token</label>
+              <input type="password" id="pp-tk" placeholder="eyJhbGci...">
+            </div>
+            <button class="btn-sm primary" onclick="savePPToken()">Salvar Token</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>🔄 Sincronizar Vendas</h3></div>
+          <div class="card-body">
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>Data início</label><input type="date" id="sy-from"></div>
+              <div class="field"><label>Data fim</label><input type="date" id="sy-to"></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn-sm primary" onclick="syncPP(false)">🔄 Sincronizar Período</button>
+              <button class="btn-sm ghost" onclick="syncPP(true)">⬇️ Sincronizar Tudo</button>
+            </div>
+            <div id="sy-res" style="font-size:13px;margin-top:12px;display:none"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>🔗 Webhook (tempo real)</h3></div>
+          <div class="card-body">
+            <div style="font-size:13px;color:var(--m);margin-bottom:12px">
+              Configure em: <strong style="color:var(--t)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <code style="flex:1">https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook</code>
+              <button class="btn-sm ghost" onclick="copyWebhook()">📋</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📊 Status da Integração</h3></div>
+          <div class="card-body"><div id="pp-status" style="font-size:13px;color:var(--m)">Verificando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         EDITAR PANELS
+    ══════════════════════════════════ -->
+
     <!-- GERAL -->
-    <div class="panel" id="p-geral">
+    <div class="panel" id="p-e-geral">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>Identidade</h3></div><div class="cb">
+        <div class="card"><div class="card-head"><h3>Identidade & Link</h3></div><div class="card-body">
           <div class="fr">
-            <div class="field"><label>Nome da Marca</label><input type="text" id="f-brand"></div>
-            <div class="field"><label>Link do Produto</label><input type="url" id="f-link"></div>
+            <div class="field"><label>Nome da Marca</label><input id="f-brand"></div>
+            <div class="field"><label>Link do Produto (URL)</label><input type="url" id="f-link"></div>
           </div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Barra de Prova Social</h3></div><div class="cb">
-          <div class="fr"><div class="field"><label>Stat 1 — Número</label><input id="f-s1n"></div><div class="field"><label>Stat 1 — Label</label><input id="f-s1l"></div></div>
-          <div class="fr"><div class="field"><label>Stat 2 — Número</label><input id="f-s2n"></div><div class="field"><label>Stat 2 — Label</label><input id="f-s2l"></div></div>
-          <div class="fr"><div class="field"><label>Stat 3 — Número</label><input id="f-s3n"></div><div class="field"><label>Stat 3 — Label</label><input id="f-s3l"></div></div>
-          <div class="fr"><div class="field"><label>Stat 4 — Número</label><input id="f-s4n"></div><div class="field"><label>Stat 4 — Label</label><input id="f-s4l"></div></div>
+        <div class="card"><div class="card-head"><h3>Barra de Prova Social</h3></div><div class="card-body">
+          <div class="fr"><div class="field"><label>Stat 1 Número</label><input id="f-s1n"></div><div class="field"><label>Stat 1 Label</label><input id="f-s1l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 2 Número</label><input id="f-s2n"></div><div class="field"><label>Stat 2 Label</label><input id="f-s2l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 3 Número</label><input id="f-s3n"></div><div class="field"><label>Stat 3 Label</label><input id="f-s3l"></div></div>
+          <div class="fr"><div class="field"><label>Stat 4 Número</label><input id="f-s4n"></div><div class="field"><label>Stat 4 Label</label><input id="f-s4l"></div></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Seção "Por que este ebook?"</h3></div><div class="cb">
-          <div class="field"><label>Título</label><input id="f-whyt"></div>
+        <div class="card"><div class="card-head"><h3>Seção "Por que este ebook?"</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:12px"><label>Título</label><input id="f-whyt"></div>
           <div class="field"><label>Subtítulo</label><textarea rows="2" id="f-whys"></textarea></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>CTA Final</h3></div><div class="cb">
-          <div class="field"><label>Título</label><input id="f-ctat"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-ctad"></textarea></div>
+        <div class="card"><div class="card-head"><h3>CTA Final</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Título</label><input id="f-ctat"></div>
+          <div class="field" style="margin-bottom:10px"><label>Descrição</label><textarea rows="2" id="f-ctad"></textarea></div>
           <div class="field"><label>Texto do Botão</label><input id="f-ctab"></div>
         </div></div>
       </div>
     </div>
 
     <!-- HERO -->
-    <div class="panel" id="p-hero">
+    <div class="panel" id="p-e-hero">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>Seção Hero</h3></div><div class="cb">
-          <div class="field"><label>Badge</label><input id="f-badge"></div>
-          <div class="field"><label>Título (HTML aceito)</label><textarea rows="3" id="f-title"></textarea><span class="hint">Use &lt;span class="highlight"&gt;texto&lt;/span&gt; para roxo.</span></div>
+        <div class="card"><div class="card-head"><h3>Seção Hero</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Badge</label><input id="f-badge"></div>
+          <div class="field" style="margin-bottom:10px"><label>Título (HTML aceito)</label><textarea rows="3" id="f-title"></textarea><span class="hint">Use &lt;span class="highlight"&gt;texto&lt;/span&gt; para cor roxa.</span></div>
           <div class="field"><label>Subtítulo</label><textarea rows="3" id="f-sub"></textarea></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Botões & Capa</h3></div><div class="cb">
-          <div class="field"><label>Link do Produto</label><input type="url" id="f-link2"></div>
-          <div class="field"><label>Texto do Botão Principal</label><input id="f-ctxt"></div>
-          <div class="fr"><div class="field"><label>Título na Capa</label><input id="f-bt"></div><div class="field"><label>Subtítulo na Capa</label><input id="f-bs"></div></div>
+        <div class="card"><div class="card-head"><h3>Botões & Capa</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Link do Produto</label><input type="url" id="f-link2"></div>
+          <div class="field" style="margin-bottom:10px"><label>Texto do Botão Principal</label><input id="f-ctxt"></div>
+          <div class="fr" style="margin-bottom:10px">
+            <div class="field"><label>Título na Capa</label><input id="f-bt"></div>
+            <div class="field"><label>Subtítulo na Capa</label><input id="f-bs"></div>
+          </div>
           <div class="field"><label>Badge de Preço na Capa</label><input id="f-bp"></div>
         </div></div>
       </div>
     </div>
 
     <!-- PRECO -->
-    <div class="panel" id="p-preco">
-      <div class="pg">
-        <div class="card"><div class="ch"><h3>Preço & Link</h3></div><div class="cb">
-          <div class="field"><label>Link do Produto</label><input type="url" id="f-link3"></div>
-          <div class="fr"><div class="field"><label>Preço Antigo</label><input id="f-pold"></div><div class="field"><label>Preço Principal</label><input id="f-pmain"></div></div>
-          <div class="fr"><div class="field"><label>Centavos</label><input id="f-pcents"></div><div class="field"><label>Texto do Botão CTA</label><input id="f-pctxt"></div></div>
+    <div class="panel" id="p-e-preco">
+      <div class="pg2">
+        <div class="card"><div class="card-head"><h3>Preço & Link</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Link do Produto</label><input type="url" id="f-link3"></div>
+          <div class="fr" style="margin-bottom:10px">
+            <div class="field"><label>Preço Antigo</label><input id="f-pold"></div>
+            <div class="field"><label>Preço Principal</label><input id="f-pmain"></div>
+          </div>
+          <div class="fr" style="margin-bottom:10px">
+            <div class="field"><label>Centavos</label><input id="f-pcents"></div>
+            <div class="field"><label>Texto do Botão CTA</label><input id="f-pctxt"></div>
+          </div>
           <div class="field"><label>Texto da Garantia</label><textarea rows="3" id="f-gtxt"></textarea></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Lista de Inclusos (um por linha)</h3></div><div class="cb">
-          <div class="field"><textarea rows="9" id="f-feats"></textarea></div>
+        <div class="card"><div class="card-head"><h3>Lista de Inclusos (um por linha)</h3></div><div class="card-body">
+          <div class="field"><textarea rows="10" id="f-feats"></textarea></div>
         </div></div>
       </div>
     </div>
 
     <!-- BENEFICIOS -->
-    <div class="panel" id="p-beneficios">
-      <div class="card"><div class="ch"><h3>Cards de Benefícios</h3></div><div class="cb">
-        <div class="le" id="e-ben"></div>
-        <button class="badd" onclick="addItem('ben')">+ Adicionar Benefício</button>
+    <div class="panel" id="p-e-ben">
+      <div class="card"><div class="card-head"><h3>Cards de Benefícios</h3></div><div class="card-body">
+        <div class="le" id="e-ben"></div><button class="badd" onclick="addItem('ben')">+ Adicionar</button>
       </div></div>
     </div>
 
     <!-- SEMANAS -->
-    <div class="panel" id="p-semanas">
+    <div class="panel" id="p-e-semanas">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>O que você vai aprender</h3></div><div class="cb">
-          <div class="field"><label>Título</label><input id="f-lt"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-ld"></textarea></div>
+        <div class="card"><div class="card-head"><h3>O que você vai aprender</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Título</label><input id="f-lt"></div>
+          <div class="field" style="margin-bottom:10px"><label>Descrição</label><textarea rows="2" id="f-ld"></textarea></div>
           <div class="field"><label>Lista (um por linha)</label><textarea rows="8" id="f-li"></textarea></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Semanas do Plano</h3></div><div class="cb">
-          <div class="le" id="e-wks"></div>
-          <button class="badd" onclick="addItem('wks')">+ Adicionar Semana</button>
+        <div class="card"><div class="card-head"><h3>Semanas do Plano</h3></div><div class="card-body">
+          <div class="le" id="e-wks"></div><button class="badd" onclick="addItem('wks')">+ Adicionar Semana</button>
         </div></div>
       </div>
     </div>
 
     <!-- MONETIZE -->
-    <div class="panel" id="p-monetize">
-      <div class="card"><div class="ch"><h3>Formas de Monetização</h3></div><div class="cb">
-        <div class="fr"><div class="field"><label>Título</label><input id="f-mt"></div><div class="field"><label>Descrição</label><input id="f-md"></div></div>
-        <div class="le" id="e-mon"></div>
-        <button class="badd" onclick="addItem('mon')">+ Adicionar</button>
+    <div class="panel" id="p-e-monetize">
+      <div class="card"><div class="card-head"><h3>Formas de Monetização</h3></div><div class="card-body">
+        <div class="fr" style="margin-bottom:14px">
+          <div class="field"><label>Título da Seção</label><input id="f-mt"></div>
+          <div class="field"><label>Descrição</label><input id="f-md"></div>
+        </div>
+        <div class="le" id="e-mon"></div><button class="badd" onclick="addItem('mon')">+ Adicionar</button>
       </div></div>
     </div>
 
     <!-- DEPOIMENTOS -->
-    <div class="panel" id="p-depoimentos">
-      <div class="card"><div class="ch"><h3>Depoimentos</h3></div><div class="cb">
-        <div class="field"><label>Título da Seção</label><input id="f-testt"></div>
-        <div class="le" id="e-test"></div>
-        <button class="badd" onclick="addItem('test')">+ Adicionar Depoimento</button>
+    <div class="panel" id="p-e-depos">
+      <div class="card"><div class="card-head"><h3>Depoimentos</h3></div><div class="card-body">
+        <div class="field" style="margin-bottom:14px"><label>Título da Seção</label><input id="f-testt"></div>
+        <div class="le" id="e-test"></div><button class="badd" onclick="addItem('test')">+ Adicionar</button>
       </div></div>
     </div>
 
     <!-- FAQ -->
-    <div class="panel" id="p-faq">
-      <div class="card"><div class="ch"><h3>Perguntas Frequentes</h3></div><div class="cb">
-        <div class="le" id="e-faq"></div>
-        <button class="badd" onclick="addItem('faq')">+ Adicionar Pergunta</button>
+    <div class="panel" id="p-e-faq">
+      <div class="card"><div class="card-head"><h3>FAQ</h3></div><div class="card-body">
+        <div class="le" id="e-faq"></div><button class="badd" onclick="addItem('faq')">+ Adicionar</button>
       </div></div>
     </div>
 
-    <!-- CONVERSION -->
-    <div class="panel" id="p-conversion">
+    <!-- CONVERSÃO -->
+    <div class="panel" id="p-e-conv">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>Timer de Urgência</h3></div><div class="cb">
+        <div class="card"><div class="card-head"><h3>⏰ Timer de Urgência</h3></div><div class="card-body">
           <div class="fr">
             <div class="field"><label>Exibir?</label><select id="f-ub"><option value="true">Sim</option><option value="false">Não</option></select></div>
             <div class="field"><label>Duração (minutos)</label><input type="number" id="f-um" min="5" max="1440"></div>
           </div>
-          <div class="fr">
+          <div class="fr" style="margin-top:10px">
             <div class="field"><label>Texto</label><input id="f-ut"></div>
             <div class="field"><label>Sufixo</label><input id="f-us"></div>
           </div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Exit Intent & Modal</h3></div><div class="cb">
-          <div class="field"><label>Título Exit Popup</label><input id="f-xt"></div>
-          <div class="field"><label>Descrição Exit Popup</label><textarea rows="2" id="f-xd"></textarea></div>
-          <div class="field"><label>Botão Exit Popup</label><input id="f-xb"></div>
-          <div class="field"><label>Texto Botão Modal</label><input id="f-mct"></div>
+        <div class="card"><div class="card-head"><h3>🚪 Exit Intent Popup</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Título</label><input id="f-xt"></div>
+          <div class="field" style="margin-bottom:10px"><label>Descrição</label><textarea rows="2" id="f-xd"></textarea></div>
+          <div class="field"><label>Texto do Botão</label><input id="f-xb"></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Notificações & Sticky & Vídeo</h3></div><div class="cb">
+        <div class="card"><div class="card-head"><h3>🛒 Modal de Compra</h3></div><div class="card-body">
+          <div class="field"><label>Texto do Botão CTA</label><input id="f-mct"></div>
+        </div></div>
+        <div class="card"><div class="card-head"><h3>📢 Notificações & Sticky</h3></div><div class="card-body">
           <div class="fr">
-            <div class="field"><label>Notif. venda ao vivo?</label><select id="f-sn"><option value="true">Sim</option><option value="false">Não</option></select></div>
+            <div class="field"><label>Exibir notif. venda?</label><select id="f-sn"><option value="true">Sim</option><option value="false">Não</option></select></div>
             <div class="field"><label>Intervalo (seg)</label><input type="number" id="f-si" min="10" max="120"></div>
           </div>
-          <div class="field"><label>Texto botão sticky</label><input id="f-sc"></div>
+          <div class="field" style="margin-top:10px"><label>Texto botão sticky</label><input id="f-sc"></div>
+        </div></div>
+        <div class="card"><div class="card-head"><h3>🎬 Vídeo de Apresentação</h3></div><div class="card-body">
           <div class="fr">
             <div class="field"><label>Exibir vídeo?</label><select id="f-vs"><option value="false">Não</option><option value="true">Sim</option></select></div>
-            <div class="field"><label>Título do vídeo</label><input id="f-vt"></div>
+            <div class="field"><label>Título</label><input id="f-vt"></div>
           </div>
-          <div class="field"><label>URL YouTube</label><input type="url" id="f-vu" placeholder="https://youtube.com/watch?v=..."></div>
+          <div class="field" style="margin-top:10px"><label>URL YouTube</label><input type="url" id="f-vu" placeholder="https://youtube.com/watch?v=..."></div>
         </div></div>
       </div>
     </div>
 
     <!-- PARA QUEM -->
-    <div class="panel" id="p-paraquem">
+    <div class="panel" id="p-e-paraquem">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>Título</h3></div><div class="cb">
-          <div class="field"><input id="f-fnft"></div>
-        </div></div>
-        <div class="card"><div class="ch"><h3>✅ É para você se... (um por linha)</h3></div><div class="cb">
-          <div class="field"><textarea rows="6" id="f-fi"></textarea></div>
-        </div></div>
-        <div class="card"><div class="ch"><h3>❌ NÃO é para você se... (um por linha)</h3></div><div class="cb">
-          <div class="field"><textarea rows="5" id="f-ni"></textarea></div>
-        </div></div>
+        <div class="card"><div class="card-head"><h3>Título da Seção</h3></div><div class="card-body"><div class="field"><input id="f-fnft"></div></div></div>
+        <div class="card"><div class="card-head"><h3>✅ É para você se... (um por linha)</h3></div><div class="card-body"><div class="field"><textarea rows="6" id="f-fi"></textarea></div></div></div>
+        <div class="card"><div class="card-head"><h3>❌ NÃO é para você se... (um por linha)</h3></div><div class="card-body"><div class="field"><textarea rows="5" id="f-ni"></textarea></div></div></div>
       </div>
     </div>
 
-    <!-- BONUS -->
-    <div class="panel" id="p-bonus">
-      <div class="card"><div class="ch"><h3>Bônus</h3></div><div class="cb">
-        <div class="fr"><div class="field"><label>Título</label><input id="f-bnt"></div><div class="field"><label>Descrição</label><input id="f-bnd"></div></div>
-        <div class="le" id="e-bon"></div>
-        <button class="badd" onclick="addItem('bon')">+ Adicionar Bônus</button>
+    <!-- BÔNUS -->
+    <div class="panel" id="p-e-bonus">
+      <div class="card"><div class="card-head"><h3>Seção de Bônus</h3></div><div class="card-body">
+        <div class="fr" style="margin-bottom:14px">
+          <div class="field"><label>Título</label><input id="f-bnt"></div>
+          <div class="field"><label>Descrição</label><input id="f-bnd"></div>
+        </div>
+        <div class="le" id="e-bon"></div><button class="badd" onclick="addItem('bon')">+ Adicionar Bônus</button>
       </div></div>
     </div>
 
     <!-- OBRIGADO -->
-    <div class="panel" id="p-obrigado">
+    <div class="panel" id="p-e-obrigado">
       <div class="pg">
-        <div class="card"><div class="ch"><h3>Página de Obrigado (pós-compra)</h3></div><div class="cb">
-          <div class="field"><label>Título</label><input id="f-tyt"></div>
-          <div class="field"><label>Descrição</label><textarea rows="2" id="f-tyd"></textarea></div>
-          <div class="field"><label>Próximos Passos (um por linha)</label><textarea rows="6" id="f-tys"></textarea></div>
+        <div class="card"><div class="card-head"><h3>Página de Obrigado</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Título</label><input id="f-tyt"></div>
+          <div class="field" style="margin-bottom:10px"><label>Descrição</label><textarea rows="2" id="f-tyd"></textarea></div>
+          <div class="field" style="margin-bottom:10px"><label>Próximos Passos (um por linha)</label><textarea rows="6" id="f-tys"></textarea></div>
           <div class="field"><label>Texto de Compartilhamento</label><input id="f-tys2"></div>
         </div></div>
-        <div class="card"><div class="ch"><h3>Como usar</h3></div><div class="cb">
-          <div style="font-size:13px;color:var(--m);line-height:1.8">
-            Configure a PerfectPay para redirecionar após compra para:<br>
-            <code>https://seusite.com/?purchased=1</code>
-          </div>
+        <div class="card"><div class="card-head"><h3>Como usar</h3></div><div class="card-body">
+          <div style="font-size:13px;color:var(--m);line-height:1.8">Configure a PerfectPay para redirecionar após compra para:<br><code style="margin-top:6px;display:inline-block">https://seusite.com/?purchased=1</code></div>
         </div></div>
-      </div>
-    </div>
-
-    <!-- VENDAS -->
-    <div class="panel" id="p-vendas">
-      <div class="pg">
-        <div class="kpis">
-          <div class="kpi"><div class="kl">Hoje</div><div class="kv" id="sv-hj">R$0</div><div class="ks" id="sv-hjc">0 vendas</div></div>
-          <div class="kpi"><div class="kl">Semana</div><div class="kv" id="sv-sm">R$0</div><div class="ks" id="sv-smc">0 vendas</div></div>
-          <div class="kpi"><div class="kl">Mês</div><div class="kv" id="sv-ms">R$0</div><div class="ks" id="sv-msc">0 vendas</div></div>
-          <div class="kpi"><div class="kl">Total</div><div class="kv" id="sv-tt">R$0</div><div class="ks" id="sv-ttc">0 vendas</div></div>
-        </div>
-        <div class="card"><div class="ch"><h3>🔑 Token API PerfectPay</h3><span class="tag" id="pp-st">Não configurado</span></div><div class="cb">
-          <div style="font-size:13px;color:var(--m);margin-bottom:10px">PerfectPay → Ferramentas → API → + Adicionar. Cole o token abaixo:</div>
-          <div style="display:flex;gap:10px">
-            <input type="password" id="pp-tk" placeholder="Seu token da API..." style="flex:1;background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13px;outline:none">
-            <button class="bsave" style="width:fit-content" onclick="savePPToken()">Salvar Token</button>
-          </div>
-        </div></div>
-        <div class="card"><div class="ch"><h3>🔄 Sincronizar Vendas</h3></div><div class="cb">
-          <div class="fr">
-            <div class="field"><label>Data início</label><input type="date" id="sy-from"></div>
-            <div class="field"><label>Data fim</label><input type="date" id="sy-to"></div>
-          </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="bsave" style="width:fit-content" onclick="syncSales(false)">🔄 Sincronizar Período</button>
-            <button class="bsave" style="width:fit-content;background:var(--s2);border:1px solid var(--b2);color:var(--t)" onclick="syncSales(true)">⬇️ Sincronizar Tudo</button>
-          </div>
-          <div id="sy-res" style="font-size:13px;display:none;margin-top:8px"></div>
-        </div></div>
-        <div class="card"><div class="ch"><h3>🔗 Webhook (tempo real)</h3></div><div class="cb">
-          <div style="font-size:13px;color:var(--m);margin-bottom:10px">PerfectPay → Ferramentas → PostBack/Webhook → cole esta URL:</div>
-          <div style="display:flex;gap:10px">
-            <code style="flex:1;padding:10px">https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook</code>
-            <button class="bsave" style="width:fit-content;padding:9px 14px" onclick="copyHook()">📋 Copiar</button>
-          </div>
-        </div></div>
-        <div class="card">
-          <div class="ch"><h3>Últimas vendas</h3>
-            <div style="display:flex;gap:8px">
-              <select id="sf" onchange="loadSales()" style="background:var(--s2);border:1px solid var(--b2);border-radius:6px;padding:5px 10px;color:var(--t);font-size:13px;outline:none">
-                <option value="all">Todos</option><option value="approved">Aprovadas</option>
-                <option value="refunded">Reembolsos</option><option value="pending">Pendentes</option>
-              </select>
-              <button class="bsave" style="padding:6px 12px;font-size:12px" onclick="loadSales()">↺</button>
-            </div>
-          </div>
-          <div class="cb"><div id="sv-tbl" style="font-size:13px;color:var(--m)">Carregando...</div></div>
-        </div>
-        <div class="card"><div class="ch"><h3>Registrar Manualmente</h3></div><div class="cb">
-          <div class="fr"><div class="field"><label>Nome</label><input id="ms-n"></div><div class="field"><label>Email</label><input type="email" id="ms-e"></div></div>
-          <div class="fr">
-            <div class="field"><label>Valor R$</label><input type="number" id="ms-v" step="0.01"></div>
-            <div class="field"><label>Método</label>
-              <select id="ms-m" style="background:var(--s2);border:1px solid var(--b2);border-radius:8px;padding:10px 13px;color:var(--t);font-size:13.5px;outline:none">
-                <option value="credit_card">Cartão</option><option value="pix">PIX</option><option value="boleto">Boleto</option>
-              </select>
-            </div>
-          </div>
-          <button class="bsave" style="width:fit-content" onclick="addSale()">Registrar Venda</button>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- CUPONS -->
-    <div class="panel" id="p-cupons">
-      <div class="pg">
-        <div class="card"><div class="ch"><h3>Criar Cupom</h3></div><div class="cb">
-          <div class="fr">
-            <div class="field"><label>Código</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
-            <div class="field"><label>Desconto %</label><input type="number" id="cp-p" value="20" min="1" max="99"></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Máx. Usos</label><input type="number" id="cp-m" value="999"></div>
-            <div class="field" style="justify-content:flex-end"><button class="bsave" style="width:100%;margin-top:22px" onclick="createCoupon()">Criar Cupom</button></div>
-          </div>
-        </div></div>
-        <div class="card"><div class="ch"><h3>Cupons</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadCoupons()">↺</button></div>
-          <div class="cb"><div id="cp-lst" style="font-size:13px;color:var(--m)">Carregando...</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTIFS -->
-    <div class="panel" id="p-notifs">
-      <div class="pg">
-        <div class="card"><div class="ch"><h3>Adicionar Notificação</h3></div><div class="cb">
-          <div class="fr"><div class="field"><label>Nome</label><input id="nt-n" placeholder="João S."></div><div class="field"><label>Cidade</label><input id="nt-c" placeholder="São Paulo"></div></div>
-          <button class="bsave" style="width:fit-content" onclick="addNotif()">Adicionar</button>
-        </div></div>
-        <div class="card"><div class="ch"><h3>Notificações</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadNotifs()">↺</button></div>
-          <div class="cb"><div id="nt-lst" style="font-size:13px;color:var(--m)">Carregando...</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ANALYTICS -->
-    <div class="panel" id="p-analytics">
-      <div class="pg">
-        <div class="kpis">
-          <div class="kpi"><div class="kl">Visitantes 24h</div><div class="kv" id="an-v">—</div></div>
-          <div class="kpi"><div class="kl">Cliques CTA</div><div class="kv" id="an-c">—</div></div>
-          <div class="kpi"><div class="kl">Taxa Clique</div><div class="kv" id="an-r">—</div></div>
-          <div class="kpi"><div class="kl">Emails</div><div class="kv" id="an-e">—</div></div>
-        </div>
-        <div class="card"><div class="ch"><h3>Visitas recentes</h3><button class="bsave" style="padding:5px 12px;font-size:12px" onclick="loadAnalytics()">↺</button></div>
-          <div class="cb"><div id="an-tbl" style="font-size:13px;color:var(--m)">Carregando...</div></div>
-        </div>
       </div>
     </div>
 
     <!-- CONFIG -->
-    <div class="panel" id="p-config">
-      <div class="pg" style="max-width:500px">
-        <div class="card"><div class="ch"><h3>Alterar Senha</h3></div><div class="cb">
-          <div class="field"><label>Senha Atual</label><input type="password" id="pw-o"></div>
-          <div class="field"><label>Nova Senha (mín. 6)</label><input type="password" id="pw-n"></div>
-          <div class="field"><label>Confirmar</label><input type="password" id="pw-c"></div>
-          <button class="bsave" style="width:fit-content" onclick="changePw()">Alterar Senha</button>
+    <div class="panel" id="p-e-config">
+      <div class="pg2" style="max-width:700px">
+        <div class="card"><div class="card-head"><h3>🔐 Alterar Senha</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px"><label>Senha Atual</label><input type="password" id="pw-o"></div>
+          <div class="field" style="margin-bottom:10px"><label>Nova Senha (mín. 6)</label><input type="password" id="pw-n"></div>
+          <div class="field" style="margin-bottom:14px"><label>Confirmar</label><input type="password" id="pw-c"></div>
+          <button class="btn-sm primary" onclick="changePw()">Alterar Senha</button>
         </div></div>
-        <div class="card"><div class="ch"><h3>Backup</h3></div><div class="cb">
-          <div style="font-size:13px;color:var(--m);margin-bottom:10px">Configs salvas no Supabase. Exporte como JSON para backup local.</div>
+        <div class="card"><div class="card-head"><h3>💾 Backup</h3></div><div class="card-body">
+          <div style="font-size:13px;color:var(--m);margin-bottom:14px">Configs salvas no Supabase. Exporte como JSON para segurança.</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
-            <button class="bsave" style="width:fit-content" onclick="exportJSON()">📥 Exportar JSON</button>
-            <button class="breset" onclick="document.getElementById('imp').click()">📤 Importar JSON</button>
+            <button class="btn-sm primary" onclick="exportJSON()">📥 Exportar JSON</button>
+            <button class="btn-sm ghost" onclick="document.getElementById('imp').click()">📤 Importar JSON</button>
             <input type="file" id="imp" accept=".json" style="display:none" onchange="importJSON(event)">
           </div>
         </div></div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /main -->
+</div><!-- /admin -->
 
-<div id="toast"><span id="ti">✓</span> <span id="tm"></span></div>
-
+<div id="toast"><span id="ti">✓</span>&nbsp;<span id="tm"></span></div>
 <script>
-// ═══════════════════════════
-// SUPABASE
-// ═══════════════════════════
+// ══════════════════════════════════════
+// SUPABASE + PERFECTPAY
+// ══════════════════════════════════════
 const SB='https://ihylwxjxjajtdhsnlrfm.supabase.co';
 const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
 const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
@@ -520,32 +891,29 @@ async function sbGet(t,q=''){try{const r=await fetch(SB+'/rest/v1/'+t+q,{headers
 async function sbPost(t,d){try{const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(d)});return r.ok;}catch{return false;}}
 async function sbPatch(t,q,d){try{const r=await fetch(SB+'/rest/v1/'+t+q,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(d)});return r.ok;}catch{return false;}}
 
-// ═══════════════════════════
+async function ppAPI(action,extra={}){
+  try{
+    const r=await fetch(SB+'/functions/v1/perfectpay-api',{
+      method:'POST',headers:{'Content-Type':'application/json',apikey:AK},
+      body:JSON.stringify({action,...extra})
+    });
+    return r.json();
+  }catch(e){return{ok:false,error:String(e)};}
+}
+
+// ══════════════════════════════════════
 // AUTH
-// ═══════════════════════════
+// ══════════════════════════════════════
 const DEFHASH='240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-
-async function sha256(s){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-async function getHash(){
-  const rows=await sbGet('iaem30_config','?id=eq.1&select=config');
-  const h=rows?.[0]?.config?.adminPasswordHash;
-  if(h){localStorage.setItem('adm_h',h);return h;}
-  return localStorage.getItem('adm_h')||DEFHASH;
-}
+async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function getHash(){const rows=await sbGet('iaem30_config','?id=eq.1&select=config');const h=rows?.[0]?.config?.adminPasswordHash;if(h){localStorage.setItem('adm_h',h);return h;}return localStorage.getItem('adm_h')||DEFHASH;}
 
 async function doLogin(){
-  const u=document.getElementById('lu').value.trim();
-  const p=document.getElementById('lp').value;
-  const btn=document.getElementById('btnl');
-  const err=document.getElementById('lerr');
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  const btn=document.getElementById('btnl'),err=document.getElementById('lerr');
   if(!u||!p){err.textContent='Preencha os campos.';err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
   btn.disabled=true;btn.textContent='Verificando…';
-  const ih=await sha256(p);
-  const sh=await getHash();
+  const ih=await sha256(p),sh=await getHash();
   if(u==='admin'&&ih===sh){
     sessionStorage.setItem('ok','1');
     document.getElementById('login').style.display='none';
@@ -557,18 +925,14 @@ async function doLogin(){
     setTimeout(()=>err.style.display='none',3000);
   }
 }
-
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 function doLogout(){sessionStorage.removeItem('ok');location.reload();}
-
 async function changePw(){
-  const o=document.getElementById('pw-o').value;
-  const n=document.getElementById('pw-n').value;
-  const c=document.getElementById('pw-c').value;
+  const o=document.getElementById('pw-o').value,n=document.getElementById('pw-n').value,c=document.getElementById('pw-c').value;
   if(!o||!n||!c){toast('Preencha todos os campos','err');return;}
   if(n.length<6){toast('Mínimo 6 caracteres','err');return;}
   if(n!==c){toast('Senhas não coincidem','err');return;}
-  const oh=await sha256(o), sh=await getHash();
+  const oh=await sha256(o),sh=await getHash();
   if(oh!==sh){toast('Senha atual incorreta','err');return;}
   const nh=await sha256(n);
   const ok=await sbPatch('iaem30_config','?id=eq.1',{config:{...C,adminPasswordHash:nh}});
@@ -576,77 +940,25 @@ async function changePw(){
   else toast('Erro ao salvar','err');
 }
 
-// ═══════════════════════════
-// DEFAULTS
-// ═══════════════════════════
-const DEF={
-  productLink:'https://go.perfectpay.com.br/PPU38CQ4TBC',
-  heroTitle:'Como Ganhar Dinheiro com <span class="highlight">IA em 30 Dias</span>',
-  heroSubtitle:'O ebook completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA.',
-  heroBadge:'🔥 Mais de 1.200 criadores já transformaram',
-  heroCtaText:'Quero Meu Ebook por R$19,90',
-  bookTitle:'Como Ganhar Dinheiro com IA em 30 Dias',bookSub:'Guia Prático para Criadores',bookPriceBadge:'R$19,90',
-  stat1Num:'1.200+',stat1Label:'criadores impactados',stat2Num:'⭐ 4.9',stat2Label:'avaliação média',
-  stat3Num:'7 dias',stat3Label:'garantia total',stat4Num:'30 dias',stat4Label:'para transformação',
-  whyTitle:'IA: Sua Aliada Criativa',whySubtitle:'A Inteligência Artificial está mudando o jogo.',
-  learnTitle:'O que você vai aprender',learnDesc:'Um método estruturado semana a semana.',
-  monetizeTitle:'Transforme Sua Criação em Renda Real',monetizeDesc:'5 caminhos comprovados.',
-  testimonialsTitle:'O que dizem nossos leitores',
-  priceOld:'R$47',priceMain:'19',priceCents:',90',
-  pricingCtaText:'Quero Meu Ebook Agora →',
-  guaranteeText:'Garantia de 7 dias. Se não ficar satisfeito, devolvemos 100% — sem perguntas.',
-  ctaFinalTitle:'Sua Decisão, Seu Futuro',ctaFinalDesc:'Seja criador independente.',ctaFinalText:'Começar Minha Transformação →',
-  footerBrand:'IA em 30',
-  urgencyMinutes:47,showUrgencyBar:true,
-  urgencyText:'Oferta especial expira em',urgencySuffix:'— garanta o preço antes que suba!',
-  modalCtaText:'Comprar com Segurança',
-  exitTitle:'Espera! Não vai perder essa oportunidade...',
-  exitDesc:'Você estava prestes a sair. O preço especial pode subir a qualquer momento.',
-  exitCta:'Quero garantir meu ebook agora →',
-  showSaleNotifications:true,saleNotifInterval:25,
-  stickyCtaText:'Quero Agora →',
-  showVideoSection:false,videoUrl:'',videoTitle:'Veja o que você vai receber',
-  fnfTitle:'Este ebook é para você?',
-  forItems:['Quer monetizar sua criação de forma independente','Está disposto a aprender ferramentas de IA','Busca liberdade financeira e criativa'],
-  notForItems:['Busca dinheiro fácil sem esforço','Não está disposto a criar e divulgar'],
-  bonusTitle:'Comprando hoje você leva também',bonusDesc:'Bônus exclusivos desta oferta',
-  bonusItems:[{icon:'📋',title:'Checklist de Ferramentas',desc:'As melhores ferramentas gratuitas e pagas.',value:'Valor: R$27'},{icon:'🎯',title:'Guia de Nicho Rápido',desc:'Defina seu nicho em 30 minutos.',value:'Valor: R$19'},{icon:'📱',title:'Scripts para Redes Sociais',desc:'10 roteiros prontos para conteúdo viral.',value:'Valor: R$37'}],
-  tyTitle:'Obrigado pela sua compra! 🎉',
-  tyDesc:'Verifique seu email. Caso não encontre, verifique o spam.',
-  tySteps:['1. Acesse seu email e procure a mensagem da PerfectPay','2. Clique no link de download','3. Salve o PDF no seu dispositivo','4. Comece pelo Módulo 1 — leva 20 minutos!'],
-  tyShareText:'Gostou? Compartilhe com um amigo! 🙌',
-  benefits:[{icon:'🧠',title:'Remove Bloqueios Criativos',desc:'Supere o bloqueio com ideias instantâneas.'},{icon:'⚡',title:'Acelera Seus Processos',desc:'Produza em horas o que levaria dias.'},{icon:'💰',title:'Reduz Seus Custos',desc:'Elimine gastos com ferramentas caras.'},{icon:'🎨',title:'Profissionaliza Sua Marca',desc:'Identidade visual forte.'},{icon:'🛠️',title:'Ferramentas',desc:'Midjourney, ChatGPT, Soundraw e mais.'},{icon:'🤝',title:'IA Como Aliada',desc:'Você cria. A IA amplifica.'}],
-  learnItems:['5 formas reais de monetizar sua criação','Ferramentas de IA passo a passo','Plano de ação de 30 dias completo','Como posicionar e vender produtos digitais','Estratégias de conteúdo para redes','Ética e direitos autorais'],
-  weeks:[{num:'01',title:'Base Criativa',desc:'Defina identidade e configure ferramentas.'},{num:'02',title:'Produto Digital',desc:'Desenvolva seu produto principal.'},{num:'03',title:'Visibilidade',desc:'Feche suas primeiras vendas.'},{num:'04',title:'Escala Real',desc:'Crie pacotes premium e automatize.'}],
-  monetizeItems:[{num:'01',title:'Venda da Própria Criação',desc:'Música, ilustrações, fotos.'},{num:'02',title:'Serviços Personalizados',desc:'Capas, artes e trilhas.'},{num:'03',title:'Produtos Digitais',desc:'Ebooks e packs de artes.'},{num:'04',title:'Conteúdo Monetizado',desc:'YouTube, TikTok, Patreon.'},{num:'05',title:'Ensino',desc:'Cursos e mentorias.'},{num:'06',title:'Pacotes Premium',desc:'Serviços completos.'}],
-  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas já vendia artes digitais no Instagram!"',name:'Ana Silva',role:'Ilustradora',avatar:'🎨'},{stars:5,text:'"Já ganhei R$1.800 num mês!"',name:'Carlos M.',role:'Músico',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias."',name:'Juliana R.',role:'Designer',avatar:'✨'}],
-  pricingFeatures:['Ebook completo em PDF','5 formas de monetizar','Ferramentas de IA passo a passo','Plano de 30 dias','Dicas de ética','Download imediato + Acesso vitalício'],
-  faqs:[{q:'Preciso de conhecimento prévio?',a:'Não! É do zero ao avançado.'},{q:'Funciona para qualquer artista?',a:'Sim! Músicos, ilustradores, designers, escritores.'},{q:'Vai tirar minha autenticidade?',a:'Não. IA é ferramenta, não substituto.'},{q:'Quando terei resultados?',a:'Muitos relatam resultados nas primeiras 2 semanas.'}]
-};
-
-let C={...DEF};
-
-// ═══════════════════════════
+// ══════════════════════════════════════
 // BOOT
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function boot(){
-  const row=await sbGet('iaem30_config','?id=eq.1&select=config,updated_at');
-  const dot=document.getElementById('sdot');
-  const txt=document.getElementById('stxt');
-  if(row&&row[0]){
-    dot.classList.add('ok');txt.textContent='Supabase ✓';
-    if(row[0].config&&Object.keys(row[0].config).length) C={...DEF,...row[0].config};
-    if(row[0].updated_at){
-      const d=new Date(row[0].updated_at);
-      document.getElementById('ks').textContent=d.toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    }
+  const dot=document.getElementById('sync-dot'),txt=document.getElementById('sync-txt');
+  const rows=await sbGet('iaem30_config','?id=eq.1&select=config,updated_at');
+  if(rows?.[0]){
+    dot.classList.add('live');txt.textContent='Supabase ✓';
+    if(rows[0].config&&Object.keys(rows[0].config).length) C={...DEF,...rows[0].config};
   } else {
     txt.textContent='Offline';
-    toast('Sem conexão Supabase. Verifique internet.','err');
+    toast('Sem conexão Supabase','err');
   }
   fill();
+  // Load overview data
+  loadOverview();
+  loadMiniAnalytics();
+  loadPPStatus();
 }
-
 window.addEventListener('load',()=>{
   if(sessionStorage.getItem('ok')==='1'){
     document.getElementById('login').style.display='none';
@@ -655,27 +967,109 @@ window.addEventListener('load',()=>{
   }
 });
 
-// ═══════════════════════════
-// NAV
-// ═══════════════════════════
-const TITLES={dash:'Dashboard',geral:'Textos & Geral',hero:'Hero & CTA',preco:'Preço & Compra',beneficios:'Benefícios',semanas:'Semanas & Aprendizado',monetize:'Monetização',depoimentos:'Depoimentos',faq:'FAQ',conversion:'Urgência & Popups',paraquem:'Para quem é',bonus:'Bônus',obrigado:'Página de Obrigado',vendas:'Vendas',cupons:'Cupons',notifs:'Notificações de Vendas',analytics:'Analytics',config:'Configurações'};
-function go(id,el){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
-  document.getElementById('p-'+id).classList.add('on');
-  el.classList.add('on');
-  document.getElementById('ptitle').textContent=TITLES[id]||id;
-  if(id==='analytics')setTimeout(loadAnalytics,50);
-  if(id==='vendas')setTimeout(()=>{loadSales();loadPPTokenStatus();},50);
-  if(id==='cupons')setTimeout(loadCoupons,50);
-  if(id==='notifs')setTimeout(loadNotifs,50);
+// ══════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════
+let sbCollapsed=false;
+function toggleSb(){
+  sbCollapsed=!sbCollapsed;
+  document.getElementById('sb').classList.toggle('collapsed',sbCollapsed);
+  document.getElementById('main').classList.toggle('collapsed',sbCollapsed);
 }
 
-// ═══════════════════════════
+let currentTab='vendas';
+function switchTab(tab){
+  currentTab=tab;
+  document.getElementById('nav-vendas').style.display=tab==='vendas'?'':'none';
+  document.getElementById('nav-edit').style.display=tab==='edit'?'':'none';
+  document.getElementById('tab-vendas').classList.toggle('on',tab==='vendas');
+  document.getElementById('tab-edit').classList.toggle('on',tab==='edit');
+  // Show/hide save button
+  const saveBtn=document.getElementById('btn-save');
+  const resetBtn=document.getElementById('btn-reset');
+  saveBtn.style.display=tab==='edit'?'flex':'none';
+  resetBtn.style.display=tab==='edit'?'flex':'none';
+  // Go to first panel of tab
+  if(tab==='vendas') go('overview',document.querySelector('#nav-vendas .ni'));
+  else go('e-geral',document.querySelector('#nav-edit .ni'));
+}
+
+const PTITLES={
+  overview:'Dashboard',vendas:'Vendas',extrato:'Extrato Financeiro',comissoes:'Comissões & Afiliados',
+  produtos:'Produtos',analytics:'Analytics',cupons:'Cupons',emails:'Emails Capturados',
+  notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
+  'e-geral':'Geral & Marca','e-hero':'Hero & CTA','e-preco':'Preço & Compra',
+  'e-ben':'Benefícios','e-semanas':'Semanas & Aprendizado','e-monetize':'Monetização',
+  'e-depos':'Depoimentos','e-faq':'FAQ','e-conv':'Conversão & Urgência',
+  'e-paraquem':'Para quem é','e-bonus':'Bônus','e-obrigado':'Página de Obrigado',
+  'e-config':'Configurações',
+};
+let currentPanel='overview';
+function go(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  const panel=document.getElementById('p-'+id);
+  if(panel) panel.classList.add('on');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(el) el.classList.add('on');
+  document.getElementById('ptitle').textContent=PTITLES[id]||id;
+  currentPanel=id;
+  // Lazy load
+  const loads={
+    vendas:loadVendas,extrato:loadExtrato,comissoes:loadComissoes,
+    produtos:loadProdutos,analytics:loadAnalytics,cupons:loadCupons,
+    emails:loadEmails,notifs:loadNotifs,perfectpay:loadPPStatus,
+  };
+  if(loads[id]) setTimeout(loads[id],50);
+}
+
+// ══════════════════════════════════════
+// DEFAULTS
+// ══════════════════════════════════════
+const DEF={
+  productLink:'https://go.perfectpay.com.br/PPU38CQ4TBC',
+  heroTitle:'Como Ganhar Dinheiro com <span class="highlight">IA em 30 Dias</span>',
+  heroSubtitle:'O ebook completo para músicos, ilustradores, designers e escritores.',
+  heroBadge:'🔥 Mais de 1.200 criadores já transformaram',heroCtaText:'Quero Meu Ebook por R$19,90',
+  bookTitle:'Como Ganhar Dinheiro com IA em 30 Dias',bookSub:'Guia Prático para Criadores',bookPriceBadge:'R$19,90',
+  stat1Num:'1.200+',stat1Label:'criadores impactados',stat2Num:'⭐ 4.9',stat2Label:'avaliação média',
+  stat3Num:'7 dias',stat3Label:'garantia total',stat4Num:'30 dias',stat4Label:'para transformação',
+  whyTitle:'IA: Sua Aliada Criativa',whySubtitle:'A IA está mudando o jogo para criadores.',
+  learnTitle:'O que você vai aprender',learnDesc:'Um método estruturado semana a semana.',
+  monetizeTitle:'Transforme Sua Criação em Renda',monetizeDesc:'5 caminhos comprovados.',
+  testimonialsTitle:'O que dizem nossos leitores',
+  priceOld:'R$47',priceMain:'19',priceCents:',90',pricingCtaText:'Quero Meu Ebook Agora →',
+  guaranteeText:'Garantia de 7 dias. Reembolso total sem perguntas.',
+  ctaFinalTitle:'Sua Decisão, Seu Futuro',ctaFinalDesc:'Empreenda sua arte.',ctaFinalText:'Começar Agora →',
+  footerBrand:'IA em 30',urgencyMinutes:47,showUrgencyBar:true,
+  urgencyText:'Oferta especial expira em',urgencySuffix:'— garanta o preço!',
+  modalCtaText:'Comprar com Segurança',exitTitle:'Espera! Não perca essa oportunidade...',
+  exitDesc:'O preço especial pode subir a qualquer momento.',exitCta:'Quero garantir agora →',
+  showSaleNotifications:true,saleNotifInterval:25,stickyCtaText:'Quero Agora →',
+  showVideoSection:false,videoUrl:'',videoTitle:'Veja o que você vai receber',
+  fnfTitle:'Este ebook é para você?',
+  forItems:['Quer monetizar sua criação','Está disposto a aprender IA','Busca liberdade financeira'],
+  notForItems:['Busca dinheiro fácil','Não está disposto a criar'],
+  bonusTitle:'Comprando hoje você leva também',bonusDesc:'Bônus exclusivos desta oferta',
+  bonusItems:[{icon:'📋',title:'Checklist de Ferramentas',desc:'As melhores ferramentas.',value:'Valor: R$27'},{icon:'🎯',title:'Guia de Nicho',desc:'Defina seu nicho em 30min.',value:'Valor: R$19'},{icon:'📱',title:'Scripts para Redes',desc:'10 roteiros prontos.',value:'Valor: R$37'}],
+  tyTitle:'Obrigado pela compra! 🎉',tyDesc:'Verifique seu email.',
+  tySteps:['1. Acesse seu email','2. Clique no link de download','3. Salve o PDF','4. Comece pelo Módulo 1!'],
+  tyShareText:'Gostou? Compartilhe! 🙌',
+  benefits:[{icon:'🧠',title:'Remove Bloqueios',desc:'Ideias instantâneas.'},{icon:'⚡',title:'Acelera Processos',desc:'Produza em horas.'},{icon:'💰',title:'Reduz Custos',desc:'Sem ferramentas caras.'},{icon:'🎨',title:'Profissionaliza',desc:'Identidade forte.'},{icon:'🛠️',title:'Ferramentas',desc:'ChatGPT, Midjourney e mais.'},{icon:'🤝',title:'IA Aliada',desc:'Você cria. IA amplifica.'}],
+  learnItems:['5 formas de monetizar','Ferramentas de IA passo a passo','Plano de 30 dias','Como vender produtos digitais','Estratégias de conteúdo','Ética e direitos autorais'],
+  weeks:[{num:'01',title:'Base Criativa',desc:'Defina identidade.'},{num:'02',title:'Produto Digital',desc:'Crie seu produto.'},{num:'03',title:'Visibilidade',desc:'Feche vendas.'},{num:'04',title:'Escala',desc:'Automatize.'}],
+  monetizeItems:[{num:'01',title:'Venda Criações',desc:'Música, ilustrações.'},{num:'02',title:'Serviços',desc:'Capas e artes.'},{num:'03',title:'Produtos Digitais',desc:'Ebooks e packs.'},{num:'04',title:'Conteúdo',desc:'YouTube e TikTok.'},{num:'05',title:'Ensino',desc:'Cursos.'},{num:'06',title:'Premium',desc:'Pacotes completos.'}],
+  testimonials:[{stars:5,text:'"Comecei do zero e em 3 semanas vendia artes no Instagram!"',name:'Ana Silva',role:'Ilustradora',avatar:'🎨'},{stars:5,text:'"Já ganhei R$1.800 em um mês!"',name:'Carlos M.',role:'Músico',avatar:'🎵'},{stars:5,text:'"Investimento que se pagou em 3 dias."',name:'Juliana R.',role:'Designer',avatar:'✨'}],
+  pricingFeatures:['Ebook completo em PDF','5 formas de monetizar','Ferramentas passo a passo','Plano de 30 dias','Ética e direitos','Download imediato'],
+  faqs:[{q:'Preciso de conhecimento prévio?',a:'Não! É do zero ao avançado.'},{q:'Funciona para qualquer artista?',a:'Sim! Músicos, designers, escritores.'},{q:'Vai tirar minha autenticidade?',a:'Não. IA é ferramenta.'},{q:'Quando terei resultados?',a:'Muitos em 2 semanas.'}]
+};
+let C={...DEF};
+
+// ══════════════════════════════════════
 // FILL FIELDS
-// ═══════════════════════════
+// ══════════════════════════════════════
 function fill(){
-  const m={'f-brand':'footerBrand','f-link':'productLink','f-link2':'productLink','f-link3':'productLink',
+  const m={
+    'f-brand':'footerBrand','f-link':'productLink','f-link2':'productLink','f-link3':'productLink',
     'f-s1n':'stat1Num','f-s1l':'stat1Label','f-s2n':'stat2Num','f-s2l':'stat2Label',
     'f-s3n':'stat3Num','f-s3l':'stat3Label','f-s4n':'stat4Num','f-s4l':'stat4Label',
     'f-whyt':'whyTitle','f-whys':'whySubtitle',
@@ -691,7 +1085,6 @@ function fill(){
     'f-si':'saleNotifInterval','f-sc':'stickyCtaText','f-vt':'videoTitle','f-vu':'videoUrl',
     'f-fnft':'fnfTitle','f-bnt':'bonusTitle','f-bnd':'bonusDesc',
     'f-tyt':'tyTitle','f-tyd':'tyDesc','f-tys2':'tyShareText',
-    'd-link':'productLink',
   };
   for(const[id,k]of Object.entries(m)){const el=document.getElementById(id);if(el&&C[k]!=null)el.value=C[k];}
   const sel=(id,val)=>{const el=document.getElementById(id);if(el)el.value=String(val);};
@@ -699,30 +1092,15 @@ function fill(){
   sel('f-sn',C.showSaleNotifications!==false);
   sel('f-vs',!!C.showVideoSection);
   const ta=(id,arr)=>{const el=document.getElementById(id);if(el)el.value=(arr||[]).join('\n');};
-  ta('f-feats',C.pricingFeatures);
-  ta('f-li',C.learnItems);
-  ta('f-fi',C.forItems);
-  ta('f-ni',C.notForItems);
-  ta('f-tys',C.tySteps);
-  renderList('ben',C.benefits||[]);
-  renderList('wks',C.weeks||[]);
-  renderList('mon',C.monetizeItems||[]);
-  renderList('test',C.testimonials||[]);
-  renderList('faq',C.faqs||[]);
-  renderList('bon',C.bonusItems||[]);
-  updateDash();
+  ta('f-feats',C.pricingFeatures);ta('f-li',C.learnItems);
+  ta('f-fi',C.forItems);ta('f-ni',C.notForItems);ta('f-tys',C.tySteps);
+  rList('ben',C.benefits||[]);rList('wks',C.weeks||[]);rList('mon',C.monetizeItems||[]);
+  rList('test',C.testimonials||[]);rList('faq',C.faqs||[]);rList('bon',C.bonusItems||[]);
 }
 
-function updateDash(){
-  const v=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
-  v('kp','R$'+(C.priceMain||'19')+(C.priceCents||',90'));
-  v('kb',(C.benefits||[]).length);
-  v('kd',(C.testimonials||[]).length);
-}
-
-// ═══════════════════════════
-// COLLECT
-// ═══════════════════════════
+// ══════════════════════════════════════
+// COLLECT & SAVE
+// ══════════════════════════════════════
 function collect(){
   const v=id=>{const el=document.getElementById(id);return el?el.value:null;};
   const ta=id=>(v(id)||'').split('\n').map(s=>s.trim()).filter(Boolean);
@@ -736,149 +1114,462 @@ function collect(){
     priceOld:v('f-pold'),priceMain:v('f-pmain'),priceCents:v('f-pcents'),
     pricingCtaText:v('f-pctxt'),guaranteeText:v('f-gtxt'),
     ctaFinalTitle:v('f-ctat'),ctaFinalDesc:v('f-ctad'),ctaFinalText:v('f-ctab'),
-    learnTitle:v('f-lt'),learnDesc:v('f-ld'),
-    monetizeTitle:v('f-mt'),monetizeDesc:v('f-md'),testimonialsTitle:v('f-testt'),
+    learnTitle:v('f-lt'),learnDesc:v('f-ld'),monetizeTitle:v('f-mt'),monetizeDesc:v('f-md'),
+    testimonialsTitle:v('f-testt'),
     urgencyMinutes:Number(v('f-um'))||47,urgencyText:v('f-ut'),urgencySuffix:v('f-us'),
     showUrgencyBar:document.getElementById('f-ub')?.value!=='false',
     exitTitle:v('f-xt'),exitDesc:v('f-xd'),exitCta:v('f-xb'),modalCtaText:v('f-mct'),
     showSaleNotifications:document.getElementById('f-sn')?.value!=='false',
     saleNotifInterval:Number(v('f-si'))||25,stickyCtaText:v('f-sc'),
     showVideoSection:document.getElementById('f-vs')?.value==='true',
-    videoTitle:v('f-vt'),videoUrl:v('f-vu'),
-    fnfTitle:v('f-fnft'),bonusTitle:v('f-bnt'),bonusDesc:v('f-bnd'),
+    videoTitle:v('f-vt'),videoUrl:v('f-vu'),fnfTitle:v('f-fnft'),
+    bonusTitle:v('f-bnt'),bonusDesc:v('f-bnd'),
     tyTitle:v('f-tyt'),tyDesc:v('f-tyd'),tyShareText:v('f-tys2'),
     pricingFeatures:ta('f-feats'),learnItems:ta('f-li'),
     forItems:ta('f-fi'),notForItems:ta('f-ni'),tySteps:ta('f-tys'),
-    benefits:collectList('ben'),weeks:collectList('wks'),
-    monetizeItems:collectList('mon'),testimonials:collectList('test'),
-    faqs:collectList('faq'),bonusItems:collectList('bon'),
+    benefits:cList('ben'),weeks:cList('wks'),monetizeItems:cList('mon'),
+    testimonials:cList('test'),faqs:cList('faq'),bonusItems:cList('bon'),
   };
 }
 
-// ═══════════════════════════
-// SAVE
-// ═══════════════════════════
 async function saveAll(){
-  const btn=document.getElementById('bsave');
+  const btn=document.getElementById('btn-save');
   btn.disabled=true;btn.textContent='Salvando…';
   C=collect();
   const ok=await sbPatch('iaem30_config','?id=eq.1',{config:C,updated_at:new Date().toISOString()});
-  btn.disabled=false;btn.textContent='💾 Salvar Tudo';
-  if(ok){
-    updateDash();
-    const now=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    document.getElementById('ks').textContent=now;
-    toast('✓ Salvo no Supabase! Site atualizado.');
-  } else {
-    toast('❌ Erro ao salvar. Verifique conexão.','err');
-  }
+  btn.disabled=false;btn.textContent='💾 Salvar';
+  if(ok) toast('✓ Salvo no Supabase! Site atualizado.');
+  else   toast('❌ Erro ao salvar.','err');
 }
 
-async function saveLinkNow(){
-  C.productLink=document.getElementById('d-link').value;
-  const ok=await sbPatch('iaem30_config','?id=eq.1',{config:C});
-  toast(ok?'✓ Link salvo!':'❌ Erro ao salvar.','ok');
-}
+function confirmReset(){if(confirm('Resetar para os padrões?')){C={...DEF};fill();toast('Resetado. Clique Salvar.');}}
 
-function confirmReset(){
-  if(confirm('Resetar tudo para os padrões?')){C={...DEF};fill();toast('Resetado. Clique Salvar Tudo.');}
-}
-
-// ═══════════════════════════
+// ══════════════════════════════════════
 // LIST EDITORS
-// ═══════════════════════════
+// ══════════════════════════════════════
 function e(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
-
 const SCHEMAS={
-  ben:['icon:64px','title:1fr','desc:1fr'],
-  wks:['num:64px','title:1fr','desc:1fr'],
-  mon:['num:64px','title:1fr','desc:1fr'],
-  test:['avatar:64px','name:1fr','role:1fr'],
+  ben:['icon:56px','title:1fr','desc:1fr'],
+  wks:['num:56px','title:1fr','desc:1fr'],
+  mon:['num:56px','title:1fr','desc:1fr'],
+  test:['avatar:56px','name:1fr','role:1fr'],
   faq:['q:1fr'],
-  bon:['icon:64px','title:1fr','value:120px','desc:1fr'],
+  bon:['icon:56px','title:1fr','value:110px','desc:1fr'],
 };
 const EXTRA={test:'text',faq:'a'};
+const KEYS_MAP={ben:'benefits',wks:'weeks',mon:'monetizeItems',test:'testimonials',faq:'faqs',bon:'bonusItems'};
+const DEFS_MAP={
+  ben:{icon:'✨',title:'Benefício',desc:'Descrição.'},
+  wks:{num:'05',title:'Semana',desc:'Descrição.'},
+  mon:{num:'07',title:'Forma',desc:'Descrição.'},
+  test:{stars:5,text:'"Depoimento."',name:'Nome',role:'Cargo',avatar:'⭐'},
+  faq:{q:'Pergunta?',a:'Resposta.'},
+  bon:{icon:'🎁',title:'Bônus',desc:'Descrição.',value:'Valor: R$27'},
+};
 
-function renderList(key,items){
+function rList(key,items){
   const el=document.getElementById('e-'+key);if(!el)return;
   const schema=SCHEMAS[key]||[];
   const extra=EXTRA[key];
   el.innerHTML=items.map((item,i)=>{
-    const cols=schema.map(s=>{const[k,w]=s.split(':');return`<input placeholder="${k}" value="${e(item[k]||'')}" data-k="${k}" data-i="${i}" style="width:${w||'1fr'}">`;}).join('');
-    const grid=`grid-template-columns:${schema.map(s=>s.split(':')[1]||'1fr').join(' ')}`;
-    const extraHtml=extra?`<textarea rows="2" placeholder="${extra}" data-k="${extra}" data-i="${i}">${e(item[extra]||'')}</textarea>`:'';
-    const stars=key==='test'?`<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--m)">Estrelas:<div class="stars" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star${s<=(item.stars||5)?' on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div></div>`:'';
-    return`<div class="li"><div class="lib"><div style="display:grid;gap:7px;${grid}">${cols}</div>${extraHtml}${stars}</div>
-    <div class="lacts">
-      ${key==='ben'?`<button class="bic" onclick="mv('${key}',${i},-1)">↑</button><button class="bic" onclick="mv('${key}',${i},1)">↓</button>`:''}
-      <button class="bic d" onclick="rm('${key}',${i})">✕</button>
+    const g=`grid-template-columns:${schema.map(s=>s.split(':')[1]||'1fr').join(' ')}`;
+    const cols=schema.map(s=>{const[k,w]=s.split(':');return`<input placeholder="${k}" value="${e(item[k]||'')}" data-k="${k}" data-i="${i}" style="min-width:0">`;}).join('');
+    const xtra=extra?`<textarea rows="2" placeholder="${extra}" data-k="${extra}" data-i="${i}">${e(item[extra]||'')}</textarea>`:'';
+    const starrow=key==='test'?`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--m)">Estrelas: <div class="stars" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star${s<=(item.stars||5)?' on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div></div>`:'';
+    return`<div class="li"><div class="lib">
+      <div style="display:grid;gap:6px;${g}">${cols}</div>${xtra}${starrow}
+    </div><div class="lacts">
+      ${key==='ben'?`<button class="bic" title="↑" onclick="mvList('${key}',${i},-1)">↑</button><button class="bic" title="↓" onclick="mvList('${key}',${i},1)">↓</button>`:''}
+      <button class="bic d" onclick="rmList('${key}',${i})">✕</button>
     </div></div>`;
   }).join('');
 }
 
-function collectList(key){
-  const schema=SCHEMAS[key]||[];
-  const extra=EXTRA[key];
-  const a=JSON.parse(JSON.stringify(C[{ben:'benefits',wks:'weeks',mon:'monetizeItems',test:'testimonials',faq:'faqs',bon:'bonusItems'}[key]]||[]));
+function cList(key){
+  const ck=KEYS_MAP[key];const extra=EXTRA[key];
+  const a=JSON.parse(JSON.stringify(C[ck]||[]));
   document.querySelectorAll('#e-'+key+' [data-i]').forEach(el=>{
     const i=+el.dataset.i,k=el.dataset.k;
-    if(a[i])a[i][k]=el.tagName==='TEXTAREA'?el.value:el.value;
+    if(a[i]) a[i][k]=el.tagName==='TEXTAREA'?el.value:el.value;
   });
-  if(key==='test'){
-    a.forEach((t,i)=>{const row=document.getElementById('sr-'+i);if(!row)return;let s=0;row.querySelectorAll('.star.on').forEach(()=>s++);t.stars=s||5;});
-  }
+  if(key==='test') a.forEach((t,i)=>{const row=document.getElementById('sr-'+i);if(!row)return;let s=0;row.querySelectorAll('.star.on').forEach(()=>s++);t.stars=s||5;});
   return a;
 }
 
 function setStar(i,s){document.getElementById('sr-'+i).querySelectorAll('.star').forEach(b=>b.classList.toggle('on',+b.dataset.s<=s));}
+function addItem(key){C[KEYS_MAP[key]]=cList(key);C[KEYS_MAP[key]].push({...DEFS_MAP[key]});rList(key,C[KEYS_MAP[key]]);}
+function rmList(key,i){C[KEYS_MAP[key]]=cList(key);C[KEYS_MAP[key]].splice(i,1);rList(key,C[KEYS_MAP[key]]);}
+function mvList(key,i,d){C[KEYS_MAP[key]]=cList(key);const a=C[KEYS_MAP[key]],j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];rList(key,a);}
 
-const DEFS={ben:{icon:'✨',title:'Novo Benefício',desc:'Descrição.'},wks:{num:'05',title:'Nova Semana',desc:'Descrição.'},mon:{num:'07',title:'Nova Forma',desc:'Descrição.'},test:{stars:5,text:'"Depoimento aqui."',name:'Nome',role:'Profissão',avatar:'⭐'},faq:{q:'Nova pergunta?',a:'Resposta aqui.'},bon:{icon:'🎁',title:'Novo Bônus',desc:'Descrição.',value:'Valor: R$27'}};
-const KEYS={ben:'benefits',wks:'weeks',mon:'monetizeItems',test:'testimonials',faq:'faqs',bon:'bonusItems'};
-
-function addItem(key){
-  C[KEYS[key]]=collectList(key);
-  C[KEYS[key]].push({...DEFS[key]});
-  renderList(key,C[KEYS[key]]);
+// ══════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════
+let charts={};
+function mkChart(id,type,labels,datasets,opts={}){
+  if(charts[id]) charts[id].destroy();
+  const ctx=document.getElementById(id)?.getContext('2d');
+  if(!ctx) return;
+  charts[id]=new Chart(ctx,{type,data:{labels,datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#7e7a96',font:{size:12}}},tooltip:{backgroundColor:'#14141f',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#eeeaf8',bodyColor:'#7e7a96'}},
+      scales:type==='doughnut'||type==='pie'?{}:{
+        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#7e7a96',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#7e7a96',font:{size:11},...(opts.yCallback?{callback:opts.yCallback}:{})}}
+      },
+      ...opts
+    }
+  });
 }
-function rm(key,i){C[KEYS[key]]=collectList(key);C[KEYS[key]].splice(i,1);renderList(key,C[KEYS[key]]);}
-function mv(key,i,d){C[KEYS[key]]=collectList(key);const a=C[KEYS[key]],j=i+d;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];renderList(key,a);}
 
-// ═══════════════════════════
-// COUPONS
-// ═══════════════════════════
+// ══════════════════════════════════════
+// OVERVIEW DASHBOARD
+// ══════════════════════════════════════
+async function loadOverview(){
+  const [sales,visitors,ctas]=await Promise.all([
+    sbGet('iaem30_sales','?order=created_at.desc&limit=500'),
+    sbGet('iaem30_visitors','?created_at=gte.'+new Date(Date.now()-86400000).toISOString()+'&select=*'),
+    sbGet('iaem30_cta_clicks','?created_at=gte.'+new Date(Date.now()-86400000).toISOString()+'&select=*'),
+  ]);
+  const allS=sales||[];const appr=allS.filter(s=>s.status==='approved');
+  const now=new Date();
+  const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+  const wk=new Date(now-7*86400000).toISOString();
+  const mo=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
+  const kpi=(rows,from)=>{const f=rows.filter(s=>s.created_at>=from);return{t:f.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:f.length};};
+  const fmt=v=>'R$'+v.toFixed(2).replace('.',',');
+  const K=(id,val,sid,cnt)=>{const e=document.getElementById(id);if(e)e.textContent=val;const s=document.getElementById(sid);if(s)s.textContent=cnt+' venda'+(cnt!==1?'s':'');};
+  const t=kpi(appr,tod),w=kpi(appr,wk),m=kpi(appr,mo),tt={t:appr.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:appr.length};
+  K('k-hoje',fmt(t.t),'k-hoje-c',t.c);K('k-sem',fmt(w.t),'k-sem-c',w.c);K('k-mes',fmt(m.t),'k-mes-c',m.c);K('k-tot',fmt(tt.t),'k-tot-c',tt.c);
+  K('sv-hj',fmt(t.t),'sv-hjc',t.c);K('sv-sm',fmt(w.t),'sv-smc',w.c);K('sv-ms',fmt(m.t),'sv-msc',m.c);K('sv-tt',fmt(tt.t),'sv-ttc',tt.c);
+
+  // Revenue chart (30 days)
+  const days30=[];const rev30=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(now-i*86400000);
+    const label=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const dayStart=new Date(d.getFullYear(),d.getMonth(),d.getDate()).toISOString();
+    const dayEnd=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).toISOString();
+    const dayRev=appr.filter(s=>s.created_at>=dayStart&&s.created_at<dayEnd).reduce((s,r)=>s+parseFloat(r.amount||0),0);
+    days30.push(label);rev30.push(dayRev);
+  }
+  mkChart('chart-revenue','bar',days30,[{label:'Receita',data:rev30,backgroundColor:'rgba(124,92,252,.5)',borderColor:'#7c5cfc',borderWidth:1,borderRadius:4}],{yCallback:v=>'R$'+v});
+
+  // Methods chart
+  const methMap={};appr.forEach(s=>{const m=s.payment_method||'Outro';methMap[m]=(methMap[m]||0)+1;});
+  const mLabels=Object.keys(methMap);const mData=Object.values(methMap);
+  mkChart('chart-methods','doughnut',mLabels,[{data:mData,backgroundColor:['#7c5cfc','#10b981','#f59e0b','#06b6d4','#f43f5e'],borderWidth:0}]);
+
+  // Recent sales
+  const recentEl=document.getElementById('dash-recent-sales');
+  if(recentEl){
+    if(!allS.length){recentEl.innerHTML='<div class="empty"><div class="eico">💳</div>Nenhuma venda registrada ainda.</div>';return;}
+    recentEl.innerHTML=allS.slice(0,5).map(s=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500">${s.customer_name||'—'}</div>
+          <div style="font-size:11px;color:var(--m)">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</div>
+          <div style="font-size:11px;color:var(--m);text-align:right">${s.payment_method||'—'}</div>
+        </div>
+        ${s.status==='approved'?'<span class="tag green" style="font-size:10px">✓</span>':s.status==='refunded'?'<span class="tag red" style="font-size:10px">↩</span>':'<span class="tag gray" style="font-size:10px">⏳</span>'}
+      </div>`).join('');
+  }
+}
+
+// ══════════════════════════════════════
+// MINI ANALYTICS (for overview panel)
+// ══════════════════════════════════════
+async function loadMiniAnalytics(){
+  const since=new Date(Date.now()-86400000).toISOString();
+  const [v,c,em]=await Promise.all([
+    sbGet('iaem30_visitors','?created_at=gte.'+since+'&select=*&order=created_at.desc&limit=200'),
+    sbGet('iaem30_cta_clicks','?created_at=gte.'+since+'&select=*'),
+    sbGet('iaem30_emails','?select=email&limit=9999'),
+  ]);
+  const vis=v||[],ct=c||[];
+  const tot=vis.length,cc=ct.length;
+  ['an-v','a-v'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=tot;});
+  ['an-c','a-c'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=cc;});
+  ['an-r','a-r'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=tot?Math.round(cc/tot*100)+'%':'0%';});
+  ['an-e','a-e'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=(em||[]).length;});
+  // Devices
+  const mob=vis.filter(x=>x.device==='mobile').length;
+  const devEl=document.getElementById('an-devs');
+  if(devEl) devEl.innerHTML=`
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>📱 Mobile</span><span style="color:var(--t)">${mob} (${tot?Math.round(mob/tot*100):0}%)</span></div>
+      <div style="background:var(--card2);border-radius:4px;height:5px"><div style="background:var(--a);height:5px;border-radius:4px;width:${tot?Math.round(mob/tot*100):0}%"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>💻 Desktop</span><span style="color:var(--t)">${tot-mob} (${tot?Math.round((tot-mob)/tot*100):0}%)</span></div>
+      <div style="background:var(--card2);border-radius:4px;height:5px"><div style="background:var(--g);height:5px;border-radius:4px;width:${tot?Math.round((tot-mob)/tot*100):0}%"></div></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════
+// VENDAS
+// ══════════════════════════════════════
+async function loadVendas(){
+  const filter=document.getElementById('vf-status')?.value||'all';
+  const from=document.getElementById('vf-from')?.value;
+  const to=document.getElementById('vf-to')?.value;
+  let q='?order=created_at.desc&limit=500';
+  if(from) q+=`&created_at=gte.${from}`;
+  if(to)   q+=`&created_at=lte.${to}T23:59:59`;
+  const all=await sbGet('iaem30_sales',q)||[];
+  const appr=all.filter(s=>s.status==='approved');
+  const now=new Date();
+  const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
+  const wk=new Date(now-7*86400000).toISOString();
+  const mo=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
+  const kpi=(rows,f)=>{const x=rows.filter(s=>s.created_at>=f);return{t:x.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:x.length};};
+  const fmt=v=>'R$'+v.toFixed(2).replace('.',',');
+  const K=(id,val,sid,cnt)=>{const e=document.getElementById(id);if(e)e.textContent=val;const s=document.getElementById(sid);if(s)s.textContent=cnt+' venda'+(cnt!==1?'s':'');};
+  const t=kpi(appr,tod),w=kpi(appr,wk),m=kpi(appr,mo),tt={t:appr.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:appr.length};
+  K('sv-hj',fmt(t.t),'sv-hjc',t.c);K('sv-sm',fmt(w.t),'sv-smc',w.c);K('sv-ms',fmt(m.t),'sv-msc',m.c);K('sv-tt',fmt(tt.t),'sv-ttc',tt.c);
+  const disp=filter==='all'?all:all.filter(s=>s.status===filter);
+  const el=document.getElementById('sv-tbl');if(!el)return;
+  if(!disp.length){el.innerHTML='<div class="empty"><div class="eico">💳</div>Nenhuma venda encontrada. Sincronize com PerfectPay ou configure o webhook.</div>';return;}
+  const sb=s=>({approved:'<span class="tag green">✓ Aprovada</span>',refunded:'<span class="tag red">↩ Reembolso</span>',cancelled:'<span class="tag gray">✕ Cancelada</span>',pending:'<span class="tag gold">⏳ Pendente</span>'}[s]||`<span class="tag gray">${s}</span>`);
+  el.innerHTML=`<table class="tbl"><thead><tr>${['Data','Cliente','Email','Valor','Método','Status','Cupom'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+    ${disp.slice(0,100).map(s=>`<tr>
+      <td style="white-space:nowrap">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td style="font-weight:500">${s.customer_name||'—'}</td>
+      <td style="color:var(--m)">${s.customer_email||'—'}</td>
+      <td style="font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</td>
+      <td style="color:var(--m)">${s.payment_method||'—'}</td>
+      <td>${sb(s.status)}</td>
+      <td style="color:var(--a2)">${s.coupon_code||'—'}</td>
+    </tr>`).join('')}
+  </tbody></table>${disp.length>100?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--m2)">Mostrando 100 de ${disp.length}</div>`:''}`;
+}
+
+async function addSaleManual(){
+  const n=document.getElementById('ms-n').value.trim();
+  const em=document.getElementById('ms-e').value.trim();
+  const v=parseFloat(document.getElementById('ms-v').value);
+  if(!em||!v){toast('Preencha email e valor','err');return;}
+  const ok=await sbPost('iaem30_sales',{order_id:'manual_'+Date.now(),customer_name:n,customer_email:em,amount:v,status:'approved',payment_method:'Manual',product_name:'IA em 30 Dias'});
+  if(ok){toast('✓ Venda registrada!');['ms-n','ms-e','ms-v'].forEach(id=>document.getElementById(id).value='');loadVendas();loadOverview();}
+  else toast('Erro','err');
+}
+
+// ══════════════════════════════════════
+// EXTRATO
+// ══════════════════════════════════════
+async function loadExtrato(){
+  const from=document.getElementById('ex-from')?.value;
+  const to=document.getElementById('ex-to')?.value;
+  const d=await ppAPI('extract',{...(from?{date_from:from}:{}),  ...(to?{date_to:to}:{})});
+  const el=document.getElementById('ex-tbl');if(!el)return;
+  if(!d?.ok){el.innerHTML=`<div class="empty"><div class="eico">🔑</div>${d?.error||'Configure o token da PerfectPay na aba Integração.'}</div>`;return;}
+  const rows=d.data||[];
+  const sum=d.summary||{};
+  // Update KPIs
+  const fmt=v=>'R$'+(parseFloat(v||0)).toFixed(2).replace('.',',');
+  ['ex-disp','ex-pend','ex-sac'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=fmt([sum.available,sum.pending,sum.total_paid][i]||0);});
+  if(rows.length){
+    el.innerHTML=`<table class="tbl"><thead><tr>${['Data','Descrição','Valor','Tipo','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+      ${rows.slice(0,50).map(r=>`<tr>
+        <td>${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
+        <td>${r.description||r.desc||'—'}</td>
+        <td style="font-weight:600;color:${(r.type||'').includes('credit')||parseFloat(r.value||0)>0?'var(--g)':'var(--r)'}">R$${parseFloat(r.value||r.amount||0).toFixed(2).replace('.',',')}</td>
+        <td style="color:var(--m)">${r.type||'—'}</td>
+        <td><span class="tag ${r.status==='paid'?'green':r.status==='pending'?'gold':'gray'}">${r.status||'—'}</span></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+  } else {
+    el.innerHTML='<div class="empty"><div class="eico">🏦</div>Nenhum lançamento encontrado no período.</div>';
+  }
+}
+
+// ══════════════════════════════════════
+// COMISSÕES
+// ══════════════════════════════════════
+async function loadComissoes(){
+  const d=await ppAPI('commissions');
+  const rankEl=document.getElementById('co-rank');
+  const tblEl=document.getElementById('co-tbl');
+  if(!d?.ok){
+    if(rankEl) rankEl.innerHTML=`<div class="empty"><div class="eico">🔑</div>${d?.error||'Configure o token.'}</div>`;
+    return;
+  }
+  const rows=d.data||[];
+  const affMap={};
+  rows.forEach(r=>{
+    const name=r.affiliate_name||r.affiliate?.name||'Desconhecido';
+    const val=parseFloat(r.commission_value||r.value||0);
+    if(!affMap[name]) affMap[name]={name,total:0,count:0};
+    affMap[name].total+=val;affMap[name].count++;
+  });
+  const sorted=Object.values(affMap).sort((a,b)=>b.total-a.total);
+  const fmt=v=>'R$'+v.toFixed(2).replace('.',',');
+  const totComm=rows.reduce((s,r)=>s+parseFloat(r.commission_value||r.value||0),0);
+  // Update KPIs
+  const K=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  K('co-tot',fmt(totComm));K('co-tot-c',rows.length+' comissões');
+  K('co-af',sorted.length);
+  if(sorted[0]){K('co-top',sorted[0].name);K('co-top-v',fmt(sorted[0].total));}
+  K('co-tkt',rows.length?fmt(totComm/rows.length):'—');
+  // Ranking
+  if(rankEl&&sorted.length){
+    rankEl.innerHTML=sorted.slice(0,10).map((af,i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${i===0?'var(--gold)':i===1?'var(--m)':i===2?'#cd7f32':'var(--m2)'};width:20px">#${i+1}</div>
+        <div style="flex:1;font-size:13px">${af.name}</div>
+        <div style="font-weight:700;color:var(--g)">${fmt(af.total)}</div>
+        <div style="font-size:11px;color:var(--m)">${af.count} vendas</div>
+      </div>`).join('');
+  } else if(rankEl){
+    rankEl.innerHTML='<div class="empty"><div class="eico">🤝</div>Nenhum afiliado encontrado.</div>';
+  }
+  // Table
+  if(tblEl&&rows.length){
+    tblEl.innerHTML=`<table class="tbl"><thead><tr>${['Data','Afiliado','Produto','Comissão','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+      ${rows.slice(0,30).map(r=>`<tr>
+        <td>${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
+        <td>${r.affiliate_name||r.affiliate?.name||'—'}</td>
+        <td style="color:var(--m)">${r.product_name||'—'}</td>
+        <td style="font-weight:600;color:var(--g)">R$${parseFloat(r.commission_value||r.value||0).toFixed(2).replace('.',',')}</td>
+        <td><span class="tag ${r.status==='approved'?'green':'gold'}">${r.status||'—'}</span></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+  }
+}
+
+// ══════════════════════════════════════
+// PRODUTOS
+// ══════════════════════════════════════
+async function loadProdutos(){
+  const d=await ppAPI('products');
+  const el=document.getElementById('prod-list');if(!el)return;
+  if(!d?.ok){el.innerHTML=`<div class="empty"><div class="eico">🔑</div>${d?.error||'Configure o token.'}</div>`;return;}
+  const prods=d.data||[];
+  if(!prods.length){el.innerHTML='<div class="empty"><div class="eico">📦</div>Nenhum produto encontrado.</div>';return;}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+    ${prods.map(p=>`
+      <div class="card" style="padding:18px">
+        <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px">${p.name||p.product_name||'Produto'}</div>
+        <div style="font-size:12px;color:var(--m);margin-bottom:10px">${p.description||''}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:18px;font-weight:800;color:var(--g)">R$${parseFloat(p.value||p.price||0).toFixed(2).replace('.',',')}</div>
+          <span class="tag ${p.status==='active'||p.active?'green':'gray'}">${p.status||'—'}</span>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+// ══════════════════════════════════════
+// ANALYTICS
+// ══════════════════════════════════════
+async function loadAnalytics(){
+  const since=new Date(Date.now()-86400000).toISOString();
+  const [v,c,em]=await Promise.all([
+    sbGet('iaem30_visitors','?created_at=gte.'+since+'&select=*&order=created_at.desc&limit=500'),
+    sbGet('iaem30_cta_clicks','?created_at=gte.'+since+'&select=*'),
+    sbGet('iaem30_emails','?select=email&limit=9999'),
+  ]);
+  const vis=v||[],ct=c||[];
+  const tot=vis.length,cc=ct.length;
+  ['a-v','an-v'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=tot;});
+  ['a-c','an-c'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=cc;});
+  ['a-r','an-r'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=tot?Math.round(cc/tot*100)+'%':'0%';});
+  ['a-e','an-e'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=(em||[]).length;});
+  // Visitors by hour chart
+  const hours=Array.from({length:24},(_,i)=>String(i).padStart(2,'0')+':00');
+  const hourCounts=new Array(24).fill(0);
+  vis.forEach(v=>{const h=new Date(v.created_at).getHours();hourCounts[h]++;});
+  mkChart('chart-visitors','line',hours,[{label:'Visitantes',data:hourCounts,borderColor:'#7c5cfc',backgroundColor:'rgba(124,92,252,.1)',tension:.4,fill:true,pointRadius:3}]);
+  // Sources
+  const srcMap={};
+  vis.forEach(v=>{const s=v.utm_source||v.referrer?.split('/')[2]||'Direto';srcMap[s]=(srcMap[s]||0)+1;});
+  const sorted=Object.entries(srcMap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const srcEl=document.getElementById('a-sources');
+  if(srcEl){
+    srcEl.innerHTML=sorted.length?sorted.map(([s,cnt])=>`
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:12px;min-width:110px;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s}</span>
+        <div style="flex:1;background:var(--card2);border-radius:4px;height:6px">
+          <div style="background:var(--a);height:6px;border-radius:4px;width:${tot?Math.round(cnt/tot*100):0}%"></div>
+        </div>
+        <span style="font-size:11px;color:var(--m);min-width:28px;text-align:right">${cnt}</span>
+      </div>`).join(''):'<div style="color:var(--m2);font-size:13px">Nenhuma visita ainda.</div>';
+  }
+  // Table
+  const tbl=document.getElementById('a-tbl');if(!tbl)return;
+  if(!vis.length){tbl.innerHTML='<div class="empty"><div class="eico">📈</div>Nenhuma visita nas últimas 24h.</div>';return;}
+  tbl.innerHTML=`<table class="tbl"><thead><tr>${['Hora','Dispositivo','Fonte','UTM','CTA'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+    ${vis.slice(0,30).map(vv=>`<tr>
+      <td>${new Date(vv.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${vv.device==='mobile'?'📱 Mobile':'💻 Desktop'}</td>
+      <td style="color:var(--m)">${vv.referrer?.split('/')[2]||'Direto'}</td>
+      <td style="color:var(--m)">${vv.utm_source||'—'}</td>
+      <td>${vv.clicked_cta?'<span class="tag green" style="font-size:10px">✓ Clicou</span>':'<span style="color:var(--m2)">—</span>'}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+// ══════════════════════════════════════
+// CUPONS
+// ══════════════════════════════════════
 async function createCoupon(){
   const code=document.getElementById('cp-c').value.trim().toUpperCase();
   const pct=Number(document.getElementById('cp-p').value)||20;
   const max=Number(document.getElementById('cp-m').value)||999;
   if(!code){toast('Digite o código','err');return;}
   const ok=await sbPost('iaem30_coupons',{code,discount_percent:pct,active:true,uses:0,max_uses:max});
-  if(ok){toast('✓ Cupom criado!');document.getElementById('cp-c').value='';loadCoupons();}
+  if(ok){toast('✓ Cupom criado!');document.getElementById('cp-c').value='';loadCupons();}
   else toast('Erro. Código pode já existir.','err');
 }
-async function loadCoupons(){
+async function loadCupons(){
   const rows=await sbGet('iaem30_coupons','?order=created_at.desc');
   const el=document.getElementById('cp-lst');if(!el)return;
-  if(!rows?.length){el.innerHTML='<span style="color:var(--m2)">Nenhum cupom.</span>';return;}
-  el.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
-    ['Código','%','Usos','Máx','Ativo','Ação'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
-    '</tr></thead><tbody>'+
-    rows.map(c=>`<tr style="border-bottom:1px solid var(--b)">
-      <td style="padding:8px 5px;font-weight:600">${c.code}</td>
-      <td style="padding:8px 5px;color:var(--g)">${c.discount_percent}%</td>
-      <td style="padding:8px 5px">${c.uses}</td>
-      <td style="padding:8px 5px">${c.max_uses}</td>
-      <td style="padding:8px 5px">${c.active?'<span style="color:var(--g)">✓</span>':'<span style="color:var(--r)">✕</span>'}</td>
-      <td style="padding:8px 5px"><button onclick="toggleCoupon('${c.id}',${!c.active})" style="background:var(--s2);border:1px solid var(--b);color:var(--m);padding:4px 8px;border-radius:5px;cursor:pointer;font-size:12px">${c.active?'Desativar':'Ativar'}</button></td>
-    </tr>`).join('')+'</tbody></table>';
+  if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">🎟️</div>Nenhum cupom criado ainda.</div>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr>${['Código','Desconto','Usos','Máx','Ativo','Ação'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(c=>`<tr>
+      <td style="font-family:'Syne',sans-serif;font-weight:700">${c.code}</td>
+      <td><span class="tag green">${c.discount_percent}%</span></td>
+      <td>${c.uses}</td><td>${c.max_uses}</td>
+      <td>${c.active?'<span class="tag green">✓ Ativo</span>':'<span class="tag red">✕ Inativo</span>'}</td>
+      <td><button onclick="toggleCoupon('${c.id}',${!c.active})" class="btn-sm ${c.active?'danger':'ghost'}" style="padding:4px 10px;font-size:11px">${c.active?'Desativar':'Ativar'}</button></td>
+    </tr>`).join('')}
+  </tbody></table>`;
 }
-async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCoupons();toast(active?'Ativado!':'Desativado.');}
+async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCupons();toast(active?'Cupom ativado!':'Cupom desativado.');}
 
-// ═══════════════════════════
+// ══════════════════════════════════════
+// EMAILS
+// ══════════════════════════════════════
+async function loadEmails(){
+  const rows=await sbGet('iaem30_emails','?order=created_at.desc&limit=500');
+  const cnt=document.getElementById('emails-count');if(cnt) cnt.textContent=(rows||[]).length+' emails';
+  const el=document.getElementById('em-tbl');if(!el)return;
+  if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">📧</div>Nenhum email capturado ainda.</div>';return;}
+  el.innerHTML=`<table class="tbl"><thead><tr>${['Email','Nome','Origem','Data'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(r=>`<tr>
+      <td style="font-weight:500">${r.email}</td>
+      <td style="color:var(--m)">${r.name||'—'}</td>
+      <td><span class="tag ${r.source==='purchase'?'green':r.source==='modal'?'purple':'gray'}">${r.source||'—'}</span></td>
+      <td style="color:var(--m)">${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+function exportEmails(){
+  sbGet('iaem30_emails','?order=created_at.desc&limit=9999').then(rows=>{
+    if(!rows?.length){toast('Nenhum email para exportar','err');return;}
+    const csv='email,nome,origem,data\n'+rows.map(r=>`${r.email},${r.name||''},${r.source||''},${r.created_at||''}`).join('\n');
+    const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='emails-iaem30.csv';a.click();
+    toast('✓ CSV exportado!');
+  });
+}
+
+// ══════════════════════════════════════
 // NOTIFS
-// ═══════════════════════════
+// ══════════════════════════════════════
 async function addNotif(){
-  const n=document.getElementById('nt-n').value.trim();
-  const c=document.getElementById('nt-c').value.trim();
+  const n=document.getElementById('nt-n').value.trim(),c=document.getElementById('nt-c').value.trim();
   if(!n||!c){toast('Preencha nome e cidade','err');return;}
   const ok=await sbPost('iaem30_sale_notifications',{name:n,city:c});
   if(ok){toast('✓ Adicionado!');document.getElementById('nt-n').value='';document.getElementById('nt-c').value='';loadNotifs();}
@@ -887,19 +1578,25 @@ async function addNotif(){
 async function loadNotifs(){
   const rows=await sbGet('iaem30_sale_notifications','?order=created_at.desc&limit=30');
   const el=document.getElementById('nt-lst');if(!el)return;
-  if(!rows?.length){el.innerHTML='<span style="color:var(--m2)">Nenhuma.</span>';return;}
-  el.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:7px">'+
-    rows.map(r=>`<div style="background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:5px 11px;font-size:13px">✅ <strong>${r.name}</strong> de ${r.city}</div>`).join('')+
+  if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">🔔</div>Nenhuma notificação cadastrada.</div>';return;}
+  el.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px">'+
+    rows.map(r=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px">✅ <strong>${r.name}</strong> de ${r.city}</div>`).join('')+
     '</div>';
 }
 
-// ═══════════════════════════
-// SALES
-// ═══════════════════════════
-async function loadPPTokenStatus(){
+// ══════════════════════════════════════
+// PERFECTPAY TOKEN & SYNC
+// ══════════════════════════════════════
+async function loadPPStatus(){
   const rows=await sbGet('iaem30_secrets','?key=eq.perfectpay_token&select=value');
-  const el=document.getElementById('pp-st');
-  if(rows?.[0]?.value){if(el){el.textContent='✓ Configurado';el.className='tag g';}}
+  const st=document.getElementById('pp-st');
+  const statusEl=document.getElementById('pp-status');
+  if(rows?.[0]?.value){
+    if(st){st.textContent='✓ Configurado';st.className='tag green';}
+    if(statusEl) statusEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--g)"><span style="font-size:20px">✓</span> Token configurado e ativo. A integração está funcionando.</div>';
+  } else {
+    if(statusEl) statusEl.innerHTML='<div class="empty"><div class="eico">🔑</div>Token não configurado. Clique em "Token da API PerfectPay" acima para configurar.</div>';
+  }
 }
 async function savePPToken(){
   const tk=document.getElementById('pp-tk').value.trim();
@@ -908,101 +1605,38 @@ async function savePPToken(){
   const ok=rows?.length
     ?await sbPatch('iaem30_secrets','?key=eq.perfectpay_token',{value:tk,updated_at:new Date().toISOString()})
     :await sbPost('iaem30_secrets',{key:'perfectpay_token',value:tk});
-  if(ok){toast('✓ Token salvo!');document.getElementById('pp-tk').value='';loadPPTokenStatus();}
-  else toast('Erro','err');
+  if(ok){toast('✓ Token salvo!');document.getElementById('pp-tk').value='';loadPPStatus();}
+  else toast('Erro ao salvar token','err');
 }
-async function syncSales(all){
+async function syncPP(all){
   const res=document.getElementById('sy-res');res.style.display='block';
-  res.innerHTML='<span style="color:var(--a2)">⏳ Sincronizando...</span>';
-  const body={page:1};
-  if(!all){const f=document.getElementById('sy-from').value,t=document.getElementById('sy-to').value;if(f)body.date_from=f;if(t)body.date_to=t;}
-  try{
-    const r=await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/sync-perfectpay-sales',{method:'POST',headers:{'Content-Type':'application/json',apikey:AK},body:JSON.stringify(body)});
-    const d=await r.json();
-    if(d.ok){res.innerHTML='<span style="color:var(--g)">✓ '+d.synced+' vendas sincronizadas!</span>';toast('✓ '+d.synced+' vendas importadas!');loadSales();}
-    else{res.innerHTML='<span style="color:var(--r)">❌ '+(d.error||'Erro')+'</span>';toast(d.error||'Erro','err');}
-  }catch(ex){res.innerHTML='<span style="color:var(--r)">❌ '+ex+'</span>';toast('Erro de conexão','err');}
+  res.innerHTML='<span style="color:var(--a2)">⏳ Sincronizando com PerfectPay...</span>';
+  const extra={};
+  if(!all){
+    const f=document.getElementById('sy-from')?.value,t=document.getElementById('sy-to')?.value;
+    if(f)extra.date_from=f;if(t)extra.date_to=t;
+  }
+  const d=await ppAPI('sales',extra);
+  if(d?.ok){
+    res.innerHTML=`<span style="color:var(--g)">✓ ${d.synced} vendas sincronizadas! (${d.total} encontradas na API)</span>`;
+    toast('✓ '+d.synced+' vendas importadas!');
+    loadOverview();loadVendas();
+  } else {
+    res.innerHTML=`<span style="color:var(--r)">❌ ${d?.error||'Erro desconhecido'}</span>`;
+    toast(d?.error||'Erro','err');
+  }
 }
-async function loadSales(){
-  const filter=document.getElementById('sf')?.value||'all';
-  const all=await sbGet('iaem30_sales','?order=created_at.desc&limit=500')||[];
-  const appr=all.filter(s=>s.status==='approved');
-  const now=new Date();
-  const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
-  const wk=new Date(now-7*86400000).toISOString();
-  const mo=new Date(now.getFullYear(),now.getMonth(),1).toISOString();
-  const kpi=(rows,from)=>{const f=rows.filter(s=>s.created_at>=from);return{t:f.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:f.length};};
-  const fmt=v=>'R$'+v.toFixed(2).replace('.',',');
-  const K=(id,val,cs,cl)=>{const e=document.getElementById(id);if(e)e.textContent=val;const ec=document.getElementById(cs);if(ec)ec.textContent=cl+' venda'+(cl!==1?'s':'');};
-  const t=kpi(appr,tod),w=kpi(appr,wk),m=kpi(appr,mo),tt={t:appr.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:appr.length};
-  K('sv-hj',fmt(t.t),'sv-hjc',t.c);K('sv-sm',fmt(w.t),'sv-smc',w.c);K('sv-ms',fmt(m.t),'sv-msc',m.c);K('sv-tt',fmt(tt.t),'sv-ttc',tt.c);
-  const disp=filter==='all'?all:all.filter(s=>s.status===filter);
-  const tbl=document.getElementById('sv-tbl');if(!tbl)return;
-  if(!disp.length){tbl.innerHTML='<div style="text-align:center;padding:24px;color:var(--m2)">Nenhuma venda. Configure webhook ou sincronize acima.</div>';return;}
-  const sb=s=>({approved:'<span style="color:var(--g)">✓ Aprovada</span>',refunded:'<span style="color:var(--r)">↩ Reembolso</span>',cancelled:'<span style="color:var(--m)">✕ Cancelada</span>',pending:'<span style="color:var(--gold)">⏳ Pendente</span>'}[s]||s);
-  tbl.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
-    ['Data','Cliente','Email','Valor','Método','Status'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
-    '</tr></thead><tbody>'+
-    disp.slice(0,50).map(s=>`<tr style="border-bottom:1px solid var(--b)">
-      <td style="padding:9px 5px;font-size:12px">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
-      <td style="padding:9px 5px;font-size:13px">${s.customer_name||'—'}</td>
-      <td style="padding:9px 5px;font-size:12px;color:var(--m)">${s.customer_email||'—'}</td>
-      <td style="padding:9px 5px;font-size:13px;font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</td>
-      <td style="padding:9px 5px;font-size:12px;color:var(--m)">${s.payment_method||'—'}</td>
-      <td style="padding:9px 5px">${sb(s.status)}</td>
-    </tr>`).join('')+
-    '</tbody></table>'+(disp.length>50?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--m2)">Mostrando 50 de ${disp.length}</div>`:'');
-}
-async function addSale(){
-  const n=document.getElementById('ms-n').value.trim();
-  const em=document.getElementById('ms-e').value.trim();
-  const v=parseFloat(document.getElementById('ms-v').value);
-  const mt=document.getElementById('ms-m').value;
-  if(!em||!v){toast('Preencha email e valor','err');return;}
-  const ok=await sbPost('iaem30_sales',{order_id:'manual_'+Date.now(),customer_name:n,customer_email:em,amount:v,status:'approved',payment_method:mt,product_name:'IA em 30 Dias'});
-  if(ok){toast('✓ Venda registrada!');['ms-n','ms-e','ms-v'].forEach(id=>document.getElementById(id).value='');loadSales();}
-  else toast('Erro','err');
-}
-function copyHook(){navigator.clipboard.writeText('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook').then(()=>toast('✓ Copiado!'));}
+function copyWebhook(){navigator.clipboard.writeText('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook').then(()=>toast('✓ URL copiada!'));}
 
-// ═══════════════════════════
-// ANALYTICS
-// ═══════════════════════════
-async function loadAnalytics(){
-  const since=new Date(Date.now()-86400000).toISOString();
-  const [vr,cr,er]=await Promise.all([
-    sbGet('iaem30_visitors','?created_at=gte.'+since+'&select=*&order=created_at.desc&limit=100'),
-    sbGet('iaem30_cta_clicks','?created_at=gte.'+since+'&select=*'),
-    sbGet('iaem30_emails','?select=email,created_at&order=created_at.desc&limit=50'),
-  ]);
-  const v=vr||[],c=cr||[],em=er||[];
-  const tot=v.length,cc=c.length;
-  document.getElementById('an-v').textContent=tot;
-  document.getElementById('an-c').textContent=cc;
-  document.getElementById('an-r').textContent=tot?Math.round(cc/tot*100)+'%':'0%';
-  document.getElementById('an-e').textContent=em.length;
-  const tbl=document.getElementById('an-tbl');if(!tbl)return;
-  if(!v.length){tbl.innerHTML='<span style="color:var(--m2)">Nenhuma visita nas últimas 24h.</span>';return;}
-  tbl.innerHTML='<table style="width:100%;border-collapse:collapse"><thead><tr style="border-bottom:1px solid var(--b)">'+
-    ['Hora','Dispositivo','Fonte','CTA'].map(h=>`<th style="text-align:left;padding:7px 5px;font-size:11px;color:var(--m2);text-transform:uppercase">${h}</th>`).join('')+
-    '</tr></thead><tbody>'+
-    v.slice(0,25).map(vv=>`<tr style="border-bottom:1px solid var(--b)">
-      <td style="padding:8px 5px;font-size:12px">${new Date(vv.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
-      <td style="padding:8px 5px;font-size:12px">${vv.device==='mobile'?'📱':'💻'} ${vv.device||'—'}</td>
-      <td style="padding:8px 5px;font-size:12px">${vv.utm_source||vv.referrer?.split('/')[2]||'Direto'}</td>
-      <td style="padding:8px 5px">${vv.clicked_cta?'<span style="color:var(--g);font-size:12px">✓</span>':'<span style="color:var(--m2);font-size:12px">—</span>'}</td>
-    </tr>`).join('')+'</tbody></table>';
-}
-
-// ═══════════════════════════
+// ══════════════════════════════════════
 // BACKUP
-// ═══════════════════════════
-function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30.json';a.click();toast('Exportado!');}
+// ══════════════════════════════════════
+function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Exportado!');}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Importado! Salve para publicar.');}catch{toast('Arquivo inválido','err');}};r.readAsText(f);}
 
-// ═══════════════════════════
+// ══════════════════════════════════════
 // TOAST
-// ═══════════════════════════
+// ══════════════════════════════════════
 let _tt;
 function toast(msg,type='ok'){
   const el=document.getElementById('toast');
