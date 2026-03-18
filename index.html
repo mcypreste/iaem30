@@ -500,73 +500,10 @@
       .container { padding: 0 16px; }
       .learn-section, .why-section, .monetize-section, .testimonials-section, .pricing-section, .faq-section { padding: 60px 0; }
     }
-  
-    /* ─── LOADER ─── */
-    #loader {
-      position: fixed; inset: 0; z-index: 99999;
-      background: #08080e;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity .5s ease, visibility .5s ease;
-    }
-    #loader.out { opacity: 0; visibility: hidden; }
-    .loader-inner { display: flex; flex-direction: column; align-items: center; gap: 24px; }
-    .loader-hex {
-      animation: hexSpin 2s ease-in-out infinite;
-      filter: drop-shadow(0 0 20px rgba(124,92,252,0.5));
-    }
-    @keyframes hexSpin {
-      0%,100% { transform: scale(1) rotate(0deg); }
-      50%      { transform: scale(1.08) rotate(5deg); }
-    }
-    .loader-line { stroke-dasharray: 30; stroke-dashoffset: 30; animation: drawLine 1.2s ease forwards; }
-    .loader-line:nth-child(2) { animation-delay: .2s; }
-    .loader-line:nth-child(3) { animation-delay: .4s; }
-    .loader-line:nth-child(4) { animation-delay: .6s; }
-    @keyframes drawLine { to { stroke-dashoffset: 0; } }
-    .loader-bar-wrap { width: 160px; height: 3px; background: rgba(255,255,255,.07); border-radius: 3px; overflow: hidden; }
-    .loader-bar { height: 100%; width: 0; border-radius: 3px; background: linear-gradient(90deg,#7c5cfc,#06b6d4); animation: loadBar 1.4s cubic-bezier(.4,0,.2,1) forwards; }
-    @keyframes loadBar { to { width: 100%; } }
-    .loader-text { font-size: 13px; color: var(--muted); letter-spacing: .08em; }
-    .loader-dots::after { content: ''; animation: dots 1.2s infinite; }
-    @keyframes dots { 0%{content:'.'} 33%{content:'..'} 66%{content:'...'} 100%{content:''} }
-
-    /* ─── HERO ANIMATE IN ─── */
-    .hero-grid > div { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
-    .hero-grid > div:nth-child(2) { transition-delay: .15s; }
-    .hero-loaded .hero-grid > div { opacity: 1; transform: translateY(0); }
-
-</style>
+  </style>
 </head>
 
 <body>
-
-<!-- ═══════ LOADING SCREEN ═══════ -->
-<div id="loader">
-  <div class="loader-inner">
-    <div class="loader-hex">
-      <svg width="64" height="74" viewBox="0 0 64 74" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="32,3 61,19 61,55 32,71 3,55 3,19" stroke="url(#lg1)" stroke-width="1.5" fill="none" opacity="0.6"/>
-        <polygon points="32,12 52,23 52,51 32,62 12,51 12,23" fill="#7c5cfc" opacity="0.08"/>
-        <line x1="32" y1="22" x2="32" y2="37" stroke="#a78bfa" stroke-width="1.5" class="loader-line"/>
-        <line x1="32" y1="37" x2="20" y2="44" stroke="#a78bfa" stroke-width="1.5" class="loader-line"/>
-        <line x1="32" y1="37" x2="44" y2="44" stroke="#06b6d4" stroke-width="1.5" class="loader-line"/>
-        <circle cx="32" cy="37" r="5" fill="url(#lg1)"/>
-        <circle cx="32" cy="22" r="3" fill="#a78bfa"/>
-        <circle cx="20" cy="44" r="2.5" fill="#a78bfa" opacity="0.8"/>
-        <circle cx="44" cy="44" r="2.5" fill="#06b6d4" opacity="0.8"/>
-        <defs>
-          <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#7c5cfc"/>
-            <stop offset="100%" stop-color="#06b6d4"/>
-          </linearGradient>
-        </defs>
-      </svg>
-    </div>
-    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-    <div class="loader-text">Carregando<span class="loader-dots"></span></div>
-  </div>
-</div>
-
 <!-- HEADER -->
 <header>
   <div class="container">
@@ -2232,24 +2169,6 @@ function rejectCookies() {
   document.getElementById('cookie-banner').classList.remove('show');
 }
 document.addEventListener('DOMContentLoaded', initCookieBanner);
-
-
-// ─── LOADING SCREEN ───
-function hideLoader() {
-  const loader = document.getElementById('loader');
-  if (!loader || loader._hidden) return;
-  loader._hidden = true;
-  loader.classList.add('out');
-  try { document.querySelector('.hero').classList.add('hero-loaded'); } catch(e) {}
-  setTimeout(() => { try { loader.remove(); } catch(e) {} }, 600);
-}
-// Esconde no load normal
-window.addEventListener('load', () => setTimeout(hideLoader, 1400));
-// Fallback: esconde em 3s no máximo, independente do que acontecer
-setTimeout(hideLoader, 3000);
-// Esconde imediatamente se a página já carregou
-if (document.readyState === 'complete') setTimeout(hideLoader, 1400);
-
 
 
 // ═══════════════════════════════════════
