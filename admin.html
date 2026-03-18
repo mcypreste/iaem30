@@ -461,8 +461,11 @@ input[type=date] { color-scheme:dark; }
             <input type="date" id="vf-from" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
             <input type="date" id="vf-to" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
             <select id="vf-status" onchange="loadVendas()" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
-              <option value="all">Todos</option><option value="approved">Aprovadas</option>
+              <option value="real">Reais (sem testes)</option>
+              <option value="all">Todos (incl. testes)</option>
+              <option value="approved">Aprovadas</option>
               <option value="refunded">Reembolsos</option><option value="pending">Pendentes</option><option value="cancelled">Canceladas</option>
+              <option value="test">Somente Testes</option>
             </select>
             <button class="btn-sm ghost" style="padding:6px 12px;font-size:12px" onclick="loadVendas()">↺ Filtrar</button>
             <button class="btn-sm primary" style="padding:6px 12px;font-size:12px" onclick="syncPP(false)">🔄 Sincronizar</button>
@@ -478,7 +481,7 @@ input[type=date] { color-scheme:dark; }
             <div class="field"><label>Email</label><input type="email" id="ms-e" placeholder="joao@email.com"></div>
             <div class="field"><label>Valor R$</label><input type="number" id="ms-v" step="0.01" placeholder="19.90"></div>
           </div>
-          <div style="margin-top:12px"><button class="btn-sm primary" onclick="addSaleManual()">Registrar</button></div>
+          <div style="margin-top:12px;display:flex;align-items:center;gap:12px"><button class="btn-sm primary" onclick="addSaleManual()">Registrar</button><span style="font-size:12px;color:var(--m2)">⚠️ Vendas manuais são marcadas como <span class="tag gold" style="font-size:10px">🧪 Teste</span> automaticamente.</span></div>
         </div>
       </div>
     </div>
@@ -1230,7 +1233,7 @@ async function loadOverview(){
     sbGet('iaem30_visitors','?created_at=gte.'+new Date(Date.now()-86400000).toISOString()+'&select=*'),
     sbGet('iaem30_cta_clicks','?created_at=gte.'+new Date(Date.now()-86400000).toISOString()+'&select=*'),
   ]);
-  const allS=sales||[];const appr=allS.filter(s=>s.status==='approved');
+  const allS=(sales||[]).filter(s=>!s.is_test);const appr=allS.filter(s=>s.status==='approved');
   const now=new Date();
   const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
   const wk=new Date(now-7*86400000).toISOString();
@@ -1312,14 +1315,16 @@ async function loadMiniAnalytics(){
 // VENDAS
 // ══════════════════════════════════════
 async function loadVendas(){
-  const filter=document.getElementById('vf-status')?.value||'all';
+  const filter=document.getElementById('vf-status')?.value||'real';
   const from=document.getElementById('vf-from')?.value;
   const to=document.getElementById('vf-to')?.value;
-  let q='?order=created_at.desc&limit=500';
+  let q='?order=created_at.desc&limit=500&select=*';
   if(from) q+=`&created_at=gte.${from}`;
   if(to)   q+=`&created_at=lte.${to}T23:59:59`;
   const all=await sbGet('iaem30_sales',q)||[];
-  const appr=all.filter(s=>s.status==='approved');
+  // KPIs always use real approved sales only
+  const realSales=all.filter(s=>!s.is_test);
+  const appr=realSales.filter(s=>s.status==='approved');
   const now=new Date();
   const tod=new Date(now.getFullYear(),now.getMonth(),now.getDate()).toISOString();
   const wk=new Date(now-7*86400000).toISOString();
@@ -1329,18 +1334,23 @@ async function loadVendas(){
   const K=(id,val,sid,cnt)=>{const e=document.getElementById(id);if(e)e.textContent=val;const s=document.getElementById(sid);if(s)s.textContent=cnt+' venda'+(cnt!==1?'s':'');};
   const t=kpi(appr,tod),w=kpi(appr,wk),m=kpi(appr,mo),tt={t:appr.reduce((s,r)=>s+parseFloat(r.amount||0),0),c:appr.length};
   K('sv-hj',fmt(t.t),'sv-hjc',t.c);K('sv-sm',fmt(w.t),'sv-smc',w.c);K('sv-ms',fmt(m.t),'sv-msc',m.c);K('sv-tt',fmt(tt.t),'sv-ttc',tt.c);
-  const disp=filter==='all'?all:all.filter(s=>s.status===filter);
+  // Display filter
+  let disp;
+  if(filter==='real')      disp=all.filter(s=>!s.is_test);
+  else if(filter==='test') disp=all.filter(s=>s.is_test);
+  else if(filter==='all')  disp=all;
+  else                     disp=all.filter(s=>!s.is_test&&s.status===filter);
   const el=document.getElementById('sv-tbl');if(!el)return;
   if(!disp.length){el.innerHTML='<div class="empty"><div class="eico">💳</div>Nenhuma venda encontrada. Sincronize com PerfectPay ou configure o webhook.</div>';return;}
   const sb=s=>({approved:'<span class="tag green">✓ Aprovada</span>',refunded:'<span class="tag red">↩ Reembolso</span>',cancelled:'<span class="tag gray">✕ Cancelada</span>',pending:'<span class="tag gold">⏳ Pendente</span>'}[s]||`<span class="tag gray">${s}</span>`);
   el.innerHTML=`<table class="tbl"><thead><tr>${['Data','Cliente','Email','Valor','Método','Status','Cupom'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
     ${disp.slice(0,100).map(s=>`<tr>
       <td style="white-space:nowrap">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
-      <td style="font-weight:500">${s.customer_name||'—'}</td>
+      <td style="font-weight:500">${s.customer_name||'—'} ${s.is_test?'<span class="tag gold" style="font-size:10px;margin-left:4px">🧪 Teste</span>':''}</td>
       <td style="color:var(--m)">${s.customer_email||'—'}</td>
-      <td style="font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</td>
+      <td style="font-weight:700;color:${s.is_test?'var(--m2)':s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')} ${s.is_test?'<span style="font-size:10px;color:var(--m2)">(teste)</span>':''}</td>
       <td style="color:var(--m)">${s.payment_method||'—'}</td>
-      <td>${sb(s.status)}</td>
+      <td>${s.is_test?'<span class="tag gold">🧪 Teste</span>':sb(s.status)}</td>
       <td style="color:var(--a2)">${s.coupon_code||'—'}</td>
     </tr>`).join('')}
   </tbody></table>${disp.length>100?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--m2)">Mostrando 100 de ${disp.length}</div>`:''}`;
@@ -1351,7 +1361,7 @@ async function addSaleManual(){
   const em=document.getElementById('ms-e').value.trim();
   const v=parseFloat(document.getElementById('ms-v').value);
   if(!em||!v){toast('Preencha email e valor','err');return;}
-  const ok=await sbPost('iaem30_sales',{order_id:'manual_'+Date.now(),customer_name:n,customer_email:em,amount:v,status:'approved',payment_method:'Manual',product_name:'IA em 30 Dias'});
+  const ok=await sbPost('iaem30_sales',{order_id:'manual_'+Date.now(),customer_name:n,customer_email:em,amount:v,status:'approved',payment_method:'Manual',product_name:'IA em 30 Dias',is_test:true});
   if(ok){toast('✓ Venda registrada!');['ms-n','ms-e','ms-v'].forEach(id=>document.getElementById(id).value='');loadVendas();loadOverview();}
   else toast('Erro','err');
 }
