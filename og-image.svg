@@ -1,0 +1,87 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#08080e"/>
+      <stop offset="100%" stop-color="#0f0818"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="textG" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#67E8F9"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow spots -->
+  <ellipse cx="300" cy="180" rx="280" ry="200" fill="#7C3AED" opacity="0.08" filter="url(#glow)"/>
+  <ellipse cx="950" cy="450" rx="220" ry="180" fill="#06B6D4" opacity="0.06" filter="url(#glow)"/>
+
+  <!-- Grid lines subtle -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+  <!-- Left accent bar -->
+  <rect x="72" y="160" width="4" height="310" rx="2" fill="url(#acc)" opacity="0.8"/>
+
+  <!-- Badge -->
+  <rect x="90" y="152" width="220" height="30" rx="15" fill="rgba(124,92,252,0.15)" stroke="rgba(124,92,252,0.4)" stroke-width="1"/>
+  <text x="200" y="172" text-anchor="middle" dominant-baseline="central" font-family="Helvetica,Arial,sans-serif" font-size="12" font-weight="600" fill="#A78BFA" letter-spacing="1.5">🔥  EBOOK DIGITAL</text>
+
+  <!-- Main title -->
+  <text x="90" y="250" font-family="Helvetica,Arial,sans-serif" font-size="72" font-weight="800" fill="url(#textG)">IA em 30 Dias</text>
+
+  <!-- Subtitle -->
+  <text x="90" y="310" font-family="Helvetica,Arial,sans-serif" font-size="26" font-weight="400" fill="#D1D5DB" opacity="0.9">Como Ganhar Dinheiro com</text>
+  <text x="90" y="348" font-family="Helvetica,Arial,sans-serif" font-size="26" font-weight="400" fill="#D1D5DB" opacity="0.9">Inteligência Artificial</text>
+
+  <!-- Underline accent -->
+  <rect x="90" y="375" width="420" height="3" rx="1.5" fill="url(#accH)" opacity="0.7"/>
+
+  <!-- Features -->
+  <text x="90" y="420" font-family="Helvetica,Arial,sans-serif" font-size="17" fill="#9CA3AF">✓  Método de 30 dias comprovado</text>
+  <text x="90" y="450" font-family="Helvetica,Arial,sans-serif" font-size="17" fill="#9CA3AF">✓  Para músicos, designers e criadores</text>
+  <text x="90" y="480" font-family="Helvetica,Arial,sans-serif" font-size="17" fill="#9CA3AF">✓  ChatGPT, Midjourney e muito mais</text>
+
+  <!-- Price badge -->
+  <rect x="90" y="518" width="200" height="60" rx="12" fill="rgba(16,185,129,0.12)" stroke="rgba(16,185,129,0.4)" stroke-width="1.5"/>
+  <text x="190" y="540" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="12" fill="#10b981" letter-spacing="1">APENAS</text>
+  <text x="190" y="567" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="28" font-weight="800" fill="#10b981">R$19,90</text>
+
+  <!-- Right side: Hex icon scaled up -->
+  <g transform="translate(750, 115) scale(3.8)">
+    <polygon points="60,6 100,28 100,72 60,94 20,72 20,28" fill="none" stroke="url(#acc)" stroke-width="1.5" opacity="0.5"/>
+    <polygon points="60,14 92,32 92,68 60,86 28,68 28,32" fill="#7C3AED" opacity="0.08"/>
+    <polygon points="60,14 92,32 92,68 60,86 28,68 28,32" fill="none" stroke="url(#acc)" stroke-width="1" opacity="0.4"/>
+    <line x1="60" y1="32" x2="60" y2="50" stroke="#A78BFA" stroke-width="1.5" opacity="0.7"/>
+    <line x1="60" y1="50" x2="44" y2="60" stroke="#A78BFA" stroke-width="1.5" opacity="0.7"/>
+    <line x1="60" y1="50" x2="76" y2="60" stroke="#06B6D4" stroke-width="1.5" opacity="0.7"/>
+    <line x1="60" y1="50" x2="60" y2="70" stroke="url(#acc)" stroke-width="1.5" opacity="0.6"/>
+    <circle cx="60" cy="32" r="4" fill="#A78BFA"/>
+    <circle cx="44" cy="60" r="3.5" fill="#A78BFA" opacity="0.8"/>
+    <circle cx="76" cy="60" r="3.5" fill="#06B6D4" opacity="0.8"/>
+    <circle cx="60" cy="70" r="3.5" fill="#06B6D4" opacity="0.7"/>
+    <circle cx="60" cy="50" r="6" fill="url(#acc)"/>
+    <circle cx="60" cy="6" r="3" fill="#06B6D4" opacity="0.9"/>
+    <circle cx="60" cy="94" r="3" fill="#06B6D4" opacity="0.9"/>
+    <circle cx="100" cy="28" r="3" fill="#A78BFA" opacity="0.8"/>
+    <circle cx="100" cy="72" r="3" fill="#A78BFA" opacity="0.8"/>
+    <circle cx="20" cy="28" r="3" fill="#A78BFA" opacity="0.8"/>
+    <circle cx="20" cy="72" r="3" fill="#A78BFA" opacity="0.8"/>
+  </g>
+
+  <!-- Bottom domain -->
+  <text x="600" y="610" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-size="14" fill="#4a4762" letter-spacing="2">IAEM30.COM.BR</text>
+</svg>

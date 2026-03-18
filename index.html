@@ -3,8 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ── SEO ── -->
   <title>IA em 30 Dias — Ganhe Dinheiro com Inteligência Artificial</title>
-  <meta name="description" content="O ebook completo para criadores que querem monetizar usando IA de forma ética e estratégica.">
+  <meta name="description" content="O guia completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA. Método de 30 dias comprovado. Por R$19,90.">
+  <meta name="keywords" content="IA, inteligência artificial, ganhar dinheiro, ebook, criadores, monetizar, ChatGPT, Midjourney, renda extra">
+  <meta name="author" content="IA em 30 Dias">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://iaem30.com.br">
+
+  <!-- ── OPEN GRAPH (WhatsApp, Facebook, LinkedIn) ── -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://iaem30.com.br">
+  <meta property="og:title" content="IA em 30 Dias — Ganhe Dinheiro com Inteligência Artificial">
+  <meta property="og:description" content="O guia completo para criadores que querem monetizar usando IA. Método de 30 dias + bônus exclusivos. Apenas R$19,90.">
+  <meta property="og:image" content="https://iaem30.com.br/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="IA em 30 Dias">
+
+  <!-- ── TWITTER CARD ── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://iaem30.com.br">
+  <meta name="twitter:title" content="IA em 30 Dias — Ganhe Dinheiro com IA">
+  <meta name="twitter:description" content="O guia completo para criadores monetizarem com IA. Apenas R$19,90.">
+  <meta name="twitter:image" content="https://iaem30.com.br/og-image.svg">
+
+  <!-- ── SCHEMA.ORG (Google Rich Results) ── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "IA em 30 Dias",
+    "description": "O guia completo para músicos, ilustradores, designers e escritores que querem monetizar usando IA de forma ética e estratégica.",
+    "image": "https://iaem30.com.br/og-image.png",
+    "url": "https://iaem30.com.br",
+    "brand": { "@type": "Brand", "name": "IA em 30 Dias" },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "BRL",
+      "price": "19.90",
+      "availability": "https://schema.org/InStock",
+      "url": "https://iaem30.com.br"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "1200"
+    }
+  }
+  </script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -678,9 +726,9 @@
     <div class="footer-inner">
       <div class="footer-left">© <span id="footer-year">2026</span> <span id="footer-brand">IA em 30</span>. Todos os direitos reservados.</div>
       <div class="footer-links">
-        <a href="#" id="footer-terms">Termos</a>
-        <a href="#" id="footer-privacy">Privacidade</a>
-        <a href="#" id="footer-contact">Contato</a>
+        <a href="/termos" id="footer-terms">Termos de Uso</a>
+        <a href="/privacidade" id="footer-privacy">Privacidade</a>
+        <a href="mailto:contato@iaem30.com.br" id="footer-contact">Contato</a>
       </div>
     </div>
   </div>
@@ -1366,5 +1414,84 @@ if(new URLSearchParams(location.search).get('purchased')==='1') {
   updateLiveCount();
 })();
 </script>
+
+<!-- ══ COOKIE BANNER LGPD ══ -->
+<div id="cookie-banner">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      <span class="cookie-icon">🍪</span>
+      <div>
+        <strong>Usamos cookies</strong>
+        <p>Este site utiliza cookies para melhorar sua experiência e analisar o tráfego, conforme nossa <a href="/privacidade" id="cookie-link-priv">Política de Privacidade</a>. Ao continuar navegando, você concorda com o uso de cookies.</p>
+      </div>
+    </div>
+    <div class="cookie-actions">
+      <button onclick="rejectCookies()" class="cookie-btn-reject">Rejeitar</button>
+      <button onclick="acceptCookies()" class="cookie-btn-accept">Aceitar Tudo</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#cookie-banner {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9990;
+  background: rgba(12, 12, 20, 0.97);
+  border-top: 1px solid rgba(124, 92, 252, 0.3);
+  backdrop-filter: blur(12px);
+  padding: 16px 24px;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.4);
+}
+#cookie-banner.show { transform: translateY(0); }
+.cookie-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+.cookie-text { display: flex; align-items: flex-start; gap: 14px; flex: 1; min-width: 280px; }
+.cookie-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.cookie-text strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 3px; color: #f0eeff; }
+.cookie-text p { font-size: 12.5px; color: #8b86a8; line-height: 1.5; margin: 0; }
+.cookie-text a { color: #a78bfa; text-decoration: none; }
+.cookie-text a:hover { text-decoration: underline; }
+.cookie-actions { display: flex; gap: 10px; flex-shrink: 0; }
+.cookie-btn-reject {
+  background: transparent; border: 1px solid rgba(255,255,255,0.12);
+  color: #8b86a8; padding: 9px 18px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.cookie-btn-reject:hover { border-color: rgba(255,255,255,0.25); color: #f0eeff; }
+.cookie-btn-accept {
+  background: #7c5cfc; border: none; color: #fff;
+  padding: 9px 20px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.cookie-btn-accept:hover { background: #8b6dfd; }
+@media(max-width: 600px) {
+  .cookie-inner { flex-direction: column; }
+  .cookie-actions { width: 100%; }
+  .cookie-btn-reject, .cookie-btn-accept { flex: 1; text-align: center; }
+}
+</style>
+
+<script>
+function initCookieBanner() {
+  const consent = localStorage.getItem('iaem30_cookie');
+  if (!consent) {
+    setTimeout(() => document.getElementById('cookie-banner').classList.add('show'), 1200);
+  }
+}
+function acceptCookies() {
+  localStorage.setItem('iaem30_cookie', 'accepted');
+  document.getElementById('cookie-banner').classList.remove('show');
+}
+function rejectCookies() {
+  localStorage.setItem('iaem30_cookie', 'rejected');
+  document.getElementById('cookie-banner').classList.remove('show');
+}
+document.addEventListener('DOMContentLoaded', initCookieBanner);
+</script>
+
 </body>
 </html>
