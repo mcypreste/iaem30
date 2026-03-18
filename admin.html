@@ -932,44 +932,33 @@ input[type=date] { color-scheme:dark; }
     </div>
 
 
-    <!-- AI CONFIG -->
-    <div class="panel" id="p-ai-config">
+    <!-- CHAT FAQ -->
+    <div class="panel" id="p-chat-faq">
       <div class="pg">
-        <div class="card"><div class="card-head"><h3>🔑 Chave da API Anthropic (Claude)</h3><span class="tag" id="ai-key-status">Não configurada</span></div><div class="card-body">
-          <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.8">
-            Para ativar o Chat de IA e o Gerador de Nicho, você precisa de uma chave da API da Anthropic.<br>
-            <strong style="color:var(--t)">1.</strong> Acesse <a href="https://console.anthropic.com" target="_blank" style="color:var(--a2)">console.anthropic.com</a><br>
-            <strong style="color:var(--t)">2.</strong> Vá em <strong style="color:var(--t)">API Keys → Create Key</strong><br>
-            <strong style="color:var(--t)">3.</strong> Cole a chave abaixo — ela é salva como variável de ambiente no Supabase
+        <div class="card"><div class="card-head"><h3>➕ Adicionar Resposta</h3></div><div class="card-body">
+          <div class="field" style="margin-bottom:10px">
+            <label>Palavras-chave (separadas por vírgula)</label>
+            <input id="faq-kw" placeholder="preço, quanto, custa, valor">
+            <span class="hint">O chat detecta essas palavras na pergunta do visitante</span>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Pergunta (resumo)</label>
+            <input id="faq-q" placeholder="Qual é o preço?">
           </div>
           <div class="field" style="margin-bottom:14px">
-            <label>API Key</label>
-            <input type="password" id="ai-key-input" placeholder="sk-ant-api03-...">
+            <label>Resposta (suporta **negrito** e quebras de linha)</label>
+            <textarea rows="6" id="faq-a" placeholder="Digite a resposta..."></textarea>
           </div>
-          <button class="btn-sm primary" onclick="saveAIKey()">Salvar Chave</button>
-          <div id="ai-key-msg" style="margin-top:10px;font-size:13px"></div>
+          <button class="btn-sm primary" onclick="saveFAQ()">Salvar Resposta</button>
+          <div id="faq-msg" style="margin-top:8px;font-size:13px"></div>
         </div></div>
-        <div class="card"><div class="card-head"><h3>📊 Estatísticas de IA</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadAIStats()">↺</button></div><div class="card-body">
-          <div id="ai-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
-        </div></div>
-        <div class="card"><div class="card-head"><h3>🎯 Prompt do Chat (contexto do produto)</h3></div><div class="card-body">
-          <div style="font-size:12px;color:var(--m2);margin-bottom:10px">O prompt do assistente está configurado diretamente na Edge Function <code>ai-chat</code> no Supabase. Para editar, acesse o painel do Supabase → Edge Functions → ai-chat.</div>
-          <a href="https://supabase.com/dashboard/project/ihylwxjxjajtdhsnlrfm/functions" target="_blank" class="btn-sm ghost">Abrir Edge Functions ↗</a>
-        </div></div>
-      </div>
-    </div>
-
-    <!-- AI CHATS -->
-    <div class="panel" id="p-ai-chats">
-      <div class="pg">
-        <div class="kpis">
-          <div class="kpi purple"><div class="kpi-icon">💬</div><div class="kpi-label">Total mensagens</div><div class="kpi-val" id="aic-total">—</div></div>
-          <div class="kpi green"><div class="kpi-icon">👥</div><div class="kpi-label">Sessões únicas</div><div class="kpi-val" id="aic-sessions">—</div></div>
-          <div class="kpi gold"><div class="kpi-icon">🤖</div><div class="kpi-label">Respostas da IA</div><div class="kpi-val" id="aic-ai">—</div></div>
-          <div class="kpi cyan"><div class="kpi-icon">📅</div><div class="kpi-label">Hoje</div><div class="kpi-val" id="aic-today">—</div></div>
+        <div class="card"><div class="card-head"><h3>Respostas Cadastradas</h3>
+          <div style="display:flex;gap:8px">
+            <span class="tag" id="faq-count">0 respostas</span>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadFAQAdmin()">↺</button>
+          </div>
         </div>
-        <div class="card"><div class="card-head"><h3>Conversas recentes</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadAIChats()">↺</button></div>
-          <div class="card-body"><div id="ai-chats-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        <div class="card-body"><div id="faq-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -1777,8 +1766,66 @@ function copyWebhook(){navigator.clipboard.writeText('https://ihylwxjxjajtdhsnlr
 // ══════════════════════════════════════
 
 // ═══════════════════════════════════════
-// AI ADMIN
+// CHAT FAQ ADMIN
 // ═══════════════════════════════════════
+async function saveFAQ() {
+  const kw = document.getElementById('faq-kw').value.trim();
+  const q  = document.getElementById('faq-q').value.trim();
+  const a  = document.getElementById('faq-a').value.trim();
+  const msg = document.getElementById('faq-msg');
+  if (!kw || !q || !a) { msg.innerHTML = '<span style="color:var(--r)">Preencha todos os campos.</span>'; return; }
+  const keywords = kw.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+  const ok = await sbPost('iaem30_chat_faq', { keywords, question: q, answer: a, active: true, priority: 5 });
+  if (ok) {
+    msg.innerHTML = '<span style="color:var(--g)">✓ Resposta salva!</span>';
+    ['faq-kw','faq-q','faq-a'].forEach(id => document.getElementById(id).value = '');
+    loadFAQAdmin();
+    setTimeout(() => msg.innerHTML = '', 3000);
+  } else {
+    msg.innerHTML = '<span style="color:var(--r)">Erro ao salvar.</span>';
+  }
+}
+
+async function loadFAQAdmin() {
+  const rows = await sbGet('iaem30_chat_faq', '?order=priority.desc,created_at.desc');
+  const el = document.getElementById('faq-list');
+  const cnt = document.getElementById('faq-count');
+  if (!el) return;
+  if (cnt) cnt.textContent = (rows||[]).length + ' respostas';
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">💬</div>Nenhuma resposta cadastrada.</div>'; return; }
+  el.innerHTML = rows.map(r => `
+    <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--bg)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div>
+          <div style="font-weight:600;font-size:13px">${r.question}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
+            ${r.keywords.map(k => `<span style="background:rgba(124,92,252,.1);color:var(--a2);border:1px solid rgba(124,92,252,.2);border-radius:4px;padding:2px 7px;font-size:11px">${k}</span>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="toggleFAQ('${r.id}',${!r.active})" class="btn-sm ${r.active?'ghost':'primary'}" style="padding:4px 10px;font-size:11px">${r.active?'Desativar':'Ativar'}</button>
+          <button onclick="deleteFAQ('${r.id}')" class="btn-sm danger" style="padding:4px 10px;font-size:11px">Excluir</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--m);background:var(--card2);border-radius:7px;padding:10px;white-space:pre-wrap;max-height:80px;overflow:hidden">${r.answer.slice(0,200)}${r.answer.length>200?'...':''}</div>
+    </div>`).join('');
+}
+
+async function toggleFAQ(id, active) {
+  await sbPatch('iaem30_chat_faq', '?id=eq.'+id, {active});
+  loadFAQAdmin();
+  toast(active ? 'Resposta ativada!' : 'Resposta desativada.');
+}
+
+async function deleteFAQ(id) {
+  if (!confirm('Excluir esta resposta?')) return;
+  try {
+    const r = await fetch(SB+'/rest/v1/iaem30_chat_faq?id=eq.'+id, {method:'DELETE',headers:H});
+    if (r.ok) { toast('✓ Excluído!'); loadFAQAdmin(); }
+    else toast('Erro ao excluir','err');
+  } catch { toast('Erro','err'); }
+}
+
 async function saveAIKey() {
   const key = document.getElementById('ai-key-input').value.trim();
   const msg = document.getElementById('ai-key-msg');

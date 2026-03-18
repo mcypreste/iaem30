@@ -2352,13 +2352,89 @@ function addAIMessage(role, content) {
   scrollAIChat();
 }
 
+// Cache de respostas carregadas do Supabase
+let _faqData = null;
+
+async function loadFAQData() {
+  if (_faqData) return _faqData;
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/iaem30_chat_faq?active=eq.true&order=priority.desc', { headers: SB_H });
+    if (r.ok) { _faqData = await r.json(); return _faqData; }
+  } catch(e) {}
+  return [];
+}
+
+function findBestAnswer(msg, faqList) {
+  const lower = msg.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'') // remove acentos
+    .replace(/[^\w\s]/g,'');
+
+  let best = null, bestScore = 0;
+
+  for (const faq of faqList) {
+    let score = 0;
+    for (const kw of faq.keywords) {
+      const kwClean = kw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+      if (lower.includes(kwClean)) score += kw.length; // palavras maiores = mais peso
+    }
+    if (score > bestScore) { bestScore = score; best = faq; }
+  }
+
+  // Score mínimo de 3 para evitar falsos positivos
+  return bestScore >= 3 ? best : null;
+}
+
+// Formata markdown simples → HTML
+function mdToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/
+• /g, '<br>• ')
+    .replace(/
+✓/g, '<br>✓')
+    .replace(/
+✅/g, '<br>✅')
+    .replace(/
+⚠️/g, '<br>⚠️')
+    .replace(/
+📚/g, '<br>📚')
+    .replace(/
+🎁/g, '<br>🎁')
+    .replace(/
+🎨/g, '<br>🎨')
+    .replace(/
+🎵/g, '<br>🎵')
+    .replace(/
+✍️/g, '<br>✍️')
+    .replace(/
+🎬/g, '<br>🎬')
+    .replace(/
+⚡/g, '<br>⚡')
+    .replace(/
+📈/g, '<br>📈')
+    .replace(/
+🚀/g, '<br>🚀')
+    .replace(/
+📱/g, '<br>📱')
+    .replace(/
+🛒/g, '<br>🛒')
+    .replace(/
+/g, '<br>');
+}
+
+const DEFAULT_REPLY = `Obrigado pela pergunta! 😊 Não encontrei uma resposta exata para isso.
+
+Para mais informações, entre em contato:<br>
+📧 <strong>contato@iaem30.com.br</strong><br><br>
+Ou, se quiser, aproveite nossa oferta especial de <strong>R$19,90</strong> com garantia de 7 dias! 🛡️`;
+
 async function sendAIMessage(text) {
   const input = document.getElementById('aiw-input');
   const sendBtn = document.getElementById('aiw-send');
   const msg = text || input.value.trim();
   if (!msg) return;
 
-  // Hide suggestions on first message
+  // Esconde sugestões
   const sugg = document.querySelector('.aiw-suggestions');
   if (sugg) sugg.remove();
 
@@ -2366,31 +2442,29 @@ async function sendAIMessage(text) {
   addAIMessage('user', msg);
   sendBtn.disabled = true;
 
-  // Show typing
+  // Mostra digitando
   const typing = document.getElementById('aiw-typing');
   typing.style.display = 'block';
   scrollAIChat();
 
-  try {
-    const r = await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/ai-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
-      body: JSON.stringify({ message: msg, session_id: AI_SESSION, history: aiHistory })
-    });
-    const data = await r.json();
-    typing.style.display = 'none';
+  // Simula delay de digitação (mais humano)
+  await new Promise(r => setTimeout(r, 800 + Math.random() * 600));
 
-    if (data.reply) {
-      addAIMessage('assistant', data.reply);
-      aiHistory.push({ role: 'user', content: msg });
-      aiHistory.push({ role: 'assistant', content: data.reply });
-      if (aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
-    } else {
-      addAIMessage('assistant', 'Desculpe, ocorreu um erro. Tente novamente! 😊');
-    }
-  } catch(e) {
-    typing.style.display = 'none';
-    addAIMessage('assistant', 'Erro de conexão. Tente novamente em instantes.');
+  typing.style.display = 'none';
+
+  // Busca resposta no FAQ
+  const faqList = await loadFAQData();
+  const match = findBestAnswer(msg, faqList);
+  const reply = match ? match.answer : DEFAULT_REPLY;
+
+  addAIMessage('assistant', mdToHtml(reply));
+
+  // CTA após 2 mensagens
+  const msgs = document.querySelectorAll('.aiw-msg.user');
+  if (msgs.length === 2) {
+    setTimeout(() => {
+      addAIMessage('assistant', '💡 Ainda com dúvidas? O ebook tem <strong>garantia de 7 dias</strong> — você pode comprar, ler e pedir reembolso se não gostar. Risco zero! 🛡️<br><br><a href="#" onclick="openModal('chat-cta'); return false;" style="color:#a78bfa;font-weight:600">→ Quero por R$19,90 agora</a>');
+    }, 1500);
   }
 
   sendBtn.disabled = false;
