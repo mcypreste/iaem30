@@ -1456,6 +1456,26 @@ async function applyCoupon() {
 // ═══════════════════════════════════════
 // EMAIL CAPTURE + PROCEED TO BUY
 // ═══════════════════════════════════════
+// ─── CHECKOUT POPUP CENTRALIZADO ───
+function openCheckoutPopup(url) {
+  const w = 500, h = 720;
+  const left = Math.round((screen.width  - w) / 2);
+  const top  = Math.round((screen.height - h) / 2);
+  const popup = window.open(
+    url,
+    'checkout_iaem30',
+    `width=${w},height=${h},left=${left},top=${top},` +
+    `resizable=yes,scrollbars=yes,toolbar=no,menubar=no,` +
+    `location=no,status=no`
+  );
+  // Se o popup foi bloqueado, abre em nova aba normalmente
+  if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+    window.open(url, '_blank');
+  } else {
+    popup.focus();
+  }
+}
+
 async function proceedToBuy() {
   const email = document.getElementById('modal-email').value.trim();
   const btn   = document.querySelector('#email-step .btn-primary');
@@ -1465,9 +1485,9 @@ async function proceedToBuy() {
   if(btn){ btn.disabled=true; btn.textContent='Redirecionando...'; }
   // Save email to Supabase
   await sbPost('iaem30_emails',{email, source:'modal'});
-  // Open product link
+  // Abre checkout em popup centralizado
   const link = CFG.productLink || DEFAULTS.productLink;
-  window.open(link, '_blank');
+  openCheckoutPopup(link);
   closeModal();
   // Show thank you page after 3s (simulate post-purchase)
   // In production, PerfectPay webhook would trigger this
