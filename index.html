@@ -599,38 +599,16 @@
           <div class="book-3d">
             <!-- Front face -->
             <div class="book-face book-front">
-              <div class="book-front-inner">
+              <div class="book-front-inner" style="padding:0;overflow:hidden;border-radius:0 10px 10px 0;position:relative;">
+                <img src="cover.svg" alt="IA em 30 Dias" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:0 10px 10px 0;">
+                <!-- Spine accent -->
                 <div class="book-spine-line"></div>
-                <!-- Header band -->
-                <div class="book-header-band">
-                  <span>EBOOK DIGITAL</span>
-                </div>
-                <!-- Icon -->
-                <div class="book-3d-icon">
-                  <svg width="52" height="60" viewBox="0 0 64 74" fill="none">
-                    <polygon points="32,3 61,19 61,55 32,71 3,55 3,19" stroke="url(#bk1)" stroke-width="2" fill="none" opacity="0.7"/>
-                    <polygon points="32,12 52,23 52,51 32,62 12,51 12,23" fill="#7c5cfc" opacity="0.15"/>
-                    <line x1="32" y1="22" x2="32" y2="37" stroke="#a78bfa" stroke-width="2"/>
-                    <line x1="32" y1="37" x2="20" y2="44" stroke="#a78bfa" stroke-width="2"/>
-                    <line x1="32" y1="37" x2="44" y2="44" stroke="#06b6d4" stroke-width="2"/>
-                    <circle cx="32" cy="37" r="5.5" fill="url(#bk1)"/>
-                    <circle cx="32" cy="22" r="3.5" fill="#a78bfa"/>
-                    <circle cx="20" cy="44" r="3" fill="#a78bfa" opacity="0.9"/>
-                    <circle cx="44" cy="44" r="3" fill="#06b6d4" opacity="0.9"/>
-                    <defs>
-                      <linearGradient id="bk1" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#7c5cfc"/>
-                        <stop offset="100%" stop-color="#06b6d4"/>
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
-                <h3 class="book-3d-title" id="book-title">Como Ganhar Dinheiro com IA em 30 Dias</h3>
-                <p class="book-3d-sub" id="book-sub">Guia Prático para Criadores</p>
-                <div class="book-3d-divider"></div>
-                <div class="book-3d-badge" id="book-price-badge">R$19,90</div>
                 <!-- Shine overlay -->
                 <div class="book-shine"></div>
+                <!-- Hidden for JS compat -->
+                <span id="book-title" style="display:none">Como Ganhar Dinheiro com IA em 30 Dias</span>
+                <span id="book-sub" style="display:none">Guia Prático para Criadores</span>
+                <span id="book-price-badge" style="display:none">R$19,90</span>
               </div>
             </div>
             <!-- Spine -->
@@ -655,6 +633,10 @@
           </div>
           <!-- Shadow -->
           <div class="book-shadow"></div>
+          <!-- Hidden elements for JS config compatibility -->
+          <span id="book-title" style="display:none">Como Ganhar Dinheiro com IA em 30 Dias</span>
+          <span id="book-sub" style="display:none">Guia Prático para Criadores</span>
+          <span id="book-price-badge" style="display:none">R$19,90</span>
         </div>
       </div>
     </div>
@@ -1206,9 +1188,8 @@ body.light-mode .exit-box { background:#fff; }
       box-shadow: inset -4px 0 12px rgba(0,0,0,0.4), inset 0 0 40px rgba(124,92,252,0.05);
     }
     .book-front-inner {
-      width: 100%; height: 100%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 24px 20px;
-      position: relative; gap: 10px;
+      width: 100%; height: 100%;
+      position: relative;
     }
     .book-spine-line {
       position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
