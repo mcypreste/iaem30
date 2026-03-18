@@ -768,6 +768,54 @@
 </section>
 
 <!-- NICHE GENERATOR ANCHOR -->
+<!-- ═══════ GERADOR DE NICHO IA ═══════ -->
+<section id="gerador-nicho" style="padding:80px 0;background:var(--bg)">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">🤖 Powered by IA</span>
+      <h2>Descubra Seu Potencial com IA</h2>
+      <p>Digite sua profissão e a IA gera um plano personalizado de como você pode ganhar dinheiro em 30 dias</p>
+    </div>
+    <div class="niche-widget">
+      <div id="niche-step-1" class="niche-step">
+        <div class="niche-input-wrap">
+          <span class="niche-emoji">✨</span>
+          <input type="text" id="niche-profession" placeholder="Ex: músico, designer, fotógrafo, escritor..." maxlength="80">
+          <button onclick="generateNiche()" id="niche-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Gerar Meu Plano
+          </button>
+        </div>
+        <div class="niche-examples">
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">músico</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">designer gráfico</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">fotógrafo</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">escritor</span>
+          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">ilustrador</span>
+        </div>
+      </div>
+      <div id="niche-step-loading" class="niche-step" style="display:none">
+        <div class="niche-loading"><div class="niche-spinner"></div><p>A IA está criando seu plano personalizado...</p></div>
+      </div>
+      <div id="niche-step-email" class="niche-step" style="display:none">
+        <div class="niche-email-gate">
+          <div class="niche-gate-icon">🎯</div>
+          <h3>Seu plano está pronto!</h3>
+          <p>Informe seu email para ver o plano completo</p>
+          <div class="niche-email-row">
+            <input type="email" id="niche-email" placeholder="seu@email.com">
+            <button onclick="revealNiche()">Ver Meu Plano →</button>
+          </div>
+          <span class="niche-skip" onclick="revealNiche(true)">Pular e ver mesmo assim</span>
+        </div>
+      </div>
+      <div id="niche-step-result" class="niche-step" style="display:none">
+        <div class="niche-result" id="niche-result-content"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FAQ -->
 <!-- ═ NICHE GENERATOR SECTION ═ -->
 <section class="faq-section" id="faq">
@@ -2585,60 +2633,6 @@ document.getElementById('niche-profession')?.addEventListener('keydown', e => {
 </div>
 
 
-<!-- ═══════ GERADOR DE NICHO IA ═══════ -->
-<section id="gerador-nicho" style="padding:80px 0;background:var(--bg)">
-  <div class="container">
-    <div class="section-header">
-      <span class="section-label">🤖 Powered by IA</span>
-      <h2>Descubra Seu Potencial com IA</h2>
-      <p>Digite sua profissão e a IA gera um plano personalizado de como você pode ganhar dinheiro em 30 dias</p>
-    </div>
-    <div class="niche-widget">
-      <!-- Input step -->
-      <div id="niche-step-1" class="niche-step">
-        <div class="niche-input-wrap">
-          <span class="niche-emoji">✨</span>
-          <input type="text" id="niche-profession" placeholder="Ex: músico, designer, fotógrafo, escritor..." maxlength="80">
-          <button onclick="generateNiche()" id="niche-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
-            Gerar Meu Plano
-          </button>
-        </div>
-        <div class="niche-examples">
-          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">músico</span>
-          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">designer gráfico</span>
-          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">fotógrafo</span>
-          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">escritor</span>
-          <span onclick="document.getElementById('niche-profession').value=this.textContent;generateNiche()">ilustrador</span>
-        </div>
-      </div>
-      <!-- Loading step -->
-      <div id="niche-step-loading" class="niche-step" style="display:none">
-        <div class="niche-loading">
-          <div class="niche-spinner"></div>
-          <p>A IA está criando seu plano personalizado...</p>
-        </div>
-      </div>
-      <!-- Email capture step -->
-      <div id="niche-step-email" class="niche-step" style="display:none">
-        <div class="niche-email-gate">
-          <div class="niche-gate-icon">🎯</div>
-          <h3>Seu plano está pronto!</h3>
-          <p>Informe seu email para ver o plano completo e receber dicas exclusivas</p>
-          <div class="niche-email-row">
-            <input type="email" id="niche-email" placeholder="seu@email.com">
-            <button onclick="revealNiche()">Ver Meu Plano →</button>
-          </div>
-          <span class="niche-skip" onclick="revealNiche(true)">Pular e ver mesmo assim</span>
-        </div>
-      </div>
-      <!-- Result step -->
-      <div id="niche-step-result" class="niche-step" style="display:none">
-        <div class="niche-result" id="niche-result-content"></div>
-      </div>
-    </div>
-  </div>
-</section>
 
 </body>
 </html>
