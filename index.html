@@ -1334,6 +1334,73 @@ body.light-mode .exit-box { background:#fff; }
       .cookie-actions { width:100%; justify-content:stretch; }
       .cookie-btn-reject, .cookie-btn-accept { flex:1; }
     }
+
+/* ─── CHECKOUT OVERLAY ─── */
+#checkout-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9998;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+}
+#checkout-overlay.show { display: flex; }
+.co-box {
+  background: #0f0f18; border: 1px solid rgba(124,92,252,.3);
+  border-radius: 20px; padding: 40px 36px; width: 340px; max-width: calc(100vw - 32px);
+  text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 60px rgba(124,92,252,.1);
+}
+.co-spinner svg {
+  animation: coSpin 1.2s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(124,92,252,.6));
+}
+@keyframes coSpin { to { transform: rotate(360deg); } }
+.co-lock { font-size: 32px; animation: lockPulse 2s ease-in-out infinite; }
+@keyframes lockPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.co-title {
+  font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700;
+  color: #f0eeff; margin: 0;
+}
+.co-sub { font-size: 13px; color: #7e7a96; line-height: 1.6; margin: 0; }
+.co-badges {
+  display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px;
+}
+.co-badges span {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 6px; padding: 4px 10px; font-size: 11px; color: #7e7a96;
+}
+.co-cancel {
+  background: none; border: 1px solid rgba(255,255,255,.1); color: #4a4762;
+  border-radius: 8px; padding: 8px 20px; font-size: 12px; cursor: pointer;
+  transition: all .2s; margin-top: 4px; font-family: 'DM Sans', sans-serif;
+}
+.co-cancel:hover { border-color: rgba(244,63,94,.4); color: #f43f5e; }
+
+/* ─── CHECKOUT WAITING (mobile fallback) ─── */
+#checkout-waiting {
+  display: none; position: fixed; inset: 0; z-index: 9997;
+  background: #08080e;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px; padding: 32px; text-align: center;
+}
+#checkout-waiting.show { display: flex; }
+.cw-logo { height: 36px; width: auto; margin-bottom: 8px; }
+.cw-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #f0eeff; }
+.cw-sub { font-size: 14px; color: #7e7a96; line-height: 1.7; max-width: 320px; }
+.cw-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #7c5cfc; color: #fff; border: none;
+  padding: 14px 28px; border-radius: 12px;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all .2s; text-decoration: none;
+  box-shadow: 0 0 40px rgba(124,92,252,.4);
+}
+.cw-btn:hover { background: #8b6dfd; }
+.cw-back {
+  background: none; border: none; color: #4a4762; font-size: 13px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+.cw-back:hover { color: #7e7a96; }
+
 </style>
 <script>
 // ═══════════════════════════════════════
@@ -1753,40 +1820,100 @@ async function applyCoupon() {
 // EMAIL CAPTURE + PROCEED TO BUY
 // ═══════════════════════════════════════
 // ─── CHECKOUT POPUP CENTRALIZADO ───
+// ─── CHECKOUT FLOW COMPLETO ───
+const isMobile = () => /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
 function openCheckoutPopup(url) {
-  const w = 500, h = 720;
+  if (isMobile()) {
+    // Mobile: mostra tela de espera com botão para abrir em nova aba
+    showCheckoutWaiting(url);
+    return;
+  }
+
+  // Desktop: mostra overlay + tenta abrir popup centralizado
+  showCheckoutOverlay();
+
+  const w = 520, h = 760;
   const left = Math.round((screen.width  - w) / 2);
   const top  = Math.round((screen.height - h) / 2);
   const popup = window.open(
     url,
     'checkout_iaem30',
     `width=${w},height=${h},left=${left},top=${top},` +
-    `resizable=yes,scrollbars=yes,toolbar=no,menubar=no,` +
-    `location=no,status=no`
+    `resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`
   );
-  // Se o popup foi bloqueado, abre em nova aba normalmente
+
   if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+    // Popup bloqueado → fallback: abre nova aba e mostra tela de espera
+    closeCheckoutOverlay();
+    showCheckoutWaiting(url);
     window.open(url, '_blank');
-  } else {
-    popup.focus();
+    return;
   }
+
+  popup.focus();
+
+  // Monitora o popup — quando fechar, remove o overlay e verifica se comprou
+  const timer = setInterval(() => {
+    if (!popup || popup.closed) {
+      clearInterval(timer);
+      closeCheckoutOverlay();
+      checkIfPurchased();
+    }
+  }, 800);
+}
+
+function showCheckoutOverlay() {
+  document.getElementById('checkout-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCheckoutOverlay() {
+  document.getElementById('checkout-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function showCheckoutWaiting(url) {
+  const el = document.getElementById('checkout-waiting');
+  // Update button link
+  el.querySelector('.cw-btn').href = url;
+  el.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  // Auto-open on mobile
+  setTimeout(() => { window.open(url, '_blank'); }, 400);
+}
+
+function closeCheckoutWaiting() {
+  document.getElementById('checkout-waiting').classList.remove('show');
+  document.body.style.overflow = '';
+  checkIfPurchased();
+}
+
+// Verifica se o usuário comprou (PerfectPay redireciona para /?purchased=1)
+function checkIfPurchased() {
+  // Mostra mensagem amigável perguntando se finalizou a compra
+  const confirmed = confirm('Você finalizou a compra? 🎉\n\nSe sim, clique em OK para acessar sua confirmação.\nSe não, clique em Cancelar para continuar navegando.');
+  if (confirmed) showThankYou();
 }
 
 async function proceedToBuy() {
   const email = document.getElementById('modal-email').value.trim();
   const btn   = document.querySelector('#email-step .btn-primary');
-  if(!email||!email.includes('@')){ document.getElementById('modal-email').style.borderColor='#ef4444'; return; }
-  document.getElementById('modal-email').style.borderColor='';
+  if (!email || !email.includes('@')) {
+    document.getElementById('modal-email').style.borderColor = '#ef4444';
+    document.getElementById('modal-email').focus();
+    return;
+  }
+  document.getElementById('modal-email').style.borderColor = '';
   capturedEmail = email;
-  if(btn){ btn.disabled=true; btn.textContent='Redirecionando...'; }
-  // Save email to Supabase
-  await sbPost('iaem30_emails',{email, source:'modal'});
-  // Abre checkout em popup centralizado
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Abrindo pagamento...'; }
+  // Salva email
+  await sbPost('iaem30_emails', { email, source: 'modal' });
+  // Fecha modal e abre checkout
   const link = CFG.productLink || DEFAULTS.productLink;
-  openCheckoutPopup(link);
   closeModal();
-  // Show thank you page after 3s (simulate post-purchase)
-  // In production, PerfectPay webhook would trigger this
+  // Pequeno delay para o modal fechar antes de abrir o popup
+  setTimeout(() => openCheckoutPopup(link), 200);
 }
 
 // ═══════════════════════════════════════
@@ -1979,5 +2106,42 @@ window.addEventListener('load', () => {
 
 </script>
 
+
+<!-- ═══════ CHECKOUT OVERLAY ═══════ -->
+<div id="checkout-overlay">
+  <div class="co-box">
+    <div class="co-spinner">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="20" stroke="rgba(124,92,252,0.2)" stroke-width="4"/>
+        <path d="M24 4 A20 20 0 0 1 44 24" stroke="url(#coGrad)" stroke-width="4" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="coGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7c5cfc"/>
+            <stop offset="100%" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    <div class="co-lock">🔒</div>
+    <h3 class="co-title">Abrindo pagamento seguro...</h3>
+    <p class="co-sub">Sua compra está sendo processada com segurança pela PerfectPay</p>
+    <div class="co-badges">
+      <span>🔐 SSL</span>
+      <span>💳 Cartão</span>
+      <span>⚡ PIX</span>
+      <span>📄 Boleto</span>
+    </div>
+    <button class="co-cancel" onclick="closeCheckoutOverlay()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════ CHECKOUT WAITING (MOBILE) ═══════ -->
+<div id="checkout-waiting">
+  <img src="logo.svg" alt="IA em 30 Dias" class="cw-logo">
+  <h3 class="cw-title">Pagamento aberto! ✅</h3>
+  <p class="cw-sub">Finalize sua compra na tela que abriu. Ela pode estar minimizada no seu navegador.</p>
+  <a href="#" class="cw-btn" target="_blank">🔒 Abrir pagamento novamente</a>
+  <button class="cw-back" onclick="closeCheckoutWaiting()">← Voltar ao site</button>
+</div>
 </body>
 </html>
