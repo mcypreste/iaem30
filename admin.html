@@ -308,6 +308,76 @@ input[type=date] { color-scheme:dark; }
 
 @media(max-width:1200px) { .kpi-grid { grid-template-columns:repeat(2,1fr); } }
 @media(max-width:900px)  { .pg2,.pg3,.fr,.fr3 { grid-template-columns:1fr; } }
+
+/* ─── TABLET ─── */
+@media(max-width:1024px) {
+  :root { --WX:200px; }
+  .ni { font-size:12.5px; padding:8px 8px; }
+  .sb-tabs .sbt { font-size:10px; }
+  .panel { padding:20px 16px; }
+  .topbar { padding:0 16px; }
+  .card-body { padding:16px; }
+}
+
+/* ─── MOBILE ─── */
+@media(max-width:768px) {
+  /* Sidebar becomes bottom drawer on mobile */
+  :root { --W:0px; --WX:0px; }
+  .sidebar {
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100% !important;
+    height: auto; max-height: 75vh;
+    flex-direction: column;
+    border-right: none;
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    z-index: 200;
+  }
+  .sidebar.mobile-open { transform: translateY(0); }
+  .main { margin-left: 0 !important; }
+
+  /* Mobile topbar */
+  .topbar {
+    padding: 0 12px; height: 52px;
+    position: sticky; top:0; z-index: 100;
+  }
+  .tb-title { font-size: 14px; }
+
+  /* Mobile menu toggle */
+  #mobile-menu-btn { display: flex !important; }
+
+  /* Overlay */
+  #sb-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 199;
+  }
+  #sb-overlay.show { display: block; }
+
+  /* Panels */
+  .panel { padding: 14px 12px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { padding: 14px; }
+  .kpi-val { font-size: 20px; }
+  .card-head { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+  .card-body { padding: 14px; }
+  .tbl { font-size: 11.5px; }
+  .tbl th, .tbl td { padding: 8px 6px; }
+  .btn-sm { font-size: 11px; padding: 6px 10px; }
+  .chart-wrap { height: 200px; }
+
+  /* Login */
+  .lbox { width: 100%; margin: 16px; padding: 32px 24px; }
+  #login { padding: 0 16px; align-items: flex-start; padding-top: 60px; }
+}
+
+@media(max-width:480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .kpi-val { font-size: 18px; }
+  .fr { grid-template-columns: 1fr; }
+  .fr3 { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -327,6 +397,7 @@ input[type=date] { color-scheme:dark; }
 
 <!-- ══════════ ADMIN ══════════ -->
 <div id="admin">
+<div id="sb-overlay" onclick="closeMobileMenu()"></div>
 
   <!-- SIDEBAR -->
   <div class="sidebar" id="sb">
@@ -390,6 +461,7 @@ input[type=date] { color-scheme:dark; }
   <div class="main" id="main">
     <div class="topbar">
       <div class="tb-left">
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;color:var(--t);cursor:pointer;padding:6px;margin-right:6px;font-size:20px">☰</button>
         <div class="tb-title" id="ptitle">Dashboard</div>
       </div>
       <div class="tb-right">
@@ -1656,6 +1728,33 @@ function toast(msg,type='ok'){
   document.getElementById('tm').textContent=msg;
   clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),4000);
 }
+// ─── MOBILE SIDEBAR ───
+function toggleMobileMenu() {
+  const sb = document.getElementById('sb');
+  const ov = document.getElementById('sb-overlay');
+  sb.classList.toggle('mobile-open');
+  ov.classList.toggle('show');
+  document.body.style.overflow = sb.classList.contains('mobile-open') ? 'hidden' : '';
+}
+function closeMobileMenu() {
+  document.getElementById('sb').classList.remove('mobile-open');
+  document.getElementById('sb-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+// Close sidebar after nav click on mobile
+document.querySelectorAll('.ni').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (window.innerWidth <= 768) closeMobileMenu();
+  });
+});
+// Show/hide mobile button based on screen size
+function checkMobile() {
+  const btn = document.getElementById('mobile-menu-btn');
+  if (btn) btn.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+}
+window.addEventListener('resize', checkMobile);
+window.addEventListener('load', checkMobile);
+
 </script>
 </body>
 </html>
