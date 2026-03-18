@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IA em 30 — Admin</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -95,7 +96,7 @@ h1,h2,h3,h4 { font-family:'Syne',sans-serif; }
 .sb-logo em { color:var(--a); font-style:normal; }
 .sb-toggle { background:none; border:none; color:var(--m); cursor:pointer; font-size:18px; flex-shrink:0; padding:2px; transition:color .2s; }
 .sb-toggle:hover { color:var(--t); }
-.sidebar.collapsed .sb-logo { opacity:0; width:0; }
+.sidebar.collapsed #sb-logo-img { opacity:0; width:0; max-width:0; overflow:hidden; }
 
 .sb-tabs {
   display:flex; border-bottom:1px solid var(--border); flex-shrink:0;
@@ -314,7 +315,7 @@ input[type=date] { color-scheme:dark; }
 <!-- ══════════ LOGIN ══════════ -->
 <div id="login">
   <div class="lbox">
-    <div class="llogo">IA<em>em30</em></div>
+    <div style="display:flex;justify-content:center;margin-bottom:6px"><img src="logo.svg" alt="IA em 30" style="height:44px;width:auto"></div>
     <div class="lsub">Painel de Administração</div>
     <div class="fg"><label>Usuário</label><input id="lu" type="text" placeholder="admin" autocomplete="username"></div>
     <div class="fg"><label>Senha</label><input id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
@@ -330,7 +331,7 @@ input[type=date] { color-scheme:dark; }
   <!-- SIDEBAR -->
   <div class="sidebar" id="sb">
     <div class="sb-top">
-      <div class="sb-logo">IA<em>em30</em></div>
+      <img src="logo.svg" alt="IA em 30" id="sb-logo-img" style="height:28px;width:auto;max-width:160px;transition:all .25s">
       <button class="sb-toggle" onclick="toggleSb()" title="Recolher">☰</button>
     </div>
 

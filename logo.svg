@@ -1,0 +1,66 @@
+<svg width="520" height="120" viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="accH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#A78BFA"/>
+      <stop offset="100%" stop-color="#67E8F9"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ── ICON ── -->
+  <!-- Outer hexagon -->
+  <polygon points="60,6 100,28 100,72 60,94 20,72 20,28" fill="none" stroke="url(#acc)" stroke-width="2" opacity="0.8" style="fill:none;color:rgb(255, 255, 255);stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Inner hexagon fill -->
+  <polygon points="60,14 92,32 92,68 60,86 28,68 28,32" fill="#7C3AED" opacity="0.12" style="fill:rgb(124, 58, 237);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.12;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Circuit lines inside hex -->
+  <line x1="60" y1="32" x2="60" y2="50" stroke="#A78BFA" stroke-width="1.5" opacity="0.6" style="fill:rgb(0, 0, 0);stroke:rgb(167, 139, 250);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="60" y1="50" x2="44" y2="60" stroke="#A78BFA" stroke-width="1.5" opacity="0.6" style="fill:rgb(0, 0, 0);stroke:rgb(167, 139, 250);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="60" y1="50" x2="76" y2="60" stroke="#06B6D4" stroke-width="1.5" opacity="0.6" style="fill:rgb(0, 0, 0);stroke:rgb(6, 182, 212);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <line x1="60" y1="50" x2="60" y2="70" stroke="url(#acc)" stroke-width="1.5" opacity="0.5" style="fill:rgb(0, 0, 0);color:rgb(255, 255, 255);stroke-width:1.5px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.5;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Circuit nodes -->
+  <circle cx="60" cy="32" r="3.5" fill="#A78BFA" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="44" cy="60" r="3" fill="#A78BFA" opacity="0.8" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="76" cy="60" r="3" fill="#06B6D4" opacity="0.8" style="fill:rgb(6, 182, 212);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="60" cy="70" r="3" fill="#06B6D4" opacity="0.7" style="fill:rgb(6, 182, 212);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.7;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="60" cy="50" r="5" fill="url(#acc)" style="stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Hex corner dots -->
+  <circle cx="60" cy="6" r="2.5" fill="#06B6D4" opacity="0.9" style="fill:rgb(6, 182, 212);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="60" cy="94" r="2.5" fill="#06B6D4" opacity="0.9" style="fill:rgb(6, 182, 212);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="100" cy="28" r="2.5" fill="#A78BFA" opacity="0.8" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="100" cy="72" r="2.5" fill="#A78BFA" opacity="0.8" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="20" cy="28" r="2.5" fill="#A78BFA" opacity="0.8" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <circle cx="20" cy="72" r="2.5" fill="#A78BFA" opacity="0.8" style="fill:rgb(167, 139, 250);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.8;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- ── VERTICAL SEPARATOR ── -->
+  <line x1="122" y1="20" x2="122" y2="80" stroke="#7C3AED" stroke-width="1" opacity="0.4" style="fill:rgb(0, 0, 0);stroke:rgb(124, 58, 237);color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.4;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- ── TEXT ── -->
+  <!-- IA -->
+  <text x="140" y="62" dominant-baseline="central" font-family="Helvetica,Arial,sans-serif" font-size="48" font-weight="700" letter-spacing="-1" fill="url(#textGrad)" style="stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Helvetica, Arial, sans-serif;font-size:48px;font-weight:700;text-anchor:start;dominant-baseline:central">IA</text>
+
+  <!-- EM -->
+  <text x="210" y="55" dominant-baseline="central" font-family="Helvetica,Arial,sans-serif" font-size="22" font-weight="400" fill="#D1D5DB" opacity="0.9" style="fill:rgb(209, 213, 219);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:Helvetica, Arial, sans-serif;font-size:22px;font-weight:400;text-anchor:start;dominant-baseline:central">EM</text>
+
+  <!-- 30 -->
+  <text x="248" y="55" dominant-baseline="central" font-family="Helvetica,Arial,sans-serif" font-size="22" font-weight="700" fill="url(#textGrad)" style="stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Helvetica, Arial, sans-serif;font-size:22px;font-weight:700;text-anchor:start;dominant-baseline:central">30</text>
+
+  <!-- DIAS -->
+  <text x="278" y="55" dominant-baseline="central" font-family="Helvetica,Arial,sans-serif" font-size="22" font-weight="400" fill="#D1D5DB" opacity="0.9" style="fill:rgb(209, 213, 219);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.9;font-family:Helvetica, Arial, sans-serif;font-size:22px;font-weight:400;text-anchor:start;dominant-baseline:central">DIAS</text>
+
+  <!-- Accent underline -->
+  <rect x="140" y="78" width="185" height="2" rx="1" fill="url(#accH)" opacity="0.6" style="stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:0.6;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- Tagline -->
+  <text x="140" y="97" font-family="Helvetica,Arial,sans-serif" font-size="10" font-weight="400" fill="#6B7280" letter-spacing="2" style="fill:rgb(107, 114, 128);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:Helvetica, Arial, sans-serif;font-size:10px;font-weight:400;text-anchor:start;dominant-baseline:auto">GANHE DINHEIRO COM IA</text>
+</svg>
