@@ -1853,42 +1853,17 @@ const isMobile = () => /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || 
 
 function openCheckoutPopup(url) {
   if (isMobile()) {
-    // Mobile: abre o link direto na mesma aba
-    window.location.href = url;
-    return;
-  }
-
-  // Desktop: mostra overlay + tenta abrir popup centralizado
-  showCheckoutOverlay();
-
-  const w = 520, h = 760;
-  const left = Math.round((screen.width  - w) / 2);
-  const top  = Math.round((screen.height - h) / 2);
-  const popup = window.open(
-    url,
-    'checkout_iaem30',
-    `width=${w},height=${h},left=${left},top=${top},` +
-    `resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`
-  );
-
-  if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-    // Popup bloqueado → fallback: abre nova aba e mostra tela de espera
-    closeCheckoutOverlay();
-    showCheckoutWaiting(url);
     window.open(url, '_blank');
+    // Mobile: inicia polling para detectar compra
+    startPurchasePolling();
     return;
   }
 
-  popup.focus();
-
-  // Monitora o popup — quando fechar, remove o overlay e verifica se comprou
-  const timer = setInterval(() => {
-    if (!popup || popup.closed) {
-      clearInterval(timer);
-      closeCheckoutOverlay();
-      checkIfPurchased();
-    }
-  }, 800);
+  // Desktop: abre em nova aba e mostra overlay de espera
+  window.open(url, '_blank');
+  showCheckoutOverlay();
+  // Inicia polling — verifica banco a cada 5s por até 30min
+  startPurchasePolling();
 }
 
 function showCheckoutOverlay() {
@@ -1899,6 +1874,8 @@ function showCheckoutOverlay() {
 function closeCheckoutOverlay() {
   document.getElementById('checkout-overlay').classList.remove('show');
   document.body.style.overflow = '';
+  // NÃO verifica compra aqui — o polling continua em background
+  // A página de obrigado só aparece quando webhook confirmar no banco
 }
 
 function showCheckoutWaiting(url) {
@@ -1914,14 +1891,45 @@ function showCheckoutWaiting(url) {
 function closeCheckoutWaiting() {
   document.getElementById('checkout-waiting').classList.remove('show');
   document.body.style.overflow = '';
-  checkIfPurchased();
+  // Polling continua em background — obrigado só aparece com compra confirmada
 }
 
-// Verifica se o usuário comprou (PerfectPay redireciona para /?purchased=1)
+// Polling real — verifica no banco se a compra foi confirmada via webhook
+let _pollTimer = null;
+let _pollCount = 0;
+const POLL_MAX = 360; // 30 min (360 x 5s)
+
+function startPurchasePolling() {
+  if (_pollTimer) return; // já rodando
+  _pollCount = 0;
+  _pollTimer = setInterval(checkPurchaseInDB, 5000);
+}
+
+function stopPurchasePolling() {
+  if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
+}
+
+async function checkPurchaseInDB() {
+  _pollCount++;
+  if (_pollCount > POLL_MAX) { stopPurchasePolling(); closeCheckoutOverlay(); return; }
+  if (!capturedEmail) return;
+
+  try {
+    const rows = await sbGet('iaem30_sales',
+      '?customer_email=eq.' + encodeURIComponent(capturedEmail) +
+      '&is_test=eq.false&status=eq.approved&select=id&limit=1'
+    );
+    if (rows?.length) {
+      stopPurchasePolling();
+      closeCheckoutOverlay();
+      showThankYou();
+    }
+  } catch(e) {}
+}
+
+// Botão "já comprei" — verifica manualmente no banco
 function checkIfPurchased() {
-  // Mostra mensagem amigável perguntando se finalizou a compra
-  const confirmed = confirm('Você finalizou a compra? 🎉\n\nSe sim, clique em OK para acessar sua confirmação.\nSe não, clique em Cancelar para continuar navegando.');
-  if (confirmed) showThankYou();
+  checkPurchaseInDB();
 }
 
 async function proceedToBuy() {
@@ -2172,15 +2180,17 @@ window.addEventListener('load', () => {
       </svg>
     </div>
     <div class="co-lock">🔒</div>
-    <h3 class="co-title">Abrindo pagamento seguro...</h3>
-    <p class="co-sub">Sua compra está sendo processada com segurança pela PerfectPay</p>
+    <h3 class="co-title">Checkout aberto em nova aba</h3>
+    <p class="co-sub">Finalize seu pagamento na PerfectPay. Esta página detectará sua compra automaticamente quando confirmada.</p>
     <div class="co-badges">
       <span>🔐 SSL</span>
       <span>💳 Cartão</span>
       <span>⚡ PIX</span>
       <span>📄 Boleto</span>
     </div>
-    <button class="co-cancel" onclick="closeCheckoutOverlay()">Cancelar</button>
+    <button class="btn-primary" style="width:100%;justify-content:center;margin-top:16px" onclick="checkIfPurchased()">✅ Já finalizei a compra</button>
+    <button class="co-cancel" onclick="closeCheckoutOverlay()" style="margin-top:10px">✕ Fechar — ainda não comprei</button>
+    <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.5">A confirmação aparece automaticamente após o pagamento ser aprovado.</p>
   </div>
 </div>
 
