@@ -426,6 +426,9 @@ input[type=date] { color-scheme:dark; }
       <button class="ni" onclick="go('cupons',this)"><span class="ico">🎟️</span><span class="lbl">Cupons</span></button>
       <button class="ni" onclick="go('emails',this)"><span class="ico">📧</span><span class="lbl">Emails</span></button>
       <button class="ni" onclick="go('notifs',this)"><span class="ico">🔔</span><span class="lbl">Notif. Vendas</span></button>
+      <div class="nsec">Chat & IA</div>
+      <button class="ni" onclick="go('chat-faq',this)"><span class="ico">💬</span><span class="lbl">Respostas do Chat</span></button>
+      <button class="ni" onclick="go('ai-leads',this)"><span class="ico">🎯</span><span class="lbl">Leads Gerador Nicho</span></button>
       <div class="nsec">Integrações</div>
       <button class="ni" onclick="go('perfectpay',this)"><span class="ico">⚙️</span><span class="lbl">PerfectPay API</span></button>
     </nav>
@@ -515,6 +518,17 @@ input[type=date] { color-scheme:dark; }
         <div class="card">
           <div class="card-head"><h3>🌐 Dispositivos & Fontes</h3></div>
           <div class="card-body"><div id="an-devs" style="font-size:13px;color:var(--m)">—</div></div>
+        </div>
+      </div>
+
+      <!-- FUNIL DE CONVERSÃO -->
+      <div class="card" style="margin-top:0">
+        <div class="card-head">
+          <h3>🎯 Funil de Conversão</h3>
+          <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadFunil()">↺</button>
+        </div>
+        <div class="card-body">
+          <div id="funil-wrap" style="padding:8px 0">Carregando...</div>
         </div>
       </div>
     </div>
@@ -635,21 +649,32 @@ input[type=date] { color-scheme:dark; }
     <div class="panel" id="p-cupons">
       <div class="pg2">
         <div class="card">
-          <div class="card-head"><h3>Criar Cupom</h3></div>
+          <div class="card-head"><h3>🎟️ Criar Cupom</h3></div>
           <div class="card-body">
             <div class="fr" style="margin-bottom:12px">
               <div class="field"><label>Código</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
               <div class="field"><label>Desconto %</label><input type="number" id="cp-p" value="20" min="1" max="99"></div>
             </div>
-            <div class="fr" style="margin-bottom:14px">
+            <div class="fr" style="margin-bottom:12px">
               <div class="field"><label>Máx. Usos</label><input type="number" id="cp-m" value="999"></div>
-              <div class="field"><label>Validade</label><input type="date" id="cp-exp"></div>
+              <div class="field"><label>Descrição</label><input id="cp-desc" placeholder="Black Friday"></div>
+            </div>
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>📅 Início (opcional)</label><input type="datetime-local" id="cp-start"></div>
+              <div class="field"><label>📅 Expira em (opcional)</label><input type="datetime-local" id="cp-exp"></div>
             </div>
             <button class="btn-sm primary" onclick="createCoupon()">Criar Cupom</button>
+            <div id="cp-msg" style="margin-top:10px;font-size:13px"></div>
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><h3>Cupons Ativos</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadCupons()">↺</button></div>
+          <div class="card-head">
+            <h3>Cupons Cadastrados</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="tag" id="cp-count">—</span>
+              <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadCupons()">↺</button>
+            </div>
+          </div>
           <div class="card-body"><div id="cp-lst">Carregando...</div></div>
         </div>
       </div>
@@ -657,15 +682,69 @@ input[type=date] { color-scheme:dark; }
 
     <!-- ══ EMAILS ══ -->
     <div class="panel" id="p-emails">
-      <div class="card">
-        <div class="card-head"><h3>📧 Leads Capturados</h3>
-          <div style="display:flex;gap:8px">
-            <span class="tag green" id="emails-count">0 emails</span>
-            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadEmails()">↺</button>
-            <button class="btn-sm primary" style="padding:5px 10px;font-size:11px" onclick="exportEmails()">📥 Exportar CSV</button>
+      <!-- Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:18px;border-bottom:1px solid var(--b2);padding-bottom:12px">
+        <button class="btn-sm primary" id="etab-leads" onclick="switchEmailTab('leads')">📧 Leads</button>
+        <button class="btn-sm ghost" id="etab-seq" onclick="switchEmailTab('seq')">⚡ Sequência Automática</button>
+        <button class="btn-sm ghost" id="etab-sends" onclick="switchEmailTab('sends')">📤 Envios</button>
+      </div>
+
+      <!-- Tab Leads -->
+      <div id="etab-leads-content">
+        <div class="card">
+          <div class="card-head"><h3>📧 Leads Capturados</h3>
+            <div style="display:flex;gap:8px">
+              <span class="tag green" id="emails-count">0 emails</span>
+              <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadEmails()">↺</button>
+              <button class="btn-sm primary" style="padding:5px 10px;font-size:11px" onclick="exportEmails()">📥 CSV</button>
+            </div>
+          </div>
+          <div class="card-body"><div id="em-tbl" style="overflow-x:auto">Carregando...</div></div>
+        </div>
+      </div>
+
+      <!-- Tab Sequência -->
+      <div id="etab-seq-content" style="display:none">
+        <div class="pg2">
+          <div class="card">
+            <div class="card-head">
+              <h3>⚡ Sequência de Boas-vindas</h3>
+              <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
+                <input type="checkbox" id="seq-active" onchange="toggleSequence(this.checked)" style="width:16px;height:16px;accent-color:var(--a)">
+                <span>Ativa</span>
+              </label>
+            </div>
+            <div class="card-body">
+              <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+                Quando alguém deixa o email no site, recebe automaticamente esta sequência de emails. Edite os textos abaixo e salve.
+              </div>
+              <div id="seq-steps">Carregando...</div>
+              <button class="btn-sm primary" style="margin-top:16px" onclick="saveSequence()">💾 Salvar Sequência</button>
+              <div id="seq-msg" style="margin-top:8px;font-size:13px"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📊 Estatísticas da Sequência</h3></div>
+            <div class="card-body">
+              <div class="kpi-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+                <div class="kpi" style="padding:14px"><div class="kpi-label">Total agendados</div><div class="kpi-val" style="font-size:22px" id="seq-tot">—</div></div>
+                <div class="kpi" style="padding:14px"><div class="kpi-label">Enviados</div><div class="kpi-val" style="font-size:22px" id="seq-sent">—</div></div>
+                <div class="kpi" style="padding:14px"><div class="kpi-label">Pendentes</div><div class="kpi-val" style="font-size:22px" id="seq-pend">—</div></div>
+                <div class="kpi" style="padding:14px"><div class="kpi-label">Taxa envio</div><div class="kpi-val" style="font-size:22px" id="seq-rate">—</div></div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="card-body"><div id="em-tbl" style="overflow-x:auto">Carregando...</div></div>
+      </div>
+
+      <!-- Tab Envios -->
+      <div id="etab-sends-content" style="display:none">
+        <div class="card">
+          <div class="card-head"><h3>📤 Histórico de Envios</h3>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadSends()">↺</button>
+          </div>
+          <div class="card-body"><div id="sends-tbl" style="overflow-x:auto;font-size:13px">Carregando...</div></div>
+        </div>
       </div>
     </div>
 
@@ -1082,6 +1161,7 @@ async function boot(){
   fill();
   // Load overview data
   loadOverview();
+  loadFunil();
   loadMiniAnalytics();
   loadPPStatus();
 }
@@ -1124,6 +1204,7 @@ const PTITLES={
   overview:'Dashboard',vendas:'Vendas',extrato:'Extrato Financeiro',comissoes:'Comissões & Afiliados',
   produtos:'Produtos',analytics:'Analytics',cupons:'Cupons',emails:'Emails Capturados',
   notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
+  'chat-faq':'Respostas do Chat','ai-leads':'Leads Gerador de Nicho',
   'e-geral':'Geral & Marca','e-hero':'Hero & CTA','e-preco':'Preço & Compra',
   'e-ben':'Benefícios','e-semanas':'Semanas & Aprendizado','e-monetize':'Monetização',
   'e-depos':'Depoimentos','e-faq':'FAQ','e-conv':'Conversão & Urgência',
@@ -1647,55 +1728,231 @@ async function loadAnalytics(){
 // ══════════════════════════════════════
 // CUPONS
 // ══════════════════════════════════════
-async function createCoupon(){
-  const code=document.getElementById('cp-c').value.trim().toUpperCase();
-  const pct=Number(document.getElementById('cp-p').value)||20;
-  const max=Number(document.getElementById('cp-m').value)||999;
-  if(!code){toast('Digite o código','err');return;}
-  const ok=await sbPost('iaem30_coupons',{code,discount_percent:pct,active:true,uses:0,max_uses:max});
-  if(ok){toast('✓ Cupom criado!');document.getElementById('cp-c').value='';loadCupons();}
-  else toast('Erro. Código pode já existir.','err');
+// ══════════════════════════════════════
+// FUNIL DE CONVERSÃO
+// ══════════════════════════════════════
+async function loadFunil() {
+  const el = document.getElementById('funil-wrap'); if (!el) return;
+  const [visitors, clicks, emails, sales] = await Promise.all([
+    sbGet('iaem30_visitors', '?select=id&created_at=gte.' + new Date(Date.now()-30*864e5).toISOString()),
+    sbGet('iaem30_cta_clicks', '?select=id&created_at=gte.' + new Date(Date.now()-30*864e5).toISOString()),
+    sbGet('iaem30_emails', '?select=id'),
+    sbGet('iaem30_sales', '?select=id&is_test=eq.false'),
+  ]);
+  const v = visitors?.length||0, c = clicks?.length||0, e = emails?.length||0, s = sales?.length||0;
+  const pct = (n,d) => d ? Math.round(n/d*100)+'%' : '0%';
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0">
+      ${[
+        {label:'👁️ Visitantes (30d)', val:v, pct:'100%', color:'#7c5cfc', w:100},
+        {label:'🖱️ Clicaram no CTA', val:c, pct:pct(c,v), color:'#06b6d4', w:Math.max(5,Math.round(c/Math.max(v,1)*100))},
+        {label:'📧 Deixaram email', val:e, pct:pct(e,v), color:'#f59e0b', w:Math.max(5,Math.round(e/Math.max(v,1)*100))},
+        {label:'💳 Compraram', val:s, pct:pct(s,v), color:'#10b981', w:Math.max(s?2:0,Math.round(s/Math.max(v,1)*100))},
+      ].map(f => `
+        <div style="margin-bottom:14px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+            <span style="color:var(--t)">${f.label}</span>
+            <span style="color:var(--m)">${f.val} <span style="color:${f.color};font-weight:700">(${f.pct})</span></span>
+          </div>
+          <div style="background:rgba(255,255,255,.06);border-radius:6px;height:10px;overflow:hidden">
+            <div style="background:${f.color};height:100%;width:${f.w}%;border-radius:6px;transition:width .6s ease"></div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--m2);margin-top:8px">
+      Taxa de conversão geral: <strong style="color:${s>0?'#10b981':'var(--m)'}">${pct(s,v)}</strong> dos visitantes compram.
+      ${s===0 ? '💡 <span style="color:#f59e0b">Foco em conversão — adicione prova social e urgência ao site.</span>' : ''}
+    </div>`;
 }
-async function loadCupons(){
-  const rows=await sbGet('iaem30_coupons','?order=created_at.desc');
-  const el=document.getElementById('cp-lst');if(!el)return;
-  if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">🎟️</div>Nenhum cupom criado ainda.</div>';return;}
-  el.innerHTML=`<table class="tbl"><thead><tr>${['Código','Desconto','Usos','Máx','Ativo','Ação'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
-    ${rows.map(c=>`<tr>
-      <td style="font-family:'Syne',sans-serif;font-weight:700">${c.code}</td>
-      <td><span class="tag green">${c.discount_percent}%</span></td>
-      <td>${c.uses}</td><td>${c.max_uses}</td>
-      <td>${c.active?'<span class="tag green">✓ Ativo</span>':'<span class="tag red">✕ Inativo</span>'}</td>
-      <td><button onclick="toggleCoupon('${c.id}',${!c.active})" class="btn-sm ${c.active?'danger':'ghost'}" style="padding:4px 10px;font-size:11px">${c.active?'Desativar':'Ativar'}</button></td>
-    </tr>`).join('')}
-  </tbody></table>`;
+
+// ══════════════════════════════════════
+// CUPONS COM AGENDAMENTO
+// ══════════════════════════════════════
+async function createCoupon() {
+  const code = document.getElementById('cp-c').value.trim().toUpperCase();
+  const pct  = Number(document.getElementById('cp-p').value)||20;
+  const max  = Number(document.getElementById('cp-m').value)||999;
+  const desc = document.getElementById('cp-desc').value.trim();
+  const start = document.getElementById('cp-start').value;
+  const exp  = document.getElementById('cp-exp').value;
+  const msg  = document.getElementById('cp-msg');
+  if (!code) { toast('Digite o código','err'); return; }
+  const now = new Date();
+  // Se tem data de início futura, começa inativo
+  const active = start ? new Date(start) <= now : true;
+  const data = { code, discount_percent:pct, active, uses:0, max_uses:max };
+  if (desc) data.description = desc;
+  if (start) data.starts_at = new Date(start).toISOString();
+  if (exp)   data.expires_at = new Date(exp).toISOString();
+  const ok = await sbPost('iaem30_coupons', data);
+  if (ok) {
+    toast('✓ Cupom criado!');
+    ['cp-c','cp-desc'].forEach(id => document.getElementById(id).value='');
+    if (msg) msg.innerHTML = start ? '<span style="color:var(--g)">✓ Cupom agendado para ativar em '+new Date(start).toLocaleDateString('pt-BR')+'</span>' : '';
+    loadCupons();
+  } else {
+    toast('Erro. Código pode já existir.','err');
+  }
+}
+
+async function loadCupons() {
+  const rows = await sbGet('iaem30_coupons','?order=created_at.desc');
+  const el = document.getElementById('cp-lst'); if (!el) return;
+  const cnt = document.getElementById('cp-count');
+  if (cnt) cnt.textContent = (rows||[]).length + ' cupons';
+  if (!rows?.length) { el.innerHTML='<div class="empty"><div class="eico">🎟️</div>Nenhum cupom ainda.</div>'; return; }
+  const now = new Date();
+  el.innerHTML = '<table class="tbl"><thead><tr>' +
+    ['Código','Desconto','Usos','Descrição','Início','Expira','Status','Ação'].map(h=>'<th>'+h+'</th>').join('') +
+    '</tr></thead><tbody>' +
+    rows.map(c => {
+      const expired = c.expires_at && new Date(c.expires_at) < now;
+      const notStarted = c.starts_at && new Date(c.starts_at) > now;
+      const status = expired ? '<span class="tag red">Expirado</span>'
+        : notStarted ? '<span class="tag gold">Agendado</span>'
+        : c.active ? '<span class="tag green">✓ Ativo</span>'
+        : '<span class="tag">Inativo</span>';
+      return '<tr>' +
+        '<td style="font-family:\'Syne\',sans-serif;font-weight:700">'+c.code+'</td>' +
+        '<td><span class="tag green">'+c.discount_percent+'%</span></td>' +
+        '<td>'+c.uses+'/'+c.max_uses+'</td>' +
+        '<td style="color:var(--m);font-size:12px">'+(c.description||'—')+'</td>' +
+        '<td style="color:var(--m);font-size:12px">'+(c.starts_at?new Date(c.starts_at).toLocaleDateString('pt-BR'):'Imediato')+'</td>' +
+        '<td style="color:var(--m);font-size:12px">'+(c.expires_at?new Date(c.expires_at).toLocaleDateString('pt-BR'):'Sem prazo')+'</td>' +
+        '<td>'+status+'</td>' +
+        '<td><button onclick="toggleCoupon(\''+c.id+'\','+(!c.active)+')" class="btn-sm '+(c.active?'danger':'ghost')+'" style="padding:4px 10px;font-size:11px">'+(c.active?'Desativar':'Ativar')+'</button></td>' +
+      '</tr>';
+    }).join('') +
+    '</tbody></table>';
 }
 async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCupons();toast(active?'Cupom ativado!':'Cupom desativado.');}
 
 // ══════════════════════════════════════
-// EMAILS
+// EMAILS + SEQUÊNCIA AUTOMÁTICA
 // ══════════════════════════════════════
+let _emailTab = 'leads';
+function switchEmailTab(tab) {
+  _emailTab = tab;
+  ['leads','seq','sends'].forEach(t => {
+    document.getElementById('etab-'+t+'-content').style.display = t===tab ? 'block' : 'none';
+    const btn = document.getElementById('etab-'+t);
+    if (btn) { btn.className = 'btn-sm '+(t===tab?'primary':'ghost'); }
+  });
+  if (tab==='leads') loadEmails();
+  else if (tab==='seq') loadSequence();
+  else if (tab==='sends') loadSends();
+}
+
 async function loadEmails(){
   const rows=await sbGet('iaem30_emails','?order=created_at.desc&limit=500');
-  const cnt=document.getElementById('emails-count');if(cnt) cnt.textContent=(rows||[]).length+' emails';
-  const el=document.getElementById('em-tbl');if(!el)return;
+  const cnt=document.getElementById('emails-count'); if(cnt) cnt.textContent=(rows||[]).length+' emails';
+  const el=document.getElementById('em-tbl'); if(!el)return;
   if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">📧</div>Nenhum email capturado ainda.</div>';return;}
-  el.innerHTML=`<table class="tbl"><thead><tr>${['Email','Nome','Origem','Data'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>
-    ${rows.map(r=>`<tr>
-      <td style="font-weight:500">${r.email}</td>
-      <td style="color:var(--m)">${r.name||'—'}</td>
-      <td><span class="tag ${r.source==='purchase'?'green':r.source==='modal'?'purple':'gray'}">${r.source||'—'}</span></td>
-      <td style="color:var(--m)">${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
-    </tr>`).join('')}
-  </tbody></table>`;
+  el.innerHTML='<table class="tbl"><thead><tr>'+['Email','Nome','Origem','Data'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr>'+
+      '<td style="font-weight:500">'+r.email+'</td>'+
+      '<td style="color:var(--m)">'+(r.name||'—')+'</td>'+
+      '<td><span class="tag '+(r.source==='purchase'?'green':r.source==='modal'?'purple':'gray')+'">'+(r.source||'—')+'</span></td>'+
+      '<td style="color:var(--m)">'+(r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
+    '</tr>').join('')+
+  '</tbody></table>';
 }
+
 function exportEmails(){
   sbGet('iaem30_emails','?order=created_at.desc&limit=9999').then(rows=>{
     if(!rows?.length){toast('Nenhum email para exportar','err');return;}
-    const csv='email,nome,origem,data\n'+rows.map(r=>`${r.email},${r.name||''},${r.source||''},${r.created_at||''}`).join('\n');
+    const csv='email,nome,origem,data\n'+rows.map(r=>r.email+','+(r.name||'')+ ','+(r.source||'')+ ','+(r.created_at||'')).join('\n');
     const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='emails-iaem30.csv';a.click();
     toast('✓ CSV exportado!');
   });
+}
+
+async function loadSequence() {
+  const seqs = await sbGet('iaem30_email_sequences','?limit=1');
+  const seq = seqs?.[0];
+  if (!seq) return;
+  const cb = document.getElementById('seq-active');
+  if (cb) cb.checked = seq.active;
+  const steps = await sbGet('iaem30_email_steps','?sequence_id=eq.'+seq.id+'&order=order_index.asc');
+  const el = document.getElementById('seq-steps'); if (!el) return;
+  if (!steps?.length) { el.innerHTML='<div style="color:var(--m);font-size:13px">Nenhum passo configurado.</div>'; return; }
+  el.innerHTML = steps.map((s,i) => `
+    <div style="border:1px solid var(--b2);border-radius:10px;padding:16px;margin-bottom:12px" data-step-id="${s.id}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="background:var(--a);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</span>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--m2)">Enviado ${s.delay_hours===0?'imediatamente':s.delay_hours<24?s.delay_hours+'h depois':Math.round(s.delay_hours/24)+'d depois'}</div>
+        </div>
+        <select class="step-delay" data-id="${s.id}" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:5px 8px;color:var(--t);font-size:12px;outline:none">
+          <option value="0" ${s.delay_hours===0?'selected':''}>Imediato</option>
+          <option value="1" ${s.delay_hours===1?'selected':''}>1h depois</option>
+          <option value="24" ${s.delay_hours===24?'selected':''}>1 dia depois</option>
+          <option value="48" ${s.delay_hours===48?'selected':''}>2 dias depois</option>
+          <option value="72" ${s.delay_hours===72?'selected':''}>3 dias depois</option>
+          <option value="168" ${s.delay_hours===168?'selected':''}>7 dias depois</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:10px">
+        <label>Assunto</label>
+        <input class="step-subject" data-id="${s.id}" value="${s.subject}" placeholder="Assunto do email">
+      </div>
+      <div class="field">
+        <label>Corpo do email</label>
+        <textarea class="step-body" data-id="${s.id}" rows="4" placeholder="Texto do email...">${s.body}</textarea>
+      </div>
+    </div>`).join('');
+
+  // Load stats
+  const sends = await sbGet('iaem30_email_sends','?select=status');
+  const tot = sends?.length||0, sent = sends?.filter(s=>s.status==='sent').length||0;
+  const pend = sends?.filter(s=>s.status==='pending').length||0;
+  ['seq-tot','seq-sent','seq-pend','seq-rate'].forEach((id,i) => {
+    const el2 = document.getElementById(id);
+    if (el2) el2.textContent = [tot,sent,pend,tot?Math.round(sent/tot*100)+'%':'—'][i];
+  });
+}
+
+async function toggleSequence(active) {
+  const seqs = await sbGet('iaem30_email_sequences','?limit=1');
+  if (seqs?.[0]) await sbPatch('iaem30_email_sequences','?id=eq.'+seqs[0].id,{active});
+  toast(active ? '✓ Sequência ativada!' : 'Sequência desativada.');
+}
+
+async function saveSequence() {
+  const subjects = document.querySelectorAll('.step-subject');
+  const bodies   = document.querySelectorAll('.step-body');
+  const delays   = document.querySelectorAll('.step-delay');
+  const msg = document.getElementById('seq-msg');
+  let ok = true;
+  for (let i=0; i<subjects.length; i++) {
+    const id = subjects[i].dataset.id;
+    const res = await sbPatch('iaem30_email_steps','?id=eq.'+id,{
+      subject: subjects[i].value,
+      body: bodies[i].value,
+      delay_hours: Number(delays[i].value)
+    });
+    if (!res) ok = false;
+  }
+  if (msg) msg.innerHTML = ok
+    ? '<span style="color:var(--g)">✓ Sequência salva com sucesso!</span>'
+    : '<span style="color:var(--r)">Erro ao salvar alguns passos.</span>';
+  if (ok) toast('✓ Sequência salva!');
+  setTimeout(()=>{ if(msg) msg.innerHTML=''; }, 3000);
+}
+
+async function loadSends() {
+  const rows = await sbGet('iaem30_email_sends','?order=scheduled_for.desc&limit=100&select=email,status,scheduled_for,sent_at,iaem30_email_steps(subject)');
+  const el = document.getElementById('sends-tbl'); if (!el) return;
+  if (!rows?.length) { el.innerHTML='<div class="empty"><div class="eico">📤</div>Nenhum envio registrado ainda.</div>'; return; }
+  el.innerHTML = '<table class="tbl"><thead><tr>'+['Email','Assunto','Agendado','Enviado','Status'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.map(r => '<tr>'+
+      '<td>'+r.email+'</td>'+
+      '<td style="font-size:12px;color:var(--m)">'+(r.iaem30_email_steps?.subject||'—').slice(0,40)+'</td>'+
+      '<td style="font-size:12px;color:var(--m)">'+new Date(r.scheduled_for).toLocaleDateString('pt-BR')+'</td>'+
+      '<td style="font-size:12px;color:var(--m)">'+(r.sent_at?new Date(r.sent_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
+      '<td><span class="tag '+(r.status==='sent'?'green':r.status==='failed'?'red':r.status==='pending'?'gold':'gray')+'">'+r.status+'</span></td>'+
+    '</tr>').join('')+
+  '</tbody></table>';
 }
 
 // ══════════════════════════════════════
