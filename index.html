@@ -1937,6 +1937,12 @@ async function proceedToBuy() {
   if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Abrindo pagamento...'; }
   // Salva email
   await sbPost('iaem30_emails', { email, source: 'modal' });
+  // Agenda sequência de emails de boas-vindas
+  fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/schedule-email', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': SB_ANON },
+    body: JSON.stringify({ email })
+  }).catch(() => {});
 
   // Usa link da PerfectPay com cupom real se disponível
   let link = CFG.productLink || DEFAULTS.productLink;
