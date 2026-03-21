@@ -1458,6 +1458,8 @@ input[type=date] { color-scheme:dark; }
 // SUPABASE + PERFECTPAY
 // ══════════════════════════════════════
 const SB='https://ihylwxjxjajtdhsnlrfm.supabase.co';
+const SL_BASE='https://iaem30.com.br/r/';
+const SL_FN='https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/';
 const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
 const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
 
@@ -2859,8 +2861,6 @@ function copyUTM() {
 // ══════════════════════════════════════
 // ENCURTADOR DE LINKS
 // ══════════════════════════════════════
-const SL_BASE = 'https://iaem30.com.br/r/';
-const SL_FN   = 'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/';
 
 async function loadShortLinks() {
   const rows = await sbGet('iaem30_short_links', '?order=clicks.desc,created_at.desc');
@@ -3208,7 +3208,7 @@ async function loadLinks() {
     ${rows.map(r=>`<tr>
       <td>
         <a href="https://iaem30.com.br/go/${r.slug}" target="_blank" style="color:var(--a2);font-weight:600">/${r.slug}</a>
-        <button onclick="copyLink('${r.slug}')" style="background:none;border:none;cursor:pointer;color:var(--m);font-size:12px;margin-left:4px" title="Copiar">📋</button>
+        <button onclick="copyLinkSlug('${r.slug}')" style="background:none;border:none;cursor:pointer;color:var(--m);font-size:12px;margin-left:4px" title="Copiar">📋</button>
       </td>
       <td style="color:var(--m);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${r.destino}</td>
       <td style="color:var(--m);font-size:12px">${r.descricao||'—'}</td>
@@ -3222,8 +3222,8 @@ async function loadLinks() {
   </tbody></table>`;
 }
 
-function copyLink(slug) {
-  navigator.clipboard.writeText('https://iaem30.com.br/go/' + slug);
+function copyLinkSlug(slug) {
+  navigator.clipboard.writeText('https://iaem30.com.br/r/' + slug);
   toast('✓ Link copiado!');
 }
 
