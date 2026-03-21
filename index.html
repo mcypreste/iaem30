@@ -1947,8 +1947,9 @@ async function proceedToBuy() {
 
   // Usa link da PerfectPay com cupom real se disponível
   let link = CFG.productLink || DEFAULTS.productLink;
-  if (_activeCoupon?.coupon_type === 'perfectpay' && _activeCoupon?.perfectpay_link) {
-    link = _activeCoupon.perfectpay_link;
+  if (_activeCoupon?.coupon_type === 'perfectpay') {
+    link = _activeCoupon.perfectpay_link ||
+      ('https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=' + _activeCoupon.code);
   }
 
   // Marca como convertido (não envia email de abandono)
