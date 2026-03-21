@@ -433,6 +433,7 @@ input[type=date] { color-scheme:dark; }
       <button class="ni" onclick="go('metas',this)"><span class="ico">🎯</span><span class="lbl">Metas</span></button>
       <button class="ni" onclick="go('calendario',this)"><span class="ico">🗓️</span><span class="lbl">Calendário</span></button>
       <button class="ni" onclick="go('links',this)"><span class="ico">🔗</span><span class="lbl">Links & QR Code</span></button>
+      <button class="ni" onclick="go('shortlinks',this)"><span class="ico">✂️</span><span class="lbl">Encurtar Links</span></button>
       <div class="nsec">Relatórios</div>
       <button class="ni" onclick="go('relatorio',this)"><span class="ico">📋</span><span class="lbl">Relatório Diário</span></button>
       <div class="nsec">Integrações</div>
@@ -1343,6 +1344,91 @@ input[type=date] { color-scheme:dark; }
       </div>
     </div>
 
+
+    <!-- ══ ENCURTADOR DE LINKS ══ -->
+    <div class="panel" id="p-shortlinks">
+      <div class="pg">
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi purple"><div class="kpi-icon">🔗</div><div class="kpi-label">Links criados</div><div class="kpi-val" id="sl-total">—</div></div>
+          <div class="kpi green"><div class="kpi-icon">👆</div><div class="kpi-label">Total de cliques</div><div class="kpi-val" id="sl-clicks">—</div></div>
+          <div class="kpi cyan"><div class="kpi-icon">🔥</div><div class="kpi-label">Link mais acessado</div><div class="kpi-val" id="sl-top" style="font-size:14px">—</div></div>
+          <div class="kpi gold"><div class="kpi-icon">📅</div><div class="kpi-label">Cliques hoje</div><div class="kpi-val" id="sl-today">—</div></div>
+        </div>
+
+        <div class="pg2">
+          <!-- Criar novo link -->
+          <div class="card">
+            <div class="card-head"><h3>✂️ Criar link curto</h3></div>
+            <div class="card-body">
+              <div class="field" style="margin-bottom:10px">
+                <label>URL de destino</label>
+                <input id="sl-dest" placeholder="https://go.perfectpay.com.br/..." type="url">
+              </div>
+              <div class="fr" style="margin-bottom:10px">
+                <div class="field">
+                  <label>Slug personalizado</label>
+                  <div style="display:flex;align-items:center;gap:0">
+                    <span style="background:rgba(255,255,255,.05);border:1px solid var(--b2);border-right:none;border-radius:8px 0 0 8px;padding:10px 12px;font-size:12px;color:var(--m);white-space:nowrap">iaem30.com.br/r/</span>
+                    <input id="sl-slug" placeholder="meu-link" style="border-radius:0 8px 8px 0;border-left:none" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+                  </div>
+                  <span class="hint">Apenas letras minúsculas, números e hífens</span>
+                </div>
+                <div class="field">
+                  <label>Título (para identificar)</label>
+                  <input id="sl-title" placeholder="Ex: Link do Instagram Bio">
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;align-items:center">
+                <button class="btn-sm primary" onclick="createShortLink()">✂️ Criar Link</button>
+                <button class="btn-sm ghost" onclick="generateSlug()">🎲 Slug aleatório</button>
+              </div>
+              <div id="sl-result" style="margin-top:14px;display:none">
+                <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:14px">
+                  <div style="font-size:12px;color:var(--g);margin-bottom:6px">✓ Link criado com sucesso!</div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span id="sl-new-url" style="font-size:14px;font-weight:600;color:var(--t);word-break:break-all"></span>
+                    <button onclick="copyShortLink()" class="btn-sm ghost" style="padding:5px 10px;font-size:11px;flex-shrink:0">📋 Copiar</button>
+                  </div>
+                </div>
+              </div>
+              <div id="sl-msg" style="margin-top:8px;font-size:13px"></div>
+            </div>
+          </div>
+
+          <!-- Info sobre domínio -->
+          <div class="card">
+            <div class="card-head"><h3>ℹ️ Como funciona</h3></div>
+            <div class="card-body">
+              <div style="font-size:13px;color:var(--m);line-height:1.8">
+                <p style="margin-bottom:12px">Os links curtos funcionam assim:</p>
+                <div style="background:var(--bg);border-radius:8px;padding:12px;font-family:monospace;font-size:13px;margin-bottom:12px">
+                  iaem30.com.br<span style="color:var(--a2)">/r/comprar</span> → PerfectPay
+                </div>
+                <p>Para ativar os redirecionamentos, adicione no <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">vercel.json</code>:</p>
+                <div id="sl-vercel-config" style="background:var(--bg);border-radius:8px;padding:12px;font-family:monospace;font-size:11px;margin-top:10px;white-space:pre-wrap;color:var(--a2)">Carregando...</div>
+                <button onclick="copyVercelConfig()" class="btn-sm ghost" style="margin-top:8px;padding:5px 10px;font-size:11px">📋 Copiar config</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de links -->
+        <div class="card">
+          <div class="card-head">
+            <h3>Todos os links</h3>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="tag" id="sl-count">0 links</span>
+              <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadShortLinks()">↺</button>
+            </div>
+          </div>
+          <div class="card-body" style="overflow-x:auto">
+            <div id="sl-list">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="panel" id="p-e-config">
       <div class="pg2" style="max-width:700px">
@@ -1488,6 +1574,7 @@ const PTITLES={
   produtos:'Produtos',analytics:'Analytics',cupons:'Cupons',emails:'Emails Capturados',
   notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
   metas:'Metas & Objetivos',calendario:'Calendário de Conteúdo',links:'Links & QR Code',
+  shortlinks:'Encurtador de Links',
   relatorio:'Relatório Diário',telegram:'Notificações Telegram',pixel:'Meta Pixel & UTM',
   'chat-faq':'Respostas do Chat','ai-leads':'Leads Gerador de Nicho',
   'e-geral':'Geral & Marca','e-hero':'Hero & CTA','e-preco':'Preço & Compra',
@@ -1510,7 +1597,7 @@ function go(id,el){
     vendas:loadVendas,extrato:loadExtrato,comissoes:loadComissoes,
     produtos:loadProdutos,analytics:loadAnalytics,cupons:loadCupons,
     emails:loadEmails,notifs:loadNotifs,perfectpay:loadPPStatus,
-    metas:loadMetas,calendario:loadCalendario,links:loadLinks,
+    metas:loadMetas,calendario:loadCalendario,links:loadLinks,shortlinks:loadShortLinks,
     'chat-faq':loadFAQAdmin,'ai-leads':loadNicheLeads,
     relatorio:loadRelatorio,telegram:loadTelegram,pixel:loadPixel,
   };
@@ -2767,6 +2854,153 @@ function copyUTM() {
   navigator.clipboard.writeText(link).then(() => toast('✓ Link copiado!'));
 }
 
+
+
+// ══════════════════════════════════════
+// ENCURTADOR DE LINKS
+// ══════════════════════════════════════
+const SL_BASE = 'https://iaem30.com.br/r/';
+const SL_FN   = 'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/';
+
+async function loadShortLinks() {
+  const rows = await sbGet('iaem30_short_links', '?order=clicks.desc,created_at.desc');
+  const el = document.getElementById('sl-list');
+  const cnt = document.getElementById('sl-count');
+
+  // KPIs
+  const total = rows?.length || 0;
+  const totalClicks = (rows||[]).reduce((s, r) => s + (r.clicks||0), 0);
+  const top = rows?.length ? rows[0] : null;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  ['sl-total','sl-clicks'].forEach((id, i) => {
+    const e = document.getElementById(id);
+    if (e) e.textContent = [total, totalClicks][i];
+  });
+  const topEl = document.getElementById('sl-top');
+  if (topEl) topEl.textContent = top ? '/' + top.slug + ' (' + top.clicks + ')' : '—';
+  if (cnt) cnt.textContent = total + ' links';
+
+  // Vercel config
+  const cfg = document.getElementById('sl-vercel-config');
+  if (cfg && rows?.length) {
+    const rewrites = rows.map(r =>
+      `  {"source":"/r/${r.slug}","destination":"${SL_FN}${r.slug}"}`
+    ).join(',
+');
+    cfg.textContent = `{
+  "rewrites": [
+${rewrites}
+  ]
+}`;
+  }
+
+  if (!el) return;
+  if (!rows?.length) {
+    el.innerHTML = '<div class="empty"><div class="eico">✂️</div>Nenhum link ainda. Crie o primeiro acima!</div>';
+    return;
+  }
+
+  el.innerHTML = `<table class="tbl">
+    <thead><tr>
+      <th>Slug</th><th>Destino</th><th>Título</th>
+      <th>Cliques</th><th>Último clique</th><th>Status</th><th>Ações</th>
+    </tr></thead>
+    <tbody>
+      ${rows.map(r => `<tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="color:var(--a2);font-weight:600">/r/${r.slug}</span>
+            <button onclick="copyLink('${SL_BASE}${r.slug}')" class="btn-sm ghost" style="padding:3px 7px;font-size:10px">📋</button>
+          </div>
+        </td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+          <a href="${r.destination}" target="_blank" style="color:var(--m);text-decoration:none;font-size:12px">${r.destination}</a>
+        </td>
+        <td style="color:var(--m);font-size:13px">${r.title || '—'}</td>
+        <td>
+          <span style="font-weight:700;color:${r.clicks > 0 ? 'var(--g)' : 'var(--m2)'}">${r.clicks || 0}</span>
+        </td>
+        <td style="font-size:12px;color:var(--m2)">
+          ${r.last_clicked_at ? new Date(r.last_clicked_at).toLocaleDateString('pt-BR') : '—'}
+        </td>
+        <td>
+          <span class="tag ${r.active ? 'green' : ''}">${r.active ? 'Ativo' : 'Inativo'}</span>
+        </td>
+        <td>
+          <div style="display:flex;gap:5px">
+            <button onclick="toggleShortLink('${r.id}',${!r.active})" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">
+              ${r.active ? 'Desativar' : 'Ativar'}
+            </button>
+            <button onclick="deleteShortLink('${r.id}')" class="btn-sm danger" style="padding:4px 8px;font-size:11px">🗑️</button>
+          </div>
+        </td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+async function createShortLink() {
+  const dest  = document.getElementById('sl-dest').value.trim();
+  const slug  = document.getElementById('sl-slug').value.trim();
+  const title = document.getElementById('sl-title').value.trim();
+  const msg   = document.getElementById('sl-msg');
+  const res   = document.getElementById('sl-result');
+
+  if (!dest) { msg.innerHTML = '<span style="color:var(--r)">URL de destino obrigatória.</span>'; return; }
+  if (!slug) { msg.innerHTML = '<span style="color:var(--r)">Slug obrigatório.</span>'; return; }
+  if (slug.length < 2) { msg.innerHTML = '<span style="color:var(--r)">Slug muito curto (mín. 2 caracteres).</span>'; return; }
+
+  msg.innerHTML = '';
+  const ok = await sbPost('iaem30_short_links', { slug, destination: dest, title: title || null, clicks: 0, active: true });
+
+  if (ok) {
+    const shortUrl = SL_BASE + slug;
+    document.getElementById('sl-new-url').textContent = shortUrl;
+    res.style.display = 'block';
+    msg.innerHTML = '';
+    ['sl-dest','sl-slug','sl-title'].forEach(id => document.getElementById(id).value = '');
+    loadShortLinks();
+  } else {
+    msg.innerHTML = '<span style="color:var(--r)">❌ Erro. O slug pode já estar em uso.</span>';
+    res.style.display = 'none';
+  }
+}
+
+function generateSlug() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const slug = Array.from({length: 6}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+  document.getElementById('sl-slug').value = slug;
+}
+
+function copyShortLink() {
+  const url = document.getElementById('sl-new-url').textContent;
+  navigator.clipboard.writeText(url).then(() => toast('✓ Link copiado!'));
+}
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url).then(() => toast('✓ Copiado: ' + url));
+}
+
+async function toggleShortLink(id, active) {
+  await sbPatch('iaem30_short_links', '?id=eq.' + id, { active });
+  toast(active ? '✓ Link ativado!' : 'Link desativado.');
+  loadShortLinks();
+}
+
+async function deleteShortLink(id) {
+  if (!confirm('Excluir este link?')) return;
+  try {
+    const r = await fetch(SB + '/rest/v1/iaem30_short_links?id=eq.' + id, { method: 'DELETE', headers: H });
+    if (r.ok) { toast('✓ Link excluído!'); loadShortLinks(); }
+    else toast('Erro ao excluir', 'err');
+  } catch { toast('Erro', 'err'); }
+}
+
+function copyVercelConfig() {
+  const text = document.getElementById('sl-vercel-config').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('✓ Config copiada!'));
+}
 
 function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Exportado!');}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Importado! Salve para publicar.');}catch{toast('Arquivo inválido','err');}};r.readAsText(f);}
