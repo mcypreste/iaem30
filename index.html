@@ -1833,10 +1833,10 @@ async function applyCoupon() {
   document.getElementById('modal-price-old').textContent = 'R$' + (CFG.priceMain || '19') + (CFG.priceCents || ',90');
 
   if (coupon.coupon_type === 'perfectpay' && coupon.perfectpay_link) {
-    msg.innerHTML = '✓ Cupom PerfectPay aplicado! <strong>' + currentDiscount + '% OFF real no checkout.</strong>';
+    msg.innerHTML = '✅ Cupom aplicado! <strong>' + currentDiscount + '% OFF</strong> — desconto real no checkout.';
     msg.className = 'ok';
   } else {
-    msg.textContent = '✓ Cupom aplicado! ' + currentDiscount + '% de desconto.';
+    msg.innerHTML = '✅ Cupom aplicado! <strong>' + currentDiscount + '% de desconto</strong> no preço.';
     msg.className = 'ok';
   }
 
@@ -1945,9 +1945,14 @@ async function proceedToBuy() {
 
   // Determina o link ANTES de qualquer await para não perder o contexto do usuário
   let link = CFG.productLink || DEFAULTS.productLink;
-  if (_activeCoupon?.coupon_type === 'perfectpay') {
-    link = _activeCoupon.perfectpay_link ||
-      ('https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=' + _activeCoupon.code);
+  if (_activeCoupon) {
+    if (_activeCoupon.coupon_type === 'perfectpay' && _activeCoupon.perfectpay_link) {
+      // Cupom real PerfectPay — abre direto com desconto aplicado
+      link = _activeCoupon.perfectpay_link;
+    } else if (_activeCoupon.coupon_type === 'local') {
+      // Cupom visual — abre checkout normal (desconto só na exibição)
+      link = CFG.productLink || DEFAULTS.productLink;
+    }
   }
 
   // Abre o checkout IMEDIATAMENTE (antes de qualquer await)
