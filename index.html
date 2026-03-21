@@ -1797,27 +1797,51 @@ function closeModal() {
 // ═══════════════════════════════════════
 // COUPON
 // ═══════════════════════════════════════
+let _activeCoupon = null; // armazena cupom ativo com link PP
+
 async function applyCoupon() {
   const code = document.getElementById('coupon-input').value.trim().toUpperCase();
   const msg  = document.getElementById('coupon-msg');
-  if(!code){ msg.textContent='Digite um cupom.'; msg.className='err'; return; }
+  if (!code) { msg.textContent='Digite um cupom.'; msg.className='err'; return; }
   msg.textContent='Verificando...'; msg.className='';
-  const rows = await sbGet('iaem30_coupons',`?code=eq.${code}&active=eq.true&select=*`);
-  if(!rows||!rows.length){ msg.textContent='Cupom inválido ou expirado.'; msg.className='err'; return; }
+
+  const rows = await sbGet('iaem30_coupons', `?code=eq.${code}&active=eq.true&select=*`);
+  if (!rows?.length) { msg.textContent='Cupom inválido ou expirado.'; msg.className='err'; return; }
+
   const coupon = rows[0];
-  if(coupon.uses>=coupon.max_uses){ msg.textContent='Cupom esgotado.'; msg.className='err'; return; }
+  const now = new Date();
+  if (coupon.expires_at && new Date(coupon.expires_at) < now) {
+    msg.textContent='Este cupom expirou.'; msg.className='err'; return;
+  }
+  if (coupon.starts_at && new Date(coupon.starts_at) > now) {
+    msg.textContent='Este cupom ainda não está ativo.'; msg.className='err'; return;
+  }
+  if (coupon.uses >= coupon.max_uses) {
+    msg.textContent='Cupom esgotado.'; msg.className='err'; return;
+  }
+
   currentDiscount = coupon.discount_percent;
-  // Update price display
-  const basePrice = parseFloat((CFG.priceMain||'19').replace(',','.'));
-  const newPrice  = (basePrice*(1-currentDiscount/100)).toFixed(2).replace('.',',');
-  const [int,dec] = newPrice.split(',');
-  document.getElementById('modal-price-main').textContent=int;
-  document.getElementById('modal-price-cents').textContent=','+dec;
-  document.getElementById('modal-discount-badge').textContent=currentDiscount+'% OFF';
-  document.getElementById('modal-price-old').textContent=`R$${CFG.priceMain}${CFG.priceCents}`;
-  msg.textContent=`✓ Cupom aplicado! ${currentDiscount}% de desconto.`; msg.className='ok';
-  // Increment coupon uses
-  await sbPatch('iaem30_coupons',`?code=eq.${code}`,{uses:coupon.uses+1});
+  _activeCoupon = coupon;
+
+  // Atualiza display de preço no modal
+  const basePrice = parseFloat((CFG.priceMain || '19').replace(',', '.'));
+  const newPrice  = (basePrice * (1 - currentDiscount / 100)).toFixed(2).replace('.', ',');
+  const [int, dec] = newPrice.split(',');
+  document.getElementById('modal-price-main').textContent = int;
+  document.getElementById('modal-price-cents').textContent = ',' + dec;
+  document.getElementById('modal-discount-badge').textContent = currentDiscount + '% OFF';
+  document.getElementById('modal-price-old').textContent = 'R$' + (CFG.priceMain || '19') + (CFG.priceCents || ',90');
+
+  if (coupon.coupon_type === 'perfectpay' && coupon.perfectpay_link) {
+    msg.innerHTML = '✓ Cupom PerfectPay aplicado! <strong>' + currentDiscount + '% OFF real no checkout.</strong>';
+    msg.className = 'ok';
+  } else {
+    msg.textContent = '✓ Cupom aplicado! ' + currentDiscount + '% de desconto.';
+    msg.className = 'ok';
+  }
+
+  // Incrementa usos
+  await sbPatch('iaem30_coupons', `?code=eq.${code}`, { uses: coupon.uses + 1 });
 }
 
 // ═══════════════════════════════════════
@@ -1913,10 +1937,14 @@ async function proceedToBuy() {
   if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Abrindo pagamento...'; }
   // Salva email
   await sbPost('iaem30_emails', { email, source: 'modal' });
-  // Fecha modal e abre checkout
-  const link = CFG.productLink || DEFAULTS.productLink;
+
+  // Usa link da PerfectPay com cupom real se disponível
+  let link = CFG.productLink || DEFAULTS.productLink;
+  if (_activeCoupon?.coupon_type === 'perfectpay' && _activeCoupon?.perfectpay_link) {
+    link = _activeCoupon.perfectpay_link;
+  }
+
   closeModal();
-  // Pequeno delay para o modal fechar antes de abrir o popup
   setTimeout(() => openCheckoutPopup(link), 200);
 }
 

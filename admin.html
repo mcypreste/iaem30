@@ -815,19 +815,59 @@ code, .mono {
         <div class="card">
           <div class="card-head"><h3>🎟️ Criar Cupom</h3></div>
           <div class="card-body">
+            <!-- Tipo de cupom -->
+            <div class="field" style="margin-bottom:16px">
+              <label>Tipo de cupom</label>
+              <div style="display:flex;gap:8px;margin-top:6px">
+                <label style="flex:1;cursor:pointer">
+                  <input type="radio" name="cp-type" value="local" checked onchange="toggleCouponType(this.value)" style="display:none">
+                  <div class="cp-type-btn on" id="cp-type-local" style="border:1px solid var(--border2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
+                    <div style="font-size:20px;margin-bottom:6px">🎨</div>
+                    <div style="font-size:12px;font-weight:700;margin-bottom:3px">Desconto Visual</div>
+                    <div style="font-size:11px;color:var(--m)">Aplica desconto só na exibição do preço no site</div>
+                  </div>
+                </label>
+                <label style="flex:1;cursor:pointer">
+                  <input type="radio" name="cp-type" value="perfectpay" onchange="toggleCouponType(this.value)" style="display:none">
+                  <div class="cp-type-btn" id="cp-type-perfectpay" style="border:1px solid var(--border2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
+                    <div style="font-size:20px;margin-bottom:6px">✅</div>
+                    <div style="font-size:12px;font-weight:700;margin-bottom:3px">PerfectPay Real</div>
+                    <div style="font-size:11px;color:var(--m)">Redireciona para link com desconto real no checkout</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <div class="fr" style="margin-bottom:12px">
-              <div class="field"><label>Código</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
+              <div class="field"><label>Código do cupom</label><input id="cp-c" placeholder="PROMO20" oninput="this.value=this.value.toUpperCase()"></div>
               <div class="field"><label>Desconto %</label><input type="number" id="cp-p" value="20" min="1" max="99"></div>
             </div>
             <div class="fr" style="margin-bottom:12px">
               <div class="field"><label>Máx. Usos</label><input type="number" id="cp-m" value="999"></div>
               <div class="field"><label>Descrição</label><input id="cp-desc" placeholder="Black Friday"></div>
             </div>
+
+            <!-- PerfectPay link field (shown only when type = perfectpay) -->
+            <div id="cp-pp-field" style="display:none;margin-bottom:12px">
+              <div class="field">
+                <label>🔗 Link de checkout da PerfectPay com cupom</label>
+                <input id="cp-pp-link" placeholder="https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=PROMO20">
+                <span class="hint">Copie o link em PerfectPay → Produtos → Cupons → Links com Cupom</span>
+              </div>
+              <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:var(--r-sm);padding:12px;margin-top:8px;font-size:12px;color:var(--m);line-height:1.7">
+                <strong style="color:var(--cyan)">Como pegar o link na PerfectPay:</strong><br>
+                1. Vá em <strong style="color:var(--t)">Produtos → Meus Produtos → Cupons</strong><br>
+                2. Crie o cupom lá com o mesmo código<br>
+                3. Clique em <strong style="color:var(--t)">Links de Checkout → Links com Cupom</strong><br>
+                4. Copie o link e cole aqui
+              </div>
+            </div>
+
             <div class="fr" style="margin-bottom:14px">
               <div class="field"><label>📅 Início (opcional)</label><input type="datetime-local" id="cp-start"></div>
               <div class="field"><label>📅 Expira em (opcional)</label><input type="datetime-local" id="cp-exp"></div>
             </div>
-            <button class="btn-sm primary" onclick="createCoupon()">Criar Cupom</button>
+            <button class="btn-sm primary" onclick="createCoupon()">🎟️ Criar Cupom</button>
             <div id="cp-msg" style="margin-top:10px;font-size:13px"></div>
           </div>
         </div>
@@ -2300,27 +2340,69 @@ async function loadFunil() {
 // ══════════════════════════════════════
 // CUPONS COM AGENDAMENTO
 // ══════════════════════════════════════
+// ── Coupon type toggle ──
+function toggleCouponType(type) {
+  const ppField = document.getElementById('cp-pp-field');
+  const localBtn = document.getElementById('cp-type-local');
+  const ppBtn = document.getElementById('cp-type-perfectpay');
+  if (type === 'perfectpay') {
+    ppField.style.display = 'block';
+    ppBtn.style.borderColor = 'var(--a)';
+    ppBtn.style.background = 'var(--agg)';
+    localBtn.style.borderColor = 'var(--border2)';
+    localBtn.style.background = 'transparent';
+  } else {
+    ppField.style.display = 'none';
+    localBtn.style.borderColor = 'var(--a)';
+    localBtn.style.background = 'var(--agg)';
+    ppBtn.style.borderColor = 'var(--border2)';
+    ppBtn.style.background = 'transparent';
+  }
+}
+// Init type toggle style
+document.addEventListener('DOMContentLoaded', () => {
+  const localBtn = document.getElementById('cp-type-local');
+  if (localBtn) { localBtn.style.borderColor = 'var(--a)'; localBtn.style.background = 'var(--agg)'; }
+});
+
 async function createCoupon() {
-  const code = document.getElementById('cp-c').value.trim().toUpperCase();
-  const pct  = Number(document.getElementById('cp-p').value)||20;
-  const max  = Number(document.getElementById('cp-m').value)||999;
-  const desc = document.getElementById('cp-desc').value.trim();
+  const code  = document.getElementById('cp-c').value.trim().toUpperCase();
+  const pct   = Number(document.getElementById('cp-p').value) || 20;
+  const max   = Number(document.getElementById('cp-m').value) || 999;
+  const desc  = document.getElementById('cp-desc').value.trim();
   const start = document.getElementById('cp-start').value;
-  const exp  = document.getElementById('cp-exp').value;
-  const msg  = document.getElementById('cp-msg');
-  if (!code) { toast('Digite o código','err'); return; }
+  const exp   = document.getElementById('cp-exp').value;
+  const msg   = document.getElementById('cp-msg');
+  const type  = document.querySelector('input[name="cp-type"]:checked')?.value || 'local';
+  const ppLink = document.getElementById('cp-pp-link')?.value.trim();
+
+  if (!code) { toast('Digite o código do cupom','err'); return; }
+  if (type === 'perfectpay' && !ppLink) {
+    toast('Cole o link da PerfectPay com cupom','err');
+    return;
+  }
+
   const now = new Date();
-  // Se tem data de início futura, começa inativo
   const active = start ? new Date(start) <= now : true;
-  const data = { code, discount_percent:pct, active, uses:0, max_uses:max };
-  if (desc) data.description = desc;
-  if (start) data.starts_at = new Date(start).toISOString();
-  if (exp)   data.expires_at = new Date(exp).toISOString();
+  const data = {
+    code, discount_percent: pct, active, uses: 0, max_uses: max,
+    coupon_type: type,
+  };
+  if (desc)   data.description = desc;
+  if (start)  data.starts_at = new Date(start).toISOString();
+  if (exp)    data.expires_at = new Date(exp).toISOString();
+  if (ppLink) data.perfectpay_link = ppLink;
+
   const ok = await sbPost('iaem30_coupons', data);
   if (ok) {
     toast('✓ Cupom criado!');
-    ['cp-c','cp-desc'].forEach(id => document.getElementById(id).value='');
-    if (msg) msg.innerHTML = start ? '<span style="color:var(--g)">✓ Cupom agendado para ativar em '+new Date(start).toLocaleDateString('pt-BR')+'</span>' : '';
+    ['cp-c','cp-desc','cp-pp-link'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    if (msg) msg.innerHTML = start
+      ? '<span style="color:var(--g)">✓ Agendado para ' + new Date(start).toLocaleDateString('pt-BR') + '</span>'
+      : type === 'perfectpay'
+        ? '<span style="color:var(--g)">✓ Cupom PerfectPay criado! O visitante será redirecionado para o checkout com desconto real.</span>'
+        : '';
+    setTimeout(() => { if(msg) msg.innerHTML=''; }, 5000);
     loadCupons();
   } else {
     toast('Erro. Código pode já existir.','err');
@@ -2334,30 +2416,53 @@ async function loadCupons() {
   if (cnt) cnt.textContent = (rows||[]).length + ' cupons';
   if (!rows?.length) { el.innerHTML='<div class="empty"><div class="eico">🎟️</div>Nenhum cupom ainda.</div>'; return; }
   const now = new Date();
-  el.innerHTML = '<table class="tbl"><thead><tr>' +
-    ['Código','Desconto','Usos','Descrição','Início','Expira','Status','Ação'].map(h=>'<th>'+h+'</th>').join('') +
-    '</tr></thead><tbody>' +
-    rows.map(c => {
-      const expired = c.expires_at && new Date(c.expires_at) < now;
-      const notStarted = c.starts_at && new Date(c.starts_at) > now;
-      const status = expired ? '<span class="tag red">Expirado</span>'
-        : notStarted ? '<span class="tag gold">Agendado</span>'
-        : c.active ? '<span class="tag green">✓ Ativo</span>'
-        : '<span class="tag">Inativo</span>';
-      return '<tr>' +
-        '<td style="font-family:\'Syne\',sans-serif;font-weight:700">'+c.code+'</td>' +
-        '<td><span class="tag green">'+c.discount_percent+'%</span></td>' +
-        '<td>'+c.uses+'/'+c.max_uses+'</td>' +
-        '<td style="color:var(--m);font-size:12px">'+(c.description||'—')+'</td>' +
-        '<td style="color:var(--m);font-size:12px">'+(c.starts_at?new Date(c.starts_at).toLocaleDateString('pt-BR'):'Imediato')+'</td>' +
-        '<td style="color:var(--m);font-size:12px">'+(c.expires_at?new Date(c.expires_at).toLocaleDateString('pt-BR'):'Sem prazo')+'</td>' +
-        '<td>'+status+'</td>' +
-        '<td><button onclick="toggleCoupon(\''+c.id+'\','+(!c.active)+')" class="btn-sm '+(c.active?'danger':'ghost')+'" style="padding:4px 10px;font-size:11px">'+(c.active?'Desativar':'Ativar')+'</button></td>' +
-      '</tr>';
-    }).join('') +
-    '</tbody></table>';
+  el.innerHTML = rows.map(function(c) {
+    const expired    = c.expires_at && new Date(c.expires_at) < now;
+    const notStarted = c.starts_at && new Date(c.starts_at) > now;
+    const statusTag  = expired
+      ? '<span class="tag red">Expirado</span>'
+      : notStarted ? '<span class="tag gold">⏳ Agendado</span>'
+      : c.active ? '<span class="tag green">✓ Ativo</span>'
+      : '<span class="tag">Inativo</span>';
+    const typeTag = c.coupon_type === 'perfectpay'
+      ? '<span class="tag cyan" style="font-size:10px">✅ PerfectPay</span>'
+      : '<span class="tag" style="font-size:10px">🎨 Visual</span>';
+    const ppLinkBtn = (c.coupon_type === 'perfectpay' && c.perfectpay_link)
+      ? '<button onclick="copyCouponLink(this)" data-link="' + encodeURIComponent(c.perfectpay_link || '') + '" class="btn-sm ghost" style="padding:4px 10px;font-size:11px">📋 Link PP</button>'
+      : '';
+    const ppLinkRow = (c.coupon_type === 'perfectpay' && c.perfectpay_link)
+      ? '<div style="margin-top:10px;background:var(--card2);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--m);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">🔗</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">' + c.perfectpay_link + '</span></div>'
+      : '';
+    const toggleBtn = '<button onclick="toggleCoupon(' + JSON.stringify(c.id) + ',' + (!c.active) + ')" class="btn-sm ' + (c.active ? 'ghost' : 'primary') + '" style="padding:4px 10px;font-size:11px">' + (c.active ? 'Desativar' : 'Ativar') + '</button>';
+
+    return '<div style="border:1px solid var(--border);border-radius:var(--r-md);padding:16px;margin-bottom:10px;background:var(--card)">' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">' +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+          '<span style="font-family:monospace;font-size:15px;font-weight:700;color:var(--a2);background:var(--agg);padding:4px 10px;border-radius:6px;letter-spacing:.05em">' + c.code + '</span>' +
+          '<span class="tag green" style="font-size:12px">' + c.discount_percent + '% OFF</span>' +
+          typeTag + statusTag +
+        '</div>' +
+        '<div style="display:flex;gap:6px;flex-shrink:0">' +
+          toggleBtn + ppLinkBtn +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--m)">' +
+        '<span>📊 <strong style="color:var(--t2)">' + c.uses + '</strong>/' + c.max_uses + ' usos</span>' +
+        (c.description ? '<span>📝 ' + c.description + '</span>' : '') +
+        (c.starts_at ? '<span>▶️ ' + new Date(c.starts_at).toLocaleDateString('pt-BR') + '</span>' : '') +
+        (c.expires_at ? '<span>⏰ ' + new Date(c.expires_at).toLocaleDateString('pt-BR') + '</span>' : '') +
+      '</div>' +
+      ppLinkRow +
+    '</div>';
+  }).join('');
 }
-async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCupons();toast(active?'Cupom ativado!':'Cupom desativado.');}
+
+
+async function toggleCoupon(id,active){await sbPatch('iaem30_coupons','?id=eq.'+id,{active});loadCupons();toast(active?'✓ Cupom ativado!':'Cupom desativado.');}
+function copyCouponLink(btn){
+  const link = btn.dataset.link;
+  navigator.clipboard.writeText(link).then(()=>toast('✓ Link PerfectPay copiado!'));
+}
 
 // ══════════════════════════════════════
 // EMAILS + SEQUÊNCIA AUTOMÁTICA
