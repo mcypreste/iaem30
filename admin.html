@@ -2885,14 +2885,9 @@ async function loadShortLinks() {
   const cfg = document.getElementById('sl-vercel-config');
   if (cfg && rows?.length) {
     const rewrites = rows.map(r =>
-      `  {"source":"/r/${r.slug}","destination":"${SL_FN}${r.slug}"}`
-    ).join(',
-');
-    cfg.textContent = `{
-  "rewrites": [
-${rewrites}
-  ]
-}`;
+      '  {"source":"/r/' + r.slug + '","destination":"' + SL_FN + r.slug + '"}'
+    ).join(',\n');
+    cfg.textContent = '{\n  "rewrites": [\n' + rewrites + '\n  ]\n}';
   }
 
   if (!el) return;
