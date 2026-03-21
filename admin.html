@@ -584,6 +584,7 @@ code, .mono {
       <button class="ni" onclick="go('calendario',this)"><span class="ico">🗓️</span><span class="lbl">Calendário</span></button>
       <button class="ni" onclick="go('links',this)"><span class="ico">🔗</span><span class="lbl">Links & QR Code</span></button>
       <button class="ni" onclick="go('shortlinks',this)"><span class="ico">✂️</span><span class="lbl">Encurtar Links</span></button>
+      <button class="ni" onclick="go('personal-pages',this)"><span class="ico">🎯</span><span class="lbl">Páginas Pessoais</span></button>
       <div class="nsec">Relatórios</div>
       <button class="ni" onclick="go('relatorio',this)"><span class="ico">📋</span><span class="lbl">Relatório Diário</span></button>
       <div class="nsec">Integrações</div>
@@ -1624,6 +1625,75 @@ code, .mono {
       </div>
     </div>
 
+
+    <!-- ══ PÁGINAS PESSOAIS ══ -->
+    <div class="panel" id="p-personal-pages">
+      <div class="pg">
+        <div class="kpi-grid">
+          <div class="kpi purple"><div class="kpi-icon">📄</div><div class="kpi-label">Páginas criadas</div><div class="kpi-val" id="pp-total">—</div></div>
+          <div class="kpi cyan"><div class="kpi-icon">👁️</div><div class="kpi-label">Total de views</div><div class="kpi-val" id="pp-views">—</div></div>
+          <div class="kpi green"><div class="kpi-icon">✅</div><div class="kpi-label">Convertidas</div><div class="kpi-val" id="pp-conv">—</div></div>
+          <div class="kpi gold"><div class="kpi-icon">⏰</div><div class="kpi-label">Ativas agora</div><div class="kpi-val" id="pp-active">—</div></div>
+        </div>
+
+        <div class="pg2">
+          <!-- Criar manualmente -->
+          <div class="card">
+            <div class="card-head"><h3>✨ Criar página pessoal</h3></div>
+            <div class="card-body">
+              <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+                Cria uma landing page exclusiva para um lead específico com cupom único e desconto personalizado. O link é enviado por email automaticamente.
+              </div>
+              <div class="fr" style="margin-bottom:12px">
+                <div class="field"><label>Email do lead</label><input id="pp-email" placeholder="cliente@email.com" type="email"></div>
+                <div class="field"><label>Nome (opcional)</label><input id="pp-name" placeholder="João Silva"></div>
+              </div>
+              <button class="btn-sm primary" onclick="createPersonalPage()">🎯 Criar e enviar por email</button>
+              <div id="pp-msg" style="margin-top:10px;font-size:13px"></div>
+            </div>
+          </div>
+          <!-- Info -->
+          <div class="card">
+            <div class="card-head"><h3>ℹ️ Como funciona</h3></div>
+            <div class="card-body">
+              <div style="font-size:13px;color:var(--m);line-height:1.8">
+                <p style="margin-bottom:10px">Quando alguém abandona o carrinho, o sistema cria automaticamente:</p>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>
+                    <span>Uma página de venda <strong style="color:var(--t)">com o nome do cliente</strong></span>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>
+                    <span>Um <strong style="color:var(--t)">cupom único</strong> de 15% válido por 48h</span>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span>
+                    <span>Um <strong style="color:var(--t)">email personalizado</strong> com o link da página</span>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:flex-start">
+                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span>
+                    <span>Countdown em tempo real na página</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista -->
+        <div class="card">
+          <div class="card-head">
+            <h3>Todas as páginas pessoais</h3>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadPersonalPages()">↺</button>
+          </div>
+          <div class="card-body" style="overflow-x:auto">
+            <div id="pp-list">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="panel" id="p-e-config">
       <div class="pg2" style="max-width:700px">
@@ -1772,6 +1842,7 @@ const PTITLES={
   notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
   metas:'Metas & Objetivos',calendario:'Calendário de Conteúdo',links:'Links & QR Code',
   shortlinks:'Encurtador de Links',
+  'personal-pages':'Páginas de Venda Pessoais',
   relatorio:'Relatório Diário',telegram:'Notificações Telegram',pixel:'Meta Pixel & UTM',
   'chat-faq':'Respostas do Chat','ai-leads':'Leads Gerador de Nicho',
   'e-geral':'Geral & Marca','e-hero':'Hero & CTA','e-preco':'Preço & Compra',
@@ -3255,6 +3326,85 @@ async function deleteShortLink(id) {
 function copyVercelConfig() {
   const text = document.getElementById('sl-vercel-config').textContent;
   navigator.clipboard.writeText(text).then(() => toast('✓ Config copiada!'));
+}
+
+
+// ══════════════════════════════════════
+// PÁGINAS PESSOAIS
+// ══════════════════════════════════════
+async function loadPersonalPages() {
+  const rows = await sbGet('iaem30_personal_pages', '?order=created_at.desc&limit=100');
+  const now = new Date();
+  const total  = rows?.length || 0;
+  const views  = (rows||[]).reduce(function(s,r) { return s+(r.views||0); }, 0);
+  const conv   = (rows||[]).filter(function(r) { return r.converted; }).length;
+  const active = (rows||[]).filter(function(r) { return new Date(r.expires_at) > now && !r.converted; }).length;
+
+  [['pp-total',total],['pp-views',views],['pp-conv',conv],['pp-active',active]].forEach(function(pair) {
+    const el = document.getElementById(pair[0]); if(el) el.textContent = pair[1];
+  });
+
+  const el = document.getElementById('pp-list');
+  if (!el) return;
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">🎯</div>Nenhuma página criada ainda.</div>'; return; }
+
+  const tbody = rows.map(function(p) {
+    const expired = new Date(p.expires_at) < now;
+    const statusTag = p.converted
+      ? '<span class="tag green">✅ Converteu</span>'
+      : expired ? '<span class="tag red">Expirado</span>'
+      : '<span class="tag cyan">⏳ Ativa</span>';
+    const pageUrl = 'https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/personal-page/' + p.slug;
+    const copyBtn = '<button class="btn-sm ghost" data-link="' + pageUrl + '" onclick="ppCopyLink(this)" style="padding:4px 8px;font-size:11px">📋</button>';
+    const viewBtn = '<button class="btn-sm ghost" data-link="' + pageUrl + '" onclick="ppView(this)" style="padding:4px 8px;font-size:11px">👁️ Ver</button>';
+    return '<tr>' +
+      '<td><div style="font-weight:600;font-size:13px">' + (p.name||'—') + '</div><div style="font-size:11px;color:var(--m)">' + p.email + '</div></td>' +
+      '<td><span style="font-family:monospace;font-size:12px;color:var(--a2);background:var(--agg);padding:2px 8px;border-radius:4px">' + (p.coupon_code||'—') + '</span></td>' +
+      '<td style="text-align:center"><strong>' + (p.views||0) + '</strong></td>' +
+      '<td>' + statusTag + '</td>' +
+      '<td style="font-size:12px;color:var(--m)">' + new Date(p.expires_at).toLocaleDateString('pt-BR') + '</td>' +
+      '<td><div style="display:flex;gap:5px">' + viewBtn + copyBtn + '</div></td>' +
+    '</tr>';
+  }).join('');
+
+  el.innerHTML = '<table class="tbl"><thead><tr><th>Nome/Email</th><th>Cupom</th><th>Views</th><th>Status</th><th>Expira</th><th>Ações</th></tr></thead><tbody>' + tbody + '</tbody></table>';
+}
+function ppView(btn) { window.open(btn.dataset.link, '_blank'); }
+function ppCopyLink(btn) { navigator.clipboard.writeText(btn.dataset.link).then(function() { toast('✓ Link copiado!'); }); }
+
+
+async function createPersonalPage() {
+  const email = document.getElementById('pp-email').value.trim();
+  const name  = document.getElementById('pp-name').value.trim();
+  const msg   = document.getElementById('pp-msg');
+
+  if (!email || !email.includes('@')) {
+    msg.innerHTML = '<span style="color:var(--r)">Email inválido.</span>';
+    return;
+  }
+
+  msg.innerHTML = '<span style="color:var(--m)">Criando página e enviando email...</span>';
+
+  try {
+    const r = await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/personal-page', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': AK },
+      body: JSON.stringify({ email, name: name || undefined })
+    });
+    const data = await r.json();
+
+    if (data.ok) {
+      msg.innerHTML = '<span style="color:var(--g)">✓ Página criada e email enviado! Cupom: <strong>' + data.coupon + '</strong></span>';
+      document.getElementById('pp-email').value = '';
+      document.getElementById('pp-name').value = '';
+      setTimeout(() => msg.innerHTML = '', 8000);
+      loadPersonalPages();
+    } else {
+      msg.innerHTML = '<span style="color:var(--r)">❌ ' + (data.error||'Erro desconhecido') + '</span>';
+    }
+  } catch(e) {
+    msg.innerHTML = '<span style="color:var(--r)">❌ Erro de conexão.</span>';
+  }
 }
 
 function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Exportado!');}
