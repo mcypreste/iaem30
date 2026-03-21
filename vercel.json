@@ -7,6 +7,10 @@
       "destination": "https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/:slug"
     },
     {
+      "source": "/p/:slug",
+      "destination": "https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/personal-page/:slug"
+    },
+    {
       "source": "/",
       "has": [{ "type": "host", "value": "admin.iaem30.com.br" }],
       "destination": "/admin"
