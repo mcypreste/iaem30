@@ -429,8 +429,16 @@ input[type=date] { color-scheme:dark; }
       <div class="nsec">Chat & IA</div>
       <button class="ni" onclick="go('chat-faq',this)"><span class="ico">💬</span><span class="lbl">Respostas do Chat</span></button>
       <button class="ni" onclick="go('ai-leads',this)"><span class="ico">🎯</span><span class="lbl">Leads Gerador Nicho</span></button>
+      <div class="nsec">Ferramentas</div>
+      <button class="ni" onclick="go('metas',this)"><span class="ico">🎯</span><span class="lbl">Metas</span></button>
+      <button class="ni" onclick="go('calendario',this)"><span class="ico">🗓️</span><span class="lbl">Calendário</span></button>
+      <button class="ni" onclick="go('links',this)"><span class="ico">🔗</span><span class="lbl">Links & QR Code</span></button>
+      <div class="nsec">Relatórios</div>
+      <button class="ni" onclick="go('relatorio',this)"><span class="ico">📋</span><span class="lbl">Relatório Diário</span></button>
       <div class="nsec">Integrações</div>
       <button class="ni" onclick="go('perfectpay',this)"><span class="ico">⚙️</span><span class="lbl">PerfectPay API</span></button>
+      <button class="ni" onclick="go('telegram',this)"><span class="ico">📱</span><span class="lbl">Notif. Telegram</span></button>
+      <button class="ni" onclick="go('pixel',this)"><span class="ico">🎯</span><span class="lbl">Meta Pixel / UTM</span></button>
     </nav>
 
     <!-- EDITAR NAV -->
@@ -1060,6 +1068,281 @@ input[type=date] { color-scheme:dark; }
       </div>
     </div>
 
+    <!-- ══ METAS ══ -->
+    <div class="panel" id="p-metas">
+      <div class="pg2" style="max-width:900px">
+        <!-- KPIs de progresso -->
+        <div class="card">
+          <div class="card-head"><h3>🎯 Progresso do Mês</h3>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadMetas()">↺</button>
+          </div>
+          <div class="card-body" id="metas-progress">Carregando...</div>
+        </div>
+        <!-- Editar metas -->
+        <div class="card">
+          <div class="card-head"><h3>✏️ Definir Metas do Mês</h3></div>
+          <div class="card-body">
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field"><label>📅 Mês</label><input type="month" id="meta-mes" value="2026-03"></div>
+              <div class="field"><label>💳 Meta de Vendas</label><input type="number" id="meta-vendas" value="50" min="1"></div>
+            </div>
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>💰 Meta de Receita (R$)</label><input type="number" id="meta-receita" value="994.50" step="0.01"></div>
+              <div class="field"><label>📧 Meta de Leads</label><input type="number" id="meta-leads" value="100"></div>
+            </div>
+            <div class="field" style="margin-bottom:14px"><label>👥 Meta de Visitantes</label><input type="number" id="meta-visitantes" value="1000"></div>
+            <button class="btn-sm primary" onclick="saveMeta()">💾 Salvar Metas</button>
+            <div id="meta-msg" style="margin-top:8px;font-size:13px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CALENDÁRIO ══ -->
+    <div class="panel" id="p-calendario">
+      <div class="pg2">
+        <!-- Adicionar evento -->
+        <div class="card">
+          <div class="card-head"><h3>➕ Adicionar Conteúdo</h3></div>
+          <div class="card-body">
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field"><label>📅 Data</label><input type="date" id="cal-data"></div>
+              <div class="field"><label>📱 Plataforma</label>
+                <select id="cal-plat" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;width:100%;outline:none">
+                  <option value="tiktok">🎵 TikTok</option>
+                  <option value="instagram">📸 Instagram</option>
+                  <option value="youtube">▶️ YouTube</option>
+                  <option value="email">📧 Email</option>
+                  <option value="whatsapp">💬 WhatsApp</option>
+                  <option value="outro">📌 Outro</option>
+                </select>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:10px"><label>Título do conteúdo</label><input id="cal-titulo" placeholder="Ex: Como ganhar R$500 com IA esse mês"></div>
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>Status</label>
+                <select id="cal-status" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;width:100%;outline:none">
+                  <option value="planejado">📋 Planejado</option>
+                  <option value="criado">✏️ Criado</option>
+                  <option value="publicado">✅ Publicado</option>
+                </select>
+              </div>
+              <div class="field"><label>Link (opcional)</label><input id="cal-link" placeholder="https://..."></div>
+            </div>
+            <button class="btn-sm primary" onclick="saveCalendario()">Adicionar</button>
+            <div id="cal-msg" style="margin-top:8px;font-size:13px"></div>
+          </div>
+        </div>
+        <!-- Lista -->
+        <div class="card">
+          <div class="card-head"><h3>📅 Próximos Conteúdos</h3>
+            <div style="display:flex;gap:8px">
+              <span class="tag" id="cal-count">—</span>
+              <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadCalendario()">↺</button>
+            </div>
+          </div>
+          <div class="card-body"><div id="cal-list">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LINKS & QR CODE ══ -->
+    <div class="panel" id="p-links">
+      <div class="pg2">
+        <!-- Criar link -->
+        <div class="card">
+          <div class="card-head"><h3>🔗 Criar Link Rastreável</h3></div>
+          <div class="card-body">
+            <div style="background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+              Crie links curtos rastreáveis para usar no TikTok, Instagram, WhatsApp, etc.<br>
+              O link <strong style="color:var(--t)">iaem30.com.br/go/tiktok</strong> redireciona para o checkout e conta os cliques.
+            </div>
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field">
+                <label>Slug (parte final do link)</label>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:13px;color:var(--m);white-space:nowrap">iaem30.com.br/go/</span>
+                  <input id="link-slug" placeholder="tiktok" style="flex:1">
+                </div>
+              </div>
+              <div class="field"><label>Destino (URL completa)</label><input id="link-destino" placeholder="https://go.perfectpay.com.br/..."></div>
+            </div>
+            <div class="field" style="margin-bottom:14px"><label>Descrição</label><input id="link-desc" placeholder="Ex: Link da bio do TikTok"></div>
+            <button class="btn-sm primary" onclick="saveLink()">Criar Link</button>
+            <div id="link-msg" style="margin-top:8px;font-size:13px"></div>
+          </div>
+        </div>
+        <!-- Lista de links -->
+        <div class="card">
+          <div class="card-head"><h3>Links Criados</h3>
+            <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadLinks()">↺</button>
+          </div>
+          <div class="card-body"><div id="links-list">Carregando...</div></div>
+        </div>
+        <!-- QR Code -->
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-head"><h3>📱 Gerador de QR Code</h3></div>
+          <div class="card-body">
+            <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
+              <div class="field" style="flex:1;min-width:220px;margin:0"><label>URL para gerar QR Code</label><input id="qr-url" value="https://iaem30.com.br" placeholder="https://iaem30.com.br"></div>
+              <div class="field" style="margin:0"><label>Tamanho</label>
+                <select id="qr-size" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;outline:none">
+                  <option value="200">200px</option>
+                  <option value="300" selected>300px</option>
+                  <option value="400">400px</option>
+                  <option value="500">500px</option>
+                </select>
+              </div>
+              <button class="btn-sm primary" onclick="generateQR()" style="margin-bottom:0">Gerar QR Code</button>
+            </div>
+            <div id="qr-result" style="display:none;text-align:center">
+              <img id="qr-img" style="border-radius:12px;border:1px solid var(--b2)">
+              <br><br>
+              <a id="qr-download" class="btn-sm primary" download="qrcode-iaem30.png">📥 Baixar PNG</a>
+              <p style="font-size:12px;color:var(--m2);margin-top:10px">Clique com botão direito → Salvar imagem para guardar o QR Code</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══ RELATÓRIO DIÁRIO ══ -->
+    <div class="panel" id="p-relatorio">
+      <div class="pg">
+        <div class="kpi-grid">
+          <div class="kpi purple"><div class="kpi-icon">👁️</div><div class="kpi-label">Visitantes hoje</div><div class="kpi-val" id="rel-vis">—</div></div>
+          <div class="kpi green"><div class="kpi-icon">🖱️</div><div class="kpi-label">Cliques CTA hoje</div><div class="kpi-val" id="rel-cta">—</div></div>
+          <div class="kpi gold"><div class="kpi-icon">📧</div><div class="kpi-label">Leads hoje</div><div class="kpi-val" id="rel-leads">—</div></div>
+          <div class="kpi cyan"><div class="kpi-icon">💳</div><div class="kpi-label">Vendas hoje</div><div class="kpi-val" id="rel-vendas">—</div></div>
+        </div>
+        <div class="pg2">
+          <div class="card">
+            <div class="card-head"><h3>📊 Visitantes — últimos 14 dias</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadRelatorio()">↺</button></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="chart-relatorio-vis"></canvas></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>🎯 Funil completo</h3></div>
+            <div class="card-body"><div id="rel-funil">Carregando...</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📅 Histórico por dia — últimos 30 dias</h3></div>
+          <div class="card-body" style="overflow-x:auto">
+            <table class="tbl" id="rel-tabela">
+              <thead><tr><th>Data</th><th>Visitantes</th><th>Cliques CTA</th><th>Leads</th><th>Vendas</th><th>Taxa Conv.</th></tr></thead>
+              <tbody id="rel-tbody"><tr><td colspan="6" style="text-align:center;color:var(--m)">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TELEGRAM ══ -->
+    <div class="panel" id="p-telegram">
+      <div class="pg2" style="max-width:800px">
+        <div class="card">
+          <div class="card-head"><h3>📱 Configurar Notificações Telegram</h3>
+            <span class="tag" id="tg-status">Não configurado</span>
+          </div>
+          <div class="card-body">
+            <div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.8">
+              <strong style="color:var(--t)">Como configurar em 2 minutos:</strong><br>
+              1. Abra o Telegram e pesquise por <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">@BotFather</code><br>
+              2. Envie <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">/newbot</code> e siga as instruções<br>
+              3. Copie o <strong>Token</strong> que o BotFather te mandar<br>
+              4. Pesquise por <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">@userinfobot</code> e anote seu <strong>Chat ID</strong><br>
+              5. Cole os dois campos abaixo e salve
+            </div>
+            <div class="fr" style="margin-bottom:12px">
+              <div class="field"><label>🔑 Token do Bot</label><input type="password" id="tg-token" placeholder="1234567890:ABCdefGHI..."></div>
+              <div class="field"><label>🆔 Chat ID</label><input id="tg-chatid" placeholder="123456789"></div>
+            </div>
+            <div class="field" style="margin-bottom:14px">
+              <label>Notificar quando:</label>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                  <input type="checkbox" id="tg-on-sale" checked style="accent-color:var(--a)"> Nova venda
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                  <input type="checkbox" id="tg-on-lead" checked style="accent-color:var(--a)"> Novo lead capturado
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+                  <input type="checkbox" id="tg-on-daily" style="accent-color:var(--a)"> Resumo diário (8h)
+                </label>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="btn-sm primary" onclick="saveTelegram()">💾 Salvar</button>
+              <button class="btn-sm ghost" onclick="testTelegram()">📤 Enviar mensagem de teste</button>
+            </div>
+            <div id="tg-msg" style="margin-top:10px;font-size:13px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📨 Últimas notificações enviadas</h3></div>
+          <div class="card-body"><div id="tg-history" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PIXEL & UTM ══ -->
+    <div class="panel" id="p-pixel">
+      <div class="pg">
+        <div class="pg2" style="margin-bottom:18px">
+          <div class="card">
+            <div class="card-head"><h3>📘 Meta Pixel (Facebook/Instagram)</h3>
+              <span class="tag" id="pixel-fb-status">Não instalado</span>
+            </div>
+            <div class="card-body">
+              <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.7">
+                O Meta Pixel permite criar anúncios no Instagram e Facebook para pessoas que já visitaram seu site.
+                <strong style="color:var(--t)"> Instale antes de qualquer anúncio pago!</strong>
+              </div>
+              <div class="field" style="margin-bottom:14px">
+                <label>Pixel ID</label>
+                <input id="fb-pixel-id" placeholder="Ex: 1234567890123456">
+                <span class="hint">Encontre em business.facebook.com → Events Manager → seu Pixel → configurações</span>
+              </div>
+              <button class="btn-sm primary" onclick="savePixel()">💾 Salvar e Instalar</button>
+              <div id="pixel-msg" style="margin-top:8px;font-size:13px"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>📊 Origens de Tráfego (UTM)</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadPixel()">↺</button></div>
+            <div class="card-body">
+              <div id="utm-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>🔗 Gerador de Links UTM</h3></div>
+          <div class="card-body">
+            <div style="font-size:13px;color:var(--m);margin-bottom:14px">Crie links com rastreamento para saber de onde vêm seus visitantes.</div>
+            <div class="fr" style="margin-bottom:10px">
+              <div class="field"><label>Fonte (utm_source)</label><input id="utm-source" placeholder="instagram, tiktok, google..."></div>
+              <div class="field"><label>Mídia (utm_medium)</label><input id="utm-medium" placeholder="social, cpc, email..."></div>
+            </div>
+            <div class="fr" style="margin-bottom:14px">
+              <div class="field"><label>Campanha (utm_campaign)</label><input id="utm-campaign" placeholder="lancamento, black-friday..."></div>
+              <div class="field"><label>Conteúdo (utm_content)</label><input id="utm-content" placeholder="post1, video2... (opcional)"></div>
+            </div>
+            <button class="btn-sm primary" onclick="generateUTM()">🔗 Gerar Link</button>
+            <div id="utm-result" style="margin-top:14px;display:none">
+              <div style="background:rgba(255,255,255,.05);border:1px solid var(--b2);border-radius:8px;padding:12px;font-size:13px;word-break:break-all" id="utm-link"></div>
+              <button class="btn-sm ghost" style="margin-top:8px" onclick="copyUTM()">📋 Copiar link</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>📱 Visitantes por dispositivo e origem — últimos 30 dias</h3></div>
+          <div class="card-body">
+            <div id="device-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- CONFIG -->
     <div class="panel" id="p-e-config">
       <div class="pg2" style="max-width:700px">
@@ -1204,6 +1487,8 @@ const PTITLES={
   overview:'Dashboard',vendas:'Vendas',extrato:'Extrato Financeiro',comissoes:'Comissões & Afiliados',
   produtos:'Produtos',analytics:'Analytics',cupons:'Cupons',emails:'Emails Capturados',
   notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
+  metas:'Metas & Objetivos',calendario:'Calendário de Conteúdo',links:'Links & QR Code',
+  relatorio:'Relatório Diário',telegram:'Notificações Telegram',pixel:'Meta Pixel & UTM',
   'chat-faq':'Respostas do Chat','ai-leads':'Leads Gerador de Nicho',
   'e-geral':'Geral & Marca','e-hero':'Hero & CTA','e-preco':'Preço & Compra',
   'e-ben':'Benefícios','e-semanas':'Semanas & Aprendizado','e-monetize':'Monetização',
@@ -1225,6 +1510,9 @@ function go(id,el){
     vendas:loadVendas,extrato:loadExtrato,comissoes:loadComissoes,
     produtos:loadProdutos,analytics:loadAnalytics,cupons:loadCupons,
     emails:loadEmails,notifs:loadNotifs,perfectpay:loadPPStatus,
+    metas:loadMetas,calendario:loadCalendario,links:loadLinks,
+    'chat-faq':loadFAQAdmin,'ai-leads':loadNicheLeads,
+    relatorio:loadRelatorio,telegram:loadTelegram,pixel:loadPixel,
   };
   if(loads[id]) setTimeout(loads[id],50);
 }
@@ -2208,6 +2496,278 @@ async function loadAIKeyStatus() {
   if (rows?.[0]?.value && el) { el.textContent = '✓ Configurada'; el.className = 'tag green'; }
 }
 
+
+// ══════════════════════════════════════
+// RELATÓRIO DIÁRIO
+// ══════════════════════════════════════
+async function loadRelatorio() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayISO = today.toISOString();
+  const thirtyAgo = new Date(Date.now() - 30*864e5).toISOString();
+  const fourteenAgo = new Date(Date.now() - 14*864e5).toISOString();
+
+  const [vis, cta, leads, sales, visAll, ctaAll] = await Promise.all([
+    sbGet('iaem30_visitors',`?created_at=gte.${todayISO}&select=id`),
+    sbGet('iaem30_cta_clicks',`?created_at=gte.${todayISO}&select=id`),
+    sbGet('iaem30_emails',`?created_at=gte.${todayISO}&select=id`),
+    sbGet('iaem30_sales',`?is_test=eq.false&created_at=gte.${todayISO}&select=id`),
+    sbGet('iaem30_visitors',`?created_at=gte.${fourteenAgo}&select=id,created_at`),
+    sbGet('iaem30_cta_clicks',`?created_at=gte.${thirtyAgo}&select=id,created_at`),
+  ]);
+
+  // KPIs
+  [['rel-vis',vis],['rel-cta',cta],['rel-leads',leads],['rel-vendas',sales]].forEach(([id,rows])=>{
+    const el=document.getElementById(id); if(el) el.textContent=rows?.length||0;
+  });
+
+  // Chart — visitors by day (14 days)
+  const dayMap={};
+  (visAll||[]).forEach(v=>{
+    const d=v.created_at.slice(0,10); dayMap[d]=(dayMap[d]||0)+1;
+  });
+  const labels=[],data=[];
+  for(let i=13;i>=0;i--){
+    const d=new Date(Date.now()-i*864e5);
+    const key=d.toISOString().slice(0,10);
+    labels.push(d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}));
+    data.push(dayMap[key]||0);
+  }
+  const ctx=document.getElementById('chart-relatorio-vis');
+  if(ctx){
+    if(ctx._chart) ctx._chart.destroy();
+    ctx._chart=new Chart(ctx,{
+      type:'bar',
+      data:{labels,datasets:[{label:'Visitantes',data,backgroundColor:'rgba(124,92,252,.7)',borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}
+    });
+  }
+
+  // Funil
+  const allVis=await sbGet('iaem30_visitors',`?created_at=gte.${thirtyAgo}&select=id`);
+  const allCta=await sbGet('iaem30_cta_clicks',`?created_at=gte.${thirtyAgo}&select=id`);
+  const allLeads=await sbGet('iaem30_emails',`?select=id`);
+  const allSales=await sbGet('iaem30_sales',`?is_test=eq.false&select=id`);
+  const v=allVis?.length||0,c=allCta?.length||0,e=allLeads?.length||0,s=allSales?.length||0;
+  const pct=(n,d)=>d?Math.round(n/d*100)+'%':'0%';
+  const funilEl=document.getElementById('rel-funil');
+  if(funilEl){
+    funilEl.innerHTML=[
+      {label:'👁️ Visitantes (30d)',val:v,color:'#7c5cfc',w:100},
+      {label:'🖱️ Clicaram no CTA',val:c,color:'#06b6d4',w:Math.max(2,Math.round(c/Math.max(v,1)*100))},
+      {label:'📧 Deixaram email',val:e,color:'#f59e0b',w:Math.max(2,Math.round(e/Math.max(v,1)*100))},
+      {label:'💳 Compraram',val:s,color:'#10b981',w:Math.max(s?2:0,Math.round(s/Math.max(v,1)*100))},
+    ].map(f=>`
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+          <span>${f.label}</span>
+          <span style="color:${f.color};font-weight:700">${f.val} (${pct(f.val,v)})</span>
+        </div>
+        <div style="background:rgba(255,255,255,.06);border-radius:6px;height:10px;overflow:hidden">
+          <div style="background:${f.color};height:100%;width:${f.w}%;border-radius:6px;transition:width .6s"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Table — last 30 days
+  const dayVis={}, dayCta={};
+  (allVis||[]).forEach(v=>{ const d=v.created_at?.slice(0,10); if(d) dayVis[d]=(dayVis[d]||0)+1; });
+  (allCta||[]).forEach(c=>{ const d=c.created_at?.slice(0,10); if(d) dayCta[d]=(dayCta[d]||0)+1; });
+  const tbody=document.getElementById('rel-tbody');
+  if(tbody){
+    const rows=[];
+    for(let i=0;i<30;i++){
+      const d=new Date(Date.now()-i*864e5);
+      const key=d.toISOString().slice(0,10);
+      const dv=dayVis[key]||0,dc=dayCta[key]||0;
+      rows.push(`<tr>
+        <td>${d.toLocaleDateString('pt-BR')}</td>
+        <td>${dv}</td><td>${dc}</td><td>—</td><td>—</td>
+        <td style="color:${dc&&dv?'#10b981':'var(--m2)'}">${dv?Math.round(dc/dv*100)+'%':'—'}</td>
+      </tr>`);
+    }
+    tbody.innerHTML=rows.join('');
+  }
+}
+
+// ══════════════════════════════════════
+// TELEGRAM
+// ══════════════════════════════════════
+async function loadTelegram() {
+  const rows = await sbGet('iaem30_secrets', '?key=in.(telegram_token,telegram_chatid,telegram_events)');
+  const map = {};
+  (rows||[]).forEach(r => map[r.key] = r.value);
+
+  const token = map['telegram_token'];
+  const chatid = map['telegram_chatid'];
+
+  if (token) { document.getElementById('tg-token').value = token; }
+  if (chatid) { document.getElementById('tg-chatid').value = chatid; }
+
+  const st = document.getElementById('tg-status');
+  if (st) {
+    st.textContent = (token && chatid) ? '✓ Configurado' : 'Não configurado';
+    st.className = 'tag ' + ((token && chatid) ? 'green' : '');
+  }
+
+  // History
+  const hist = await sbGet('iaem30_telegram_sends', '?order=created_at.desc&limit=10');
+  const el = document.getElementById('tg-history');
+  if (el) {
+    if (!hist?.length) { el.innerHTML = '<div style="color:var(--m2);font-size:13px">Nenhuma notificação enviada ainda.</div>'; return; }
+    el.innerHTML = '<table class="tbl"><thead><tr><th>Mensagem</th><th>Status</th><th>Data</th></tr></thead><tbody>' +
+      hist.map(r => `<tr>
+        <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.message||'—'}</td>
+        <td><span class="tag ${r.ok?'green':''}">${r.ok?'✓ Enviado':'❌ Erro'}</span></td>
+        <td>${new Date(r.created_at).toLocaleString('pt-BR')}</td>
+      </tr>`).join('') + '</tbody></table>';
+  }
+}
+
+async function saveTelegram() {
+  const token = document.getElementById('tg-token').value.trim();
+  const chatid = document.getElementById('tg-chatid').value.trim();
+  const msg = document.getElementById('tg-msg');
+  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--r)">Preencha token e chat ID.</span>'; return; }
+
+  await Promise.all([
+    upsertSecret('telegram_token', token),
+    upsertSecret('telegram_chatid', chatid),
+  ]);
+
+  const st = document.getElementById('tg-status');
+  if (st) { st.textContent = '✓ Configurado'; st.className = 'tag green'; }
+  msg.innerHTML = '<span style="color:var(--g)">✓ Salvo! Clique em "Enviar teste" para verificar.</span>';
+  setTimeout(() => msg.innerHTML = '', 4000);
+}
+
+async function upsertSecret(key, value) {
+  const existing = await sbGet('iaem30_secrets', `?key=eq.${key}&select=id`);
+  if (existing?.length) {
+    await sbPatch('iaem30_secrets', `?key=eq.${key}`, { value });
+  } else {
+    await sbPost('iaem30_secrets', { key, value });
+  }
+}
+
+async function testTelegram() {
+  const token = document.getElementById('tg-token').value.trim();
+  const chatid = document.getElementById('tg-chatid').value.trim();
+  const msg = document.getElementById('tg-msg');
+  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--r)">Configure token e chat ID primeiro.</span>'; return; }
+
+  msg.innerHTML = '<span style="color:var(--m)">Enviando...</span>';
+  try {
+    const text = encodeURIComponent(`🤖 *IA em 30 Dias — Teste*
+
+✅ Notificações configuradas com sucesso!
+
+Você receberá alertas de novas vendas e leads aqui.
+
+_${new Date().toLocaleString('pt-BR')}_`);
+    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatid}&text=${text}&parse_mode=Markdown`);
+    const data = await r.json();
+    if (data.ok) {
+      msg.innerHTML = '<span style="color:var(--g)">✓ Mensagem enviada! Verifique seu Telegram.</span>';
+    } else {
+      msg.innerHTML = `<span style="color:var(--r)">❌ Erro: ${data.description||'Verifique token e chat ID'}</span>`;
+    }
+  } catch(e) {
+    msg.innerHTML = '<span style="color:var(--r)">❌ Erro de conexão.</span>';
+  }
+}
+
+// ══════════════════════════════════════
+// PIXEL & UTM
+// ══════════════════════════════════════
+async function loadPixel() {
+  // Check existing pixel
+  const rows = await sbGet('iaem30_secrets', '?key=eq.meta_pixel_id');
+  const pixelId = rows?.[0]?.value;
+  const st = document.getElementById('pixel-fb-status');
+
+  if (pixelId) {
+    document.getElementById('fb-pixel-id').value = pixelId;
+    if (st) { st.textContent = '✓ Instalado: ' + pixelId; st.className = 'tag green'; }
+  }
+
+  // UTM stats from visitors
+  const vis = await sbGet('iaem30_visitors', '?select=utm_source,utm_medium,utm_campaign&order=created_at.desc&limit=500');
+  const utmEl = document.getElementById('utm-stats');
+  if (utmEl && vis?.length) {
+    const sources = {};
+    vis.forEach(v => {
+      const src = v.utm_source || 'Direto';
+      sources[src] = (sources[src] || 0) + 1;
+    });
+    const sorted = Object.entries(sources).sort((a,b) => b[1]-a[1]).slice(0,8);
+    const total = vis.length;
+    utmEl.innerHTML = sorted.map(([src, cnt]) => `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="min-width:100px;font-size:13px">${src}</span>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:4px;height:8px;overflow:hidden">
+          <div style="background:var(--a);height:100%;width:${Math.round(cnt/total*100)}%;border-radius:4px"></div>
+        </div>
+        <span style="font-size:12px;color:var(--m);min-width:60px;text-align:right">${cnt} (${Math.round(cnt/total*100)}%)</span>
+      </div>`).join('') || '<span style="color:var(--m2)">Sem dados UTM ainda. Gere links com UTM para rastrear.</span>';
+  } else if (utmEl) {
+    utmEl.innerHTML = '<span style="color:var(--m2)">Sem dados UTM ainda. Use o gerador abaixo para criar links rastreáveis.</span>';
+  }
+
+  // Device stats
+  const devEl = document.getElementById('device-stats');
+  if (devEl && vis?.length) {
+    const devices = {};
+    vis.forEach(v => {
+      const dev = v.device_type || 'Desktop';
+      devices[dev] = (devices[dev] || 0) + 1;
+    });
+    const total = vis.length;
+    devEl.innerHTML = `<div style="display:flex;gap:20px;flex-wrap:wrap">` +
+      Object.entries(devices).map(([dev, cnt]) => `
+        <div class="kpi" style="padding:16px;min-width:120px;text-align:center">
+          <div style="font-size:24px;margin-bottom:6px">${dev==='Mobile'?'📱':dev==='Tablet'?'📟':'💻'}</div>
+          <div class="kpi-label">${dev}</div>
+          <div class="kpi-val" style="font-size:20px">${cnt}</div>
+          <div style="font-size:11px;color:var(--m2)">${Math.round(cnt/total*100)}%</div>
+        </div>`).join('') + `</div>`;
+  }
+}
+
+async function savePixel() {
+  const id = document.getElementById('fb-pixel-id').value.trim();
+  const msgEl = document.getElementById('pixel-msg');
+  if (!id || !/^\d{10,20}$/.test(id)) {
+    msgEl.innerHTML = '<span style="color:var(--r)">ID inválido. Deve ser um número com 10-20 dígitos.</span>';
+    return;
+  }
+  await upsertSecret('meta_pixel_id', id);
+  const st = document.getElementById('pixel-fb-status');
+  if (st) { st.textContent = '✓ Instalado: ' + id; st.className = 'tag green'; }
+  msgEl.innerHTML = '<span style="color:var(--g)">✓ Pixel salvo! Faça um novo deploy do site para ativar o rastreamento.</span>';
+  setTimeout(() => msgEl.innerHTML = '', 5000);
+}
+
+function generateUTM() {
+  const base = 'https://iaem30.com.br';
+  const src = document.getElementById('utm-source').value.trim();
+  const med = document.getElementById('utm-medium').value.trim();
+  const cam = document.getElementById('utm-campaign').value.trim();
+  const con = document.getElementById('utm-content').value.trim();
+  if (!src || !cam) { toast('Preencha pelo menos Fonte e Campanha','err'); return; }
+
+  let url = `${base}?utm_source=${encodeURIComponent(src)}&utm_medium=${encodeURIComponent(med||'social')}&utm_campaign=${encodeURIComponent(cam)}`;
+  if (con) url += `&utm_content=${encodeURIComponent(con)}`;
+
+  document.getElementById('utm-link').textContent = url;
+  document.getElementById('utm-result').style.display = 'block';
+}
+
+function copyUTM() {
+  const link = document.getElementById('utm-link').textContent;
+  navigator.clipboard.writeText(link).then(() => toast('✓ Link copiado!'));
+}
+
+
 function exportJSON(){const b=new Blob([JSON.stringify(collect(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='iaem30-config.json';a.click();toast('Exportado!');}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{C={...DEF,...JSON.parse(r.result)};fill();toast('Importado! Salve para publicar.');}catch{toast('Arquivo inválido','err');}};r.readAsText(f);}
 
@@ -2248,6 +2808,236 @@ function checkMobile() {
 }
 window.addEventListener('resize', checkMobile);
 window.addEventListener('load', checkMobile);
+
+// ══════════════════════════════════════
+// METAS
+// ══════════════════════════════════════
+async function loadMetas() {
+  const el = document.getElementById('metas-progress');
+  if (!el) return;
+
+  const mes = new Date().toISOString().slice(0,7);
+  const [meta, vendas, leads, visitors] = await Promise.all([
+    sbGet('iaem30_metas', '?mes=eq.' + mes + '&limit=1'),
+    sbGet('iaem30_sales', '?is_test=eq.false&select=amount'),
+    sbGet('iaem30_emails', '?select=id'),
+    sbGet('iaem30_visitors', '?created_at=gte.' + new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString() + '&select=id'),
+  ]);
+
+  const m = meta?.[0] || { meta_vendas:50, meta_receita:994.50, meta_leads:100, meta_visitantes:1000 };
+  const receita = (vendas||[]).reduce((s,v) => s + (parseFloat(v.amount)||19.90), 0);
+  const nVendas = (vendas||[]).length;
+  const nLeads = (leads||[]).length;
+  const nVisitors = (visitors||[]).length;
+
+  const bar = (val, max, color) => {
+    const pct = Math.min(100, Math.round(val / Math.max(max,1) * 100));
+    return `<div style="background:rgba(255,255,255,.06);border-radius:6px;height:12px;overflow:hidden;margin-top:6px">
+      <div style="background:${color};height:100%;width:${pct}%;border-radius:6px;transition:width .8s ease"></div>
+    </div><div style="font-size:11px;color:var(--m2);margin-top:3px">${pct}% — ${val} de ${max}</div>`;
+  };
+
+  el.innerHTML = `<div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+    <div class="kpi purple" style="padding:16px">
+      <div class="kpi-label">💳 Vendas</div>
+      <div class="kpi-val" style="font-size:24px">${nVendas}</div>
+      ${bar(nVendas, m.meta_vendas, '#7c5cfc')}
+    </div>
+    <div class="kpi green" style="padding:16px">
+      <div class="kpi-label">💰 Receita</div>
+      <div class="kpi-val" style="font-size:24px">R$${receita.toFixed(2)}</div>
+      ${bar(receita, m.meta_receita, '#10b981')}
+    </div>
+    <div class="kpi gold" style="padding:16px">
+      <div class="kpi-label">📧 Leads</div>
+      <div class="kpi-val" style="font-size:24px">${nLeads}</div>
+      ${bar(nLeads, m.meta_leads, '#f59e0b')}
+    </div>
+    <div class="kpi cyan" style="padding:16px">
+      <div class="kpi-label">👥 Visitantes</div>
+      <div class="kpi-val" style="font-size:24px">${nVisitors}</div>
+      ${bar(nVisitors, m.meta_visitantes, '#06b6d4')}
+    </div>
+  </div>`;
+
+  // Update form values
+  if (meta?.[0]) {
+    ['vendas','receita','leads','visitantes'].forEach(k => {
+      const el2 = document.getElementById('meta-' + k);
+      if (el2) el2.value = meta[0]['meta_' + k];
+    });
+  }
+}
+
+async function saveMeta() {
+  const mes = document.getElementById('meta-mes').value;
+  const data = {
+    mes,
+    meta_vendas: parseInt(document.getElementById('meta-vendas').value)||50,
+    meta_receita: parseFloat(document.getElementById('meta-receita').value)||994.50,
+    meta_leads: parseInt(document.getElementById('meta-leads').value)||100,
+    meta_visitantes: parseInt(document.getElementById('meta-visitantes').value)||1000,
+    updated_at: new Date().toISOString(),
+  };
+  const existing = await sbGet('iaem30_metas', '?mes=eq.' + mes + '&limit=1');
+  let ok;
+  if (existing?.[0]) ok = await sbPatch('iaem30_metas', '?mes=eq.' + mes, data);
+  else ok = await sbPost('iaem30_metas', data);
+  const msg = document.getElementById('meta-msg');
+  if (ok) { msg.innerHTML = '<span style="color:var(--g)">✓ Metas salvas!</span>'; loadMetas(); setTimeout(()=>msg.innerHTML='',3000); }
+  else msg.innerHTML = '<span style="color:var(--r)">Erro ao salvar.</span>';
+}
+
+// ══════════════════════════════════════
+// CALENDÁRIO
+// ══════════════════════════════════════
+const PLAT_ICONS = { tiktok:'🎵',instagram:'📸',youtube:'▶️',email:'📧',whatsapp:'💬',outro:'📌' };
+const STATUS_COLORS = { planejado:'var(--m)',criado:'#f59e0b',publicado:'#10b981' };
+
+async function loadCalendario() {
+  const rows = await sbGet('iaem30_calendario', '?order=data.asc&limit=50');
+  const el = document.getElementById('cal-list');
+  const cnt = document.getElementById('cal-count');
+  if (!el) return;
+  if (cnt) cnt.textContent = (rows||[]).length + ' itens';
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">🗓️</div>Nenhum conteúdo planejado.</div>'; return; }
+
+  // Group by date
+  const byDate = {};
+  rows.forEach(r => { if (!byDate[r.data]) byDate[r.data] = []; byDate[r.data].push(r); });
+
+  el.innerHTML = Object.entries(byDate).map(([date, items]) => `
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--m2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b2)">
+        ${new Date(date+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'})}
+      </div>
+      ${items.map(i => `
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--b2);border-radius:9px;margin-bottom:6px">
+          <span style="font-size:20px">${PLAT_ICONS[i.plataforma]||'📌'}</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--t)">${i.titulo}</div>
+            <div style="font-size:11px;color:var(--m)">${i.plataforma} · <span style="color:${STATUS_COLORS[i.status]||'var(--m)'}">${i.status}</span></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            ${i.link ? `<a href="${i.link}" target="_blank" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">🔗</a>` : ''}
+            <button onclick="updateCalStatus('${i.id}','${i.status}')" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">✏️</button>
+            <button onclick="deleteCalItem('${i.id}')" class="btn-sm danger" style="padding:4px 8px;font-size:11px">✕</button>
+          </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+async function saveCalendario() {
+  const data = {
+    data: document.getElementById('cal-data').value,
+    plataforma: document.getElementById('cal-plat').value,
+    titulo: document.getElementById('cal-titulo').value.trim(),
+    status: document.getElementById('cal-status').value,
+    link: document.getElementById('cal-link').value.trim() || null,
+  };
+  if (!data.data || !data.titulo) { toast('Preencha data e título','err'); return; }
+  const ok = await sbPost('iaem30_calendario', data);
+  if (ok) {
+    toast('✓ Conteúdo adicionado!');
+    document.getElementById('cal-titulo').value = '';
+    document.getElementById('cal-link').value = '';
+    loadCalendario();
+  } else toast('Erro','err');
+}
+
+async function updateCalStatus(id, current) {
+  const order = ['planejado','criado','publicado'];
+  const next = order[(order.indexOf(current) + 1) % order.length];
+  await sbPatch('iaem30_calendario', '?id=eq.' + id, { status: next });
+  loadCalendario();
+  toast('Status: ' + next);
+}
+
+async function deleteCalItem(id) {
+  if (!confirm('Remover este item?')) return;
+  try {
+    const r = await fetch(SB+'/rest/v1/iaem30_calendario?id=eq.'+id, {method:'DELETE',headers:H});
+    if (r.ok) { toast('✓ Removido!'); loadCalendario(); }
+    else toast('Erro','err');
+  } catch { toast('Erro','err'); }
+}
+
+// ══════════════════════════════════════
+// LINKS & QR CODE
+// ══════════════════════════════════════
+async function loadLinks() {
+  const rows = await sbGet('iaem30_links', '?order=cliques.desc');
+  const el = document.getElementById('links-list');
+  if (!el) return;
+  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">🔗</div>Nenhum link criado ainda.</div>'; return; }
+  el.innerHTML = `<table class="tbl"><thead><tr><th>Slug</th><th>Destino</th><th>Descrição</th><th>Cliques</th><th>Status</th><th></th></tr></thead><tbody>
+    ${rows.map(r=>`<tr>
+      <td>
+        <a href="https://iaem30.com.br/go/${r.slug}" target="_blank" style="color:var(--a2);font-weight:600">/${r.slug}</a>
+        <button onclick="copyLink('${r.slug}')" style="background:none;border:none;cursor:pointer;color:var(--m);font-size:12px;margin-left:4px" title="Copiar">📋</button>
+      </td>
+      <td style="color:var(--m);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${r.destino}</td>
+      <td style="color:var(--m);font-size:12px">${r.descricao||'—'}</td>
+      <td><span style="font-weight:700;color:var(--a2)">${r.cliques||0}</span></td>
+      <td><span class="tag ${r.active?'green':''}">${r.active?'Ativo':'Inativo'}</span></td>
+      <td style="display:flex;gap:5px">
+        <button onclick="toggleLink('${r.id}',${!r.active})" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">${r.active?'Pausar':'Ativar'}</button>
+        <button onclick="generateQRForLink('${r.slug}')" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">📱</button>
+      </td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function copyLink(slug) {
+  navigator.clipboard.writeText('https://iaem30.com.br/go/' + slug);
+  toast('✓ Link copiado!');
+}
+
+async function saveLink() {
+  const slug = document.getElementById('link-slug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+  const destino = document.getElementById('link-destino').value.trim();
+  const descricao = document.getElementById('link-desc').value.trim();
+  const msg = document.getElementById('link-msg');
+  if (!slug || !destino) { msg.innerHTML = '<span style="color:var(--r)">Preencha o slug e o destino.</span>'; return; }
+  const ok = await sbPost('iaem30_links', { slug, destino, descricao, cliques: 0, active: true });
+  if (ok) {
+    msg.innerHTML = '<span style="color:var(--g)">✓ Link criado! <strong>iaem30.com.br/go/' + slug + '</strong></span>';
+    document.getElementById('link-slug').value = '';
+    document.getElementById('link-destino').value = '';
+    document.getElementById('link-desc').value = '';
+    loadLinks();
+    setTimeout(()=>msg.innerHTML='', 5000);
+  } else msg.innerHTML = '<span style="color:var(--r)">Erro. Slug pode já existir.</span>';
+}
+
+async function toggleLink(id, active) {
+  await sbPatch('iaem30_links', '?id=eq.'+id, { active });
+  loadLinks();
+  toast(active ? '✓ Link ativado!' : 'Link pausado.');
+}
+
+function generateQR() {
+  const url = document.getElementById('qr-url').value.trim();
+  const size = document.getElementById('qr-size').value;
+  if (!url) { toast('Digite uma URL','err'); return; }
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=000000&format=png&margin=10`;
+  const img = document.getElementById('qr-img');
+  const dl = document.getElementById('qr-download');
+  const res = document.getElementById('qr-result');
+  img.src = qrUrl;
+  dl.href = qrUrl;
+  res.style.display = 'block';
+  toast('✓ QR Code gerado!');
+}
+
+function generateQRForLink(slug) {
+  document.getElementById('qr-url').value = 'https://iaem30.com.br/go/' + slug;
+  go('links', document.querySelector('[onclick*=\'links\']'));
+  setTimeout(() => {
+    generateQR();
+    document.getElementById('qr-result').scrollIntoView({behavior:'smooth'});
+  }, 100);
+}
 
 </script>
 </body>
