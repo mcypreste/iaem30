@@ -126,7 +126,7 @@ footer a{color:#3d3558}
         <div class="cpn-hint">Aplique no checkout · Válido por 48h · Uso único</div>
       </div>
     </div>
-    <a href="https://iaem30.com.br" class="cta" onclick="trackClick()" target="_blank" rel="noopener">
+    <a href="https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=${coupon}" class="cta" onclick="trackClick()" target="_blank" rel="noopener">
       ➤ Garantir com ${discount}% de desconto
     </a>
     <div class="trust">
@@ -161,7 +161,7 @@ footer a{color:#3d3558}
 <div class="cta-bottom">
   <h2>Esta oferta expira em breve, ${first}</h2>
   <p>Use seu cupom <strong style="color:#a78bfa;font-family:monospace">${coupon}</strong> antes que expire.</p>
-  <a href="https://iaem30.com.br" class="cta" onclick="trackClick()" target="_blank" rel="noopener" style="display:inline-flex">
+  <a href="https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=${coupon}" class="cta" onclick="trackClick()" target="_blank" rel="noopener" style="display:inline-flex">
     Garantir meu ebook agora →
   </a>
   <div class="trust" style="margin-top:16px">
