@@ -2042,8 +2042,8 @@ function initTheme() {
 // THANK YOU PAGE
 // ═══════════════════════════════════════
 function showThankYou() {
-  document.getElementById('thankyou-page').style.display='block';
-  document.body.style.overflow='hidden';
+  // Redireciona para a página de obrigado dedicada
+  window.location.href = '/obrigado';
 }
 function shareWhatsApp() {
   const link = CFG.productLink || DEFAULTS.productLink;
