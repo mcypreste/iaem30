@@ -8,7 +8,7 @@
     },
     {
       "source": "/p/:slug",
-      "destination": "https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/personal-page/:slug"
+      "destination": "/api/p?slug=:slug"
     },
     {
       "source": "/",
