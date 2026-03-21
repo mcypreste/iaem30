@@ -1934,10 +1934,22 @@ async function proceedToBuy() {
   }
   document.getElementById('modal-email').style.borderColor = '';
   capturedEmail = email;
-  if (btn) { btn.disabled = true; btn.innerHTML = '<span>⏳</span> Abrindo pagamento...'; }
-  // Salva email
-  await sbPost('iaem30_emails', { email, source: 'modal' });
-  // Agenda abandono de carrinho (1h) e sequência de boas-vindas
+
+  // Determina o link ANTES de qualquer await para não perder o contexto do usuário
+  let link = CFG.productLink || DEFAULTS.productLink;
+  if (_activeCoupon?.coupon_type === 'perfectpay') {
+    link = _activeCoupon.perfectpay_link ||
+      ('https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=' + _activeCoupon.code);
+  }
+
+  // Abre o checkout IMEDIATAMENTE (antes de qualquer await)
+  // Browsers bloqueiam window.open após await — precisa ser síncrono
+  closeModal();
+  openCheckoutPopup(link);
+
+  // Depois do open, faz os saves em background (não bloqueia o popup)
+  if (btn) { btn.disabled = true; }
+  sbPost('iaem30_emails', { email, source: 'modal' });
   scheduleCartAbandonment(email);
   fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/schedule-email', {
     method: 'POST',
@@ -1945,23 +1957,12 @@ async function proceedToBuy() {
     body: JSON.stringify({ email })
   }).catch(() => {});
 
-  // Usa link da PerfectPay com cupom real se disponível
-  let link = CFG.productLink || DEFAULTS.productLink;
-  if (_activeCoupon?.coupon_type === 'perfectpay') {
-    link = _activeCoupon.perfectpay_link ||
-      ('https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=' + _activeCoupon.code);
-  }
-
-  // Marca como convertido (não envia email de abandono)
-  if (capturedEmail) {
-    fetch(SB_URL + '/rest/v1/iaem30_cart_abandonment?email=eq.' + capturedEmail + '&status=eq.pending', {
-      method: 'PATCH',
-      headers: { ...SB_H, 'Prefer': 'return=minimal' },
-      body: JSON.stringify({ status: 'converted' })
-    }).catch(() => {});
-  }
-  closeModal();
-  setTimeout(() => openCheckoutPopup(link), 200);
+  // Marca carrinho como convertido
+  fetch(SB_URL + '/rest/v1/iaem30_cart_abandonment?email=eq.' + capturedEmail + '&status=eq.pending', {
+    method: 'PATCH',
+    headers: { ...SB_H, 'Prefer': 'return=minimal' },
+    body: JSON.stringify({ status: 'converted' })
+  }).catch(() => {});
 }
 
 // ═══════════════════════════════════════
