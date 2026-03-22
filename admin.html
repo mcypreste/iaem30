@@ -2709,6 +2709,122 @@ function stopPolling()  { stopRealtimeTeamChat(); }
            shortlinks, links, personal-pages, notifs + todo o editor do site
   viewer → apenas dashboard, relatorio, analytics
 */
+// ═══════════════════════════════════════
+// NAVEGAÇÃO E UI
+// ═══════════════════════════════════════
+
+// Painéis ativos
+const PTITLES = {
+  overview:'Dashboard', relatorio:'Relatório', vendas:'Vendas',
+  extrato:'Extrato Financeiro', comissoes:'Comissões & Afiliados',
+  produtos:'Produtos', analytics:'Analytics', cupons:'Cupons',
+  emails:'Emails Capturados', notifs:'Notificações de Venda',
+  perfectpay:'Integração PerfectPay', metas:'Metas & Calendário',
+  calendario:'Calendário', links:'Links Rastreados',
+  relatorio:'Relatório', telegram:'Telegram Bot', pixel:'Meta Pixel',
+  shortlinks:'Short Links', 'personal-pages':'Páginas Personalizadas',
+  'chat-faq':'FAQ do Chat', 'ai-leads':'IA para Leads',
+  'e-geral':'Editor — Geral', 'e-hero':'Editor — Hero',
+  'e-preco':'Editor — Preço', 'e-ben':'Editor — Benefícios',
+  'e-semanas':'Editor — Semanas', 'e-monetize':'Editor — Monetize',
+  'e-depos':'Editor — Depoimentos', 'e-faq':'Editor — FAQ',
+  'e-conv':'Editor — CTA', 'e-paraquem':'Editor — Para Quem',
+  'e-bonus':'Editor — Bônus', 'e-obrigado':'Editor — Obrigado',
+  'e-config':'Editor — Config', equipe:'Equipe & Perfil',
+  inbox:'Inbox de Suporte',
+};
+
+// Navegação principal
+function go(id, el) {
+  // Role access control
+  const _allowed = window._allowedPanels;
+  if (_allowed && !_allowed.includes(id)) {
+    toast('⛔ Sem permissão para esta área');
+    return;
+  }
+
+  // Update active nav item
+  document.querySelectorAll('.ni').forEach(b => b.classList.remove('on'));
+  if (el) el.classList.add('on');
+
+  // Show panel
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  const panel = document.getElementById('p-' + id);
+  if (panel) panel.classList.add('on');
+
+  // Update page title
+  const title = document.getElementById('page-title');
+  if (title) title.textContent = PTITLES[id] || id;
+
+  // Update topbar breadcrumb
+  const bc = document.getElementById('tb-page-title');
+  if (bc) bc.textContent = PTITLES[id] || id;
+
+  // Auto-load panel data
+  if (id === 'equipe') setTimeout(() => { if (typeof loadEquipe === 'function') loadEquipe(); }, 50);
+  if (id === 'inbox')  setTimeout(() => { if (typeof loadInbox  === 'function') loadInbox(); }, 50);
+  if (id === 'overview') setTimeout(() => { if (typeof loadOverview === 'function') loadOverview(); }, 50);
+
+  // Close mobile sidebar if open
+  if (window.innerWidth <= 768) {
+    document.querySelector('.sidebar')?.classList.remove('mobile-open');
+    document.getElementById('sb-overlay')?.classList.remove('show');
+  }
+}
+
+// Toggle sidebar collapse
+function toggleSb() {
+  const sb   = document.querySelector('.sidebar');
+  const main = document.querySelector('.main');
+  const tb   = document.querySelector('.topbar');
+  if (!sb) return;
+  sb.classList.toggle('collapsed');
+  main?.classList.toggle('collapsed');
+  tb?.classList.toggle('collapsed');
+}
+
+// Mobile menu
+function openMobileMenu() {
+  document.querySelector('.sidebar')?.classList.add('mobile-open');
+  document.getElementById('sb-overlay')?.classList.add('show');
+}
+
+// Sidebar search filter
+function sbSearch(q) {
+  const query = q.toLowerCase().trim();
+  document.querySelectorAll('.ni').forEach(btn => {
+    const label = btn.querySelector('.lbl')?.textContent?.toLowerCase() || '';
+    btn.style.display = (!query || label.includes(query)) ? '' : 'none';
+  });
+  document.querySelectorAll('.nsec').forEach(sec => {
+    sec.style.display = query ? 'none' : '';
+  });
+}
+
+// Tab switching (within panels)
+function switchTab(tab, group) {
+  group = group || 'default';
+  document.querySelectorAll('[data-tab-group="' + group + '"]').forEach(el => {
+    el.classList.toggle('on', el.dataset.tab === tab);
+  });
+  document.querySelectorAll('[data-tab-panel-group="' + group + '"]').forEach(el => {
+    el.style.display = el.dataset.tabPanel === tab ? '' : 'none';
+  });
+}
+
+// Logout
+function doLogout() {
+  sessionStorage.removeItem('ok');
+  sessionStorage.removeItem('admin_role');
+  sessionStorage.removeItem('admin_username');
+  sessionStorage.removeItem('admin_user_json');
+  _currentUser = null;
+  window._allowedPanels = null;
+  window._currentRole = null;
+  location.reload();
+}
+
+
 const ROLE_ACCESS = {
   owner: {
     panels: '*',
