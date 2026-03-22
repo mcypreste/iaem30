@@ -2345,6 +2345,78 @@ const SL_FN='https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/';
 const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
 const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
 
+// ═══════════════════════════════════════
+// FUNÇÕES BASE — SUPABASE + UTILITÁRIOS
+// ═══════════════════════════════════════
+
+// SHA-256 via WebCrypto
+async function sha256(text){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Buscar hash da senha do config (legacy fallback)
+async function getHash(){
+  const rows=await sbGet('iaem30_config','?id=eq.1&select=config');
+  return rows&&rows[0]?rows[0].config?.adminPasswordHash||rows[0].config?.admin_password_hash||''  :'';
+}
+
+// API helpers
+async function sbGet(t,q=''){
+  try{const r=await fetch(SB+'/rest/v1/'+t+q,{headers:H});return r.ok?r.json():null;}catch{return null;}
+}
+async function sbPost(t,d){
+  try{const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:{...H,Prefer:'return=representation'},body:JSON.stringify(d)});const rows=r.ok?await r.json():null;return rows&&rows[0]?rows[0]:null;}catch{return null;}
+}
+async function sbPatch(t,q,d){
+  try{await fetch(SB+'/rest/v1/'+t+q,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(d)});}catch{}
+}
+async function sbDelete(t,q){
+  try{await fetch(SB+'/rest/v1/'+t+q,{method:'DELETE',headers:H});}catch{}
+}
+
+// Toast notification
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  if(!el)return;
+  el.textContent=msg;
+  el.className='show'+(type==='error'?' error':'');
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>el.className='',3000);
+}
+
+// Escape HTML
+function escHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Log activity
+async function logActivity(action,section,detail,icon){
+  if(!_currentUser) return;
+  sbPost('iaem30_activity_log',{
+    user_id:_currentUser.id,
+    username:_currentUser.username||_currentUser.name||'admin',
+    action, section:section||'', detail:detail||'', icon:icon||'📋'
+  });
+}
+
+// Copy to clipboard
+function copyText(text){
+  navigator.clipboard.writeText(text).then(()=>toast('✓ Copiado!')).catch(()=>{});
+}
+
+// Format date BR
+function fmtDate(iso){
+  if(!iso) return '—';
+  return new Date(iso).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+// Format currency
+function fmtBRL(v){
+  return 'R$'+(Number(v)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+
 // ═══════════════════════════════════════════════════════════
 // SUPABASE REALTIME — WebSocket (protocolo Phoenix correto)
 // ═══════════════════════════════════════════════════════════
