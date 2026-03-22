@@ -2507,9 +2507,32 @@ async function doLogin(){
     // 2. Legacy fallback — admin/senha original
     const sh = await getHash();
     if(u==='admin' && hash===sh){
+      // Also check iaem30_admin_users for admin user with this password
+      const adminRows = await sbGet('iaem30_admin_users','?username=eq.admin&select=id,username,name,email,role,avatar,password_hash');
+      if(adminRows && adminRows[0] && adminRows[0].password_hash === hash){
+        const user = adminRows[0];
+        sessionStorage.removeItem('admin_role');
+        sessionStorage.removeItem('admin_user_json');
+        sessionStorage.setItem('ok','1');
+        sessionStorage.setItem('admin_username', user.username);
+        sessionStorage.setItem('admin_role', user.role);
+        sessionStorage.setItem('admin_user_json', JSON.stringify(user));
+        _currentUser = user;
+        sbPatch('iaem30_admin_users','?id=eq.'+user.id,{last_login:new Date().toISOString()});
+        window._currentRole = user.role;
+        window._allowedPanels = null;
+        applyRoleAccess(user.role);
+        document.getElementById('login').style.display='none';
+        document.getElementById('admin').style.display='flex';
+        await boot();
+        return;
+      }
+      // Pure legacy fallback (no DB user)
       sessionStorage.setItem('ok','1');
       sessionStorage.setItem('admin_username','admin');
       sessionStorage.setItem('admin_role','owner');
+      window._currentRole = 'owner';
+      window._allowedPanels = null;
       applyRoleAccess('owner');
       document.getElementById('login').style.display='none';
       document.getElementById('admin').style.display='flex';
@@ -4705,6 +4728,9 @@ async function loadContacts() {
   if (!rows.length) { el.innerHTML = '<div style="padding:12px;color:var(--fg4);font-size:12px">Nenhum outro usuário</div>'; return; }
 
   const others = rows.filter(u => u.id !== _currentUser?.id);
+  if (!others.length) {
+    el.innerHTML = '<div style="padding:12px;text-align:center;color:var(--fg4);font-size:11px;line-height:1.6">Nenhum outro membro ainda.<br>Adicione usuários em Equipe.</div>';
+  } else {
   el.innerHTML = others.map(u => {
     const avatarHtml = u.avatar && u.avatar.startsWith('data:')
       ? `<div style="width:34px;height:34px;border-radius:50%;background:url('${u.avatar}') center/cover;flex-shrink:0"></div>`
@@ -4720,7 +4746,8 @@ async function loadContacts() {
     </div>`;
   }).join('');
 
-  // Select general by default
+  } // end if others.length
+  // Always select general channel by default
   selectMsgContact('all');
 
   // Start polling for new messages
@@ -4745,15 +4772,14 @@ async function selectMsgContact(userId, name, role, avatar) {
   const hdrName = document.getElementById('chat-contact-name');
   const hdrRole = document.getElementById('chat-contact-role');
   const hdrAvatar = document.getElementById('chat-contact-avatar');
+  const allBtn = document.getElementById('msg-btn-all');
   if (userId === 'all') {
     if (hdrName) hdrName.textContent = 'Canal Geral';
     if (hdrRole) hdrRole.textContent = 'Mensagens para toda a equipe';
-    if (hdrAvatar) hdrAvatar.innerHTML = '📢';
-    document.getElementById('msg-btn-all').style.background = 'var(--amberbg)';
-    document.getElementById('msg-btn-all').style.color = 'var(--amber)';
+    if (hdrAvatar) { hdrAvatar.innerHTML = '📢'; hdrAvatar.style.cssText = 'width:32px;height:32px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0'; }
+    if (allBtn) { allBtn.style.background = 'var(--amberbg)'; allBtn.style.color = 'var(--amber)'; allBtn.style.borderColor = 'var(--amber)'; }
   } else {
-    document.getElementById('msg-btn-all').style.background = '';
-    document.getElementById('msg-btn-all').style.color = '';
+    if (allBtn) { allBtn.style.background = ''; allBtn.style.color = ''; allBtn.style.borderColor = ''; }
     if (hdrName) hdrName.textContent = name || 'Usuário';
     if (hdrRole) hdrRole.textContent = role || '';
     if (hdrAvatar) {
@@ -4787,7 +4813,12 @@ async function loadMessages() {
   const rows = await sbGet('iaem30_team_messages', query);
 
   if (!rows || !rows.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--fg4);font-size:13px;padding:30px">Nenhuma mensagem ainda. Diga olá! 👋</div>';
+    const chanName = _currentContact === 'all' ? 'Canal Geral' : 'esta conversa';
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px">
+      <div style="font-size:32px;margin-bottom:10px">💬</div>
+      <div style="font-size:13px;font-weight:600;color:var(--fg);margin-bottom:4px">Nenhuma mensagem em ${chanName}</div>
+      <div style="font-size:12px;color:var(--fg4)">Seja o primeiro a enviar uma mensagem!</div>
+    </div>`;
     return;
   }
 
@@ -4942,7 +4973,8 @@ function applyRoleAccess(role) {
   addRoleBadge(role);
 
   // ── 5. Block go() for restricted panels ──
-  window._allowedPanels = access.panels === '*' ? null : access.panels;
+  // owner always gets null (unrestricted), others get their panel list
+  window._allowedPanels = (role === 'owner' || access.panels === '*') ? null : access.panels;
 
   // ── 6. Ensure equipe button visible for all roles (it's controlled by sub-tabs inside) ──
   document.querySelectorAll('.ni').forEach(btn => {
@@ -4977,12 +5009,14 @@ function addRoleBadge(role) {
 
 // Restore role on page reload (after DOM ready)
 document.addEventListener('DOMContentLoaded', function() {
-  const role = sessionStorage.getItem('admin_role');
+  const ok = sessionStorage.getItem('ok');
+  if (!ok) return; // not logged in
+  const role = sessionStorage.getItem('admin_role') || 'owner'; // default owner for legacy sessions
   const userJson = sessionStorage.getItem('admin_user_json');
-  if (role) {
-    if (userJson) try { _currentUser = JSON.parse(userJson); } catch(e) {}
-    setTimeout(() => applyRoleAccess(role), 150);
-  }
+  if (userJson) try { _currentUser = JSON.parse(userJson); } catch(e) {}
+  window._currentRole = role;
+  window._allowedPanels = (role === 'owner') ? null : (ROLE_ACCESS[role]?.panels === '*' ? null : ROLE_ACCESS[role]?.panels || null);
+  setTimeout(() => applyRoleAccess(role), 100);
 });
 
 // ═══════════════════════════════════════
