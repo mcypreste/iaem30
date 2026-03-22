@@ -6335,37 +6335,6 @@ async function openInboxSession(sessionId) {
 
 let _lastInboxMsgId = null;
 
-async function loadInboxMessages(sessionId) {
-  const msgs = await sbGet('iaem30_chat_messages', '?session_id=eq.'+sessionId+'&order=created_at.asc&limit=80');
-  const el = document.getElementById('inbox-messages');
-  if (!el) return;
-  if (!msgs || !msgs.length) {
-    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--fg4);font-size:13px">Nenhuma mensagem ainda</div>';
-    return;
-  }
-  el.innerHTML = msgs.map(m => renderInboxMsg(m)).join('');
-  el.scrollTop = el.scrollHeight;
-  _lastInboxMsgId = msgs[msgs.length-1].id;
-}
-
-function renderInboxMsg(m) {
-  const isVisitor = m.sender === 'visitor';
-  const isBot = m.sender === 'bot';
-  const time = new Date(m.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-  const colors = { visitor:'var(--ink)', agent:'var(--blue)', bot:'var(--fg3)' };
-  const bgs = { visitor:'var(--ink)', agent:'var(--blue)', bot:'var(--bg3)' };
-  return `<div style="display:flex;gap:8px;align-items:flex-end;${!isVisitor ? 'flex-direction:row-reverse' : ''}">
-    <div style="width:28px;height:28px;border-radius:50%;background:${isVisitor ? 'var(--amberbg)' : isBot ? 'var(--bg3)' : 'var(--bluebg)'};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-bottom:2px;border:1px solid var(--line)">
-      ${isVisitor ? ((_inboxSession?.visitor_name||'V')[0].toUpperCase()) : isBot ? '🤖' : '👤'}
-    </div>
-    <div style="max-width:68%">
-      ${!isVisitor ? '<div style="font-size:10px;color:var(--fg4);margin-bottom:3px;text-align:right">'+(m.agent_name||'Equipe')+'</div>' : ''}
-      <div style="padding:9px 13px;border-radius:${isVisitor ? '14px 14px 14px 4px' : '14px 14px 4px 14px'};background:${isVisitor ? 'var(--bg2)' : isBot ? 'var(--bg3)' : 'var(--blue)'};color:${isVisitor ? 'var(--fg)' : isBot ? 'var(--fg3)' : '#fff'};font-size:13px;line-height:1.55;border:${isVisitor ? '1px solid var(--line)' : 'none'};word-break:break-word">${escInbox(m.content)}</div>
-      <div style="font-size:10px;color:var(--fg4);margin-top:3px;${!isVisitor ? 'text-align:right' : ''}">${time}</div>
-    </div>
-  </div>`;
-}
-
 async function pollInboxSession(sessionId) {
   const msgs = await sbGet('iaem30_chat_messages', '?session_id=eq.'+sessionId+'&order=created_at.asc&limit=80');
   if (!msgs || !msgs.length) return;
@@ -6436,16 +6405,6 @@ async function markAsSpam(sessionId) {
   document.getElementById('inbox-chat-header').innerHTML = '<div style="flex:1;text-align:center;color:var(--fg4);font-size:13px">Selecione uma conversa</div>';
   toast('Marcado como spam');
   loadInbox();
-}
-
-async function updateInboxBadge() {
-  const rows = await sbGet('iaem30_chat_sessions', '?status=eq.open&select=id');
-  const count = rows?.length || 0;
-  const badge = document.getElementById('inbox-badge');
-  if (badge) {
-    badge.textContent = count;
-    badge.style.display = count > 0 ? 'flex' : 'none';
-  }
 }
 
 function escInbox(str) {
