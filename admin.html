@@ -899,20 +899,8 @@ code, .mono {
 
   <!-- Footer -->
   <div class="sb-footer">
-    <button class="ni" onclick="go('livechat',this)">
-      <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
-      <span class="lbl">Live Chat</span>
-      <span class="badge" id="lc-admin-badge" style="display:none">0</span>
-    </button>
-    <button class="ni" onclick="go('chat-suporte',this)" id="nav-chat-suporte">
-      <span class="ico">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-        </svg>
-      </span>
-      <span class="lbl">Suporte Chat</span>
-      <span class="badge" id="chat-suporte-badge" style="display:none">0</span>
-    </button>
+    
+    
     <button class="ni" onclick="go('equipe',this)">
       <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
       <span class="lbl">Equipe & Perfil</span>
@@ -2063,338 +2051,6 @@ code, .mono {
 
     <!-- CONFIG -->
     <!-- ══ CHAT AO VIVO ══ -->
-<div class="panel" id="p-livechat">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h2>💬 Chat ao Vivo</h2>
-      <p>Conversas em tempo real com visitantes do site</p>
-    </div>
-    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
-      <div style="display:flex;gap:6px">
-        <button class="btn ghost" id="lc-filter-open" onclick="lcFilter('open')" style="padding:6px 12px;font-size:12px">Abertas</button>
-        <button class="btn ghost" id="lc-filter-assigned" onclick="lcFilter('assigned')" style="padding:6px 12px;font-size:12px">Em atendimento</button>
-        <button class="btn ghost" id="lc-filter-resolved" onclick="lcFilter('resolved')" style="padding:6px 12px;font-size:12px">Resolvidas</button>
-        <button class="btn ghost" id="lc-filter-all" onclick="lcFilter('all')" style="padding:6px 12px;font-size:12px">Todas</button>
-      </div>
-      <button class="btn ghost" onclick="loadLiveChat()" style="padding:6px 12px;font-size:12px">↻</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px)">
-    <!-- Lista de conversas -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
-        <input type="text" id="lc-search" placeholder="🔍 Buscar visitante..." oninput="lcSearch(this.value)"
-          style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;font-size:12.5px;outline:none;font-family:'Instrument Sans',sans-serif;color:var(--fg)">
-      </div>
-      <div id="lc-sessions" style="flex:1;overflow-y:auto">
-        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando conversas...</div>
-      </div>
-    </div>
-
-    <!-- Área de atendimento -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <!-- Estado vazio -->
-      <div id="lc-empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--fg4)">
-        <div style="font-size:48px;opacity:.3">💬</div>
-        <div style="font-size:14px;font-weight:600;color:var(--fg3)">Selecione uma conversa</div>
-        <div style="font-size:12px">As mensagens aparecerão aqui</div>
-      </div>
-
-      <!-- Chat ativo -->
-      <div id="lc-chat-active" style="display:none;flex-direction:column;height:100%">
-        <!-- Header da conversa -->
-        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:18px">👤</div>
-            <div>
-              <div id="lc-visitor-name" style="font-weight:700;font-size:13.5px;font-family:'Fraunces',serif;letter-spacing:-.01em"></div>
-              <div id="lc-visitor-info" style="font-size:11px;color:var(--fg4)"></div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <select id="lc-status-select" onchange="lcChangeStatus()" style="font-size:12px;padding:5px 8px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
-              <option value="open">🟡 Aberta</option>
-              <option value="assigned">🔵 Em atendimento</option>
-              <option value="resolved">✅ Resolvida</option>
-              <option value="closed">⛔ Fechada</option>
-            </select>
-            <button class="btn ghost" onclick="lcRefreshMessages()" style="padding:5px 10px;font-size:11px">↻</button>
-          </div>
-        </div>
-
-        <!-- Mensagens -->
-        <div id="lc-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
-
-        <!-- Input de resposta -->
-        <div style="padding:12px 16px;border-top:1px solid var(--line);flex-shrink:0">
-          <div style="display:flex;gap:8px">
-            <textarea id="lc-reply-input" placeholder="Digite sua resposta..." rows="2"
-              style="flex:1;padding:10px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;font-size:13.5px;outline:none;font-family:'Instrument Sans',sans-serif;color:var(--fg);resize:none;transition:border-color .2s"
-              onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''"
-              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSendReply()}"></textarea>
-            <button onclick="lcSendReply()" class="btn primary" style="align-self:flex-end;padding:10px 18px">
-              Enviar
-              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-            </button>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn ghost" onclick="lcQuickReply('Olá! Como posso te ajudar?')" style="font-size:11px;padding:4px 10px">👋 Saudação</button>
-            <button class="btn ghost" onclick="lcQuickReply('Obrigado pelo contato! Em breve retornaremos.')" style="font-size:11px;padding:4px 10px">⏳ Aguardar</button>
-            <button class="btn ghost" onclick="lcQuickReply('O link para acessar seu ebook está no email de confirmação da compra.')" style="font-size:11px;padding:4px 10px">📧 Link ebook</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ LIVE CHAT ══ -->
-<div class="panel" id="p-livechat">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h2>Live Chat</h2>
-      <p>Mensagens dos visitantes do site em tempo real</p>
-    </div>
-    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
-      <select id="lc-status-filter" onchange="lcLoadSessions()" style="font-size:12px;padding:6px 10px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
-        <option value="open">Abertas</option>
-        <option value="assigned">Em atendimento</option>
-        <option value="resolved">Resolvidas</option>
-        <option value="all">Todas</option>
-      </select>
-      <button class="btn ghost" onclick="lcLoadSessions()" style="padding:6px 12px;font-size:12px">↻</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px);min-height:500px">
-
-    <!-- Lista de sessões -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
-        <input type="text" id="lc-search" placeholder="Buscar visitante..." oninput="lcFilterSessions()"
-          style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;color:var(--fg);font-size:12px;outline:none;font-family:'Instrument Sans',sans-serif">
-      </div>
-      <div id="lc-sessions-list" style="flex:1;overflow-y:auto;padding:6px">
-        <div style="text-align:center;padding:24px;color:var(--fg4);font-size:12px">Carregando...</div>
-      </div>
-    </div>
-
-    <!-- Área de chat -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <!-- Header vazio (antes de selecionar) -->
-      <div id="lc-chat-empty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
-        <div style="font-size:40px;opacity:.2">💬</div>
-        <div style="font-size:13px">Selecione uma conversa para responder</div>
-      </div>
-
-      <!-- Chat ativo -->
-      <div id="lc-chat-active" style="display:none;flex-direction:column;height:100%">
-        <!-- Header do chat -->
-        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
-          <div id="lc-visitor-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);border:1px solid rgba(212,144,10,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
-          <div style="flex:1;min-width:0">
-            <div id="lc-visitor-name-hdr" style="font-weight:700;font-size:13.5px;color:var(--fg);font-family:'Fraunces',serif"></div>
-            <div id="lc-visitor-meta" style="font-size:11px;color:var(--fg4)"></div>
-          </div>
-          <div style="display:flex;gap:6px">
-            <button class="btn-sm ghost" onclick="lcAssignToMe()" style="font-size:11px;padding:4px 10px">👋 Assumir</button>
-            <button class="btn-sm success" onclick="lcResolve()" style="font-size:11px;padding:4px 10px">✓ Resolver</button>
-          </div>
-        </div>
-
-        <!-- Mensagens -->
-        <div id="lc-admin-messages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px"></div>
-
-        <!-- Input -->
-        <div style="padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end;flex-shrink:0">
-          <textarea id="lc-admin-input" placeholder="Digite sua resposta..." rows="1"
-            style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;color:var(--fg);font-size:13px;outline:none;resize:none;font-family:'Instrument Sans',sans-serif;max-height:100px;overflow-y:auto;line-height:1.5"
-            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcAdminSend()}"></textarea>
-          <button onclick="lcAdminSend()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-bottom:1px">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ══ INBOX — ATENDIMENTO ══ -->
-<div class="panel" id="p-inbox">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h2>Inbox — Atendimento</h2>
-      <p>Mensagens dos visitantes do site em tempo real</p>
-    </div>
-    <div class="page-header-right" style="display:flex;gap:8px">
-      <select id="inbox-filter" onchange="loadInbox()" style="font-size:12px;padding:6px 10px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
-        <option value="open">Abertas</option>
-        <option value="attending">Em atendimento</option>
-        <option value="resolved">Resolvidas</option>
-        <option value="">Todas</option>
-      </select>
-      <button class="btn ghost" onclick="loadInbox()" style="padding:6px 12px;font-size:12px">↻ Atualizar</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px)">
-
-    <!-- Lista de conversas -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
-        <input type="text" id="inbox-search" placeholder="Buscar por nome..." oninput="filterInboxList()" style="width:100%;padding:7px 10px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--fg);outline:none;font-family:inherit">
-      </div>
-      <div id="inbox-list" style="flex:1;overflow-y:auto">
-        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando conversas...</div>
-      </div>
-    </div>
-
-    <!-- Área de conversa -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <!-- Header da conversa -->
-      <div id="inbox-chat-header" style="padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
-        <div style="flex:1;text-align:center;color:var(--fg4);font-size:13px;padding:20px">
-          Selecione uma conversa
-        </div>
-      </div>
-      <!-- Mensagens -->
-      <div id="inbox-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)">
-        <div style="text-align:center;color:var(--fg4);font-size:13px;padding:30px;opacity:.5">Nenhuma conversa selecionada</div>
-      </div>
-      <!-- Input de resposta -->
-      <div id="inbox-reply-area" style="padding:12px 16px;border-top:1px solid var(--line);display:none">
-        <div style="display:flex;gap:8px;align-items:flex-end">
-          <textarea id="inbox-input" placeholder="Digite sua resposta..." rows="2" style="flex:1;padding:9px 12px;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;color:var(--fg);font-size:13px;outline:none;font-family:inherit;resize:none;line-height:1.5" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendInboxReply()}"></textarea>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <button onclick="sendInboxReply()" class="btn primary" style="padding:9px 16px;font-size:12.5px">Enviar</button>
-            <button onclick="resolveSession()" class="btn success" style="padding:6px 10px;font-size:11px" id="btn-resolve">✓ Resolver</button>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap" id="quick-replies">
-          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Olá! Pode me contar mais?</button>
-          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Vou verificar e retorno!</button>
-          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">O ebook já está disponível 🎉</button>
-          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Tem garantia de 7 dias!</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ EQUIPE & PERFIL ══ -->
-<!-- ══ SUPORTE CHAT ══ -->
-<div class="panel" id="p-chat-suporte">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h2>Suporte ao Vivo</h2>
-      <p>Responda visitantes do site em tempo real</p>
-    </div>
-    <div class="page-header-right">
-      <button class="btn ghost" onclick="loadChatSessions()" style="font-size:12px">↻ Atualizar</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px);min-height:500px">
-
-    <!-- Lista de conversas -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <!-- Filtros -->
-      <div style="padding:12px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;gap:6px">
-        <button class="btn ghost chat-filter-btn active" data-filter="open,active" onclick="setChatFilter(this,'open,active')" style="flex:1;font-size:11px;padding:5px">🟢 Abertas</button>
-        <button class="btn ghost chat-filter-btn" data-filter="closed" onclick="setChatFilter(this,'closed')" style="flex:1;font-size:11px;padding:5px">✓ Fechadas</button>
-        <button class="btn ghost chat-filter-btn" data-filter="all" onclick="setChatFilter(this,'all')" style="flex:1;font-size:11px;padding:5px">Todas</button>
-      </div>
-      <!-- Sessions list -->
-      <div id="chat-sessions-list" style="flex:1;overflow-y:auto;padding:6px">
-        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:12px">Carregando...</div>
-      </div>
-    </div>
-
-    <!-- Área de conversa -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="chat-convo-panel">
-      <!-- Empty state -->
-      <div id="chat-empty-state" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
-        <div style="font-size:40px;opacity:.3">💬</div>
-        <div style="font-size:13px">Selecione uma conversa</div>
-      </div>
-
-      <!-- Conversation view (hidden until selected) -->
-      <div id="chat-convo-view" style="display:none;flex-direction:column;height:100%">
-        <!-- Visitor info header -->
-        <div style="padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
-          <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
-          <div style="flex:1;min-width:0">
-            <div id="convo-visitor-name" style="font-weight:700;font-size:13px;color:var(--fg)">Visitante</div>
-            <div id="convo-visitor-email" style="font-size:11px;color:var(--fg4)"></div>
-          </div>
-          <div style="display:flex;gap:6px;flex-shrink:0">
-            <span id="convo-status-badge" class="tag green">Ativo</span>
-            <button class="btn danger" onclick="closeSession()" style="font-size:11px;padding:5px 10px">Fechar</button>
-          </div>
-        </div>
-
-        <!-- Messages -->
-        <div id="admin-chat-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
-
-        <!-- Agent reply input -->
-        <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-shrink:0">
-          <input type="text" id="agent-msg-input" placeholder="Digite sua resposta..."
-            style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif;transition:border-color .2s"
-            onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAgentMsg()}">
-          <button onclick="sendAgentMsg()" style="width:36px;height:36px;border-radius:50%;background:var(--fg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='var(--fg2)'" onmouseout="this.style.background='var(--fg)'">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--bg1)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ SUPORTE AO CLIENTE ══ -->
-<div class="panel" id="p-suporte">
-  <div class="page-header">
-    <div class="page-header-left">
-      <h2>Suporte ao Cliente</h2>
-      <p>Atenda visitantes do site em tempo real</p>
-    </div>
-    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
-      <div style="display:flex;gap:6px">
-        <button class="btn ghost" id="filter-open" onclick="filterChats('open')" style="font-size:11px;padding:5px 12px">🟡 Abertos</button>
-        <button class="btn ghost" id="filter-attending" onclick="filterChats('attending')" style="font-size:11px;padding:5px 12px">🔵 Em atendimento</button>
-        <button class="btn ghost" id="filter-resolved" onclick="filterChats('resolved')" style="font-size:11px;padding:5px 12px">✅ Resolvidos</button>
-        <button class="btn ghost" id="filter-all" onclick="filterChats('all')" style="font-size:11px;padding:5px 12px">Todos</button>
-      </div>
-      <button class="btn ghost" onclick="loadSupport()" style="font-size:11px;padding:5px 10px">↻</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 180px)">
-
-    <!-- Lista de conversas -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
-      <div style="padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0">
-        <input type="text" id="support-search" placeholder="Buscar visitante..." oninput="filterChatSearch(this.value)" style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;font-size:12px;color:var(--fg);outline:none;font-family:'Instrument Sans',sans-serif">
-      </div>
-      <div id="chats-list" style="flex:1;overflow-y:auto">
-        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando...</div>
-      </div>
-    </div>
-
-    <!-- Área de atendimento -->
-    <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="support-chat-area">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
-        <div style="font-size:40px;opacity:.2">💬</div>
-        <div style="font-size:14px">Selecione uma conversa</div>
-        <div style="font-size:12px">para começar a atender</div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="panel" id="p-equipe">
   <div class="page-header">
     <div class="page-header-left">
@@ -3977,34 +3633,7 @@ async function loadAIStats() {
   });
 }
 
-async function loadAIChats() {
-  loadAIStats();
-  const rows = await sbGet('iaem30_ai_chats', '?order=created_at.desc&limit=200');
-  const el = document.getElementById('ai-chats-list');
-  if (!el) return;
-  if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">💬</div>Nenhuma conversa ainda.</div>'; return; }
 
-  // Group by session
-  const sessions = {};
-  rows.forEach(r => {
-    if (!sessions[r.session_id]) sessions[r.session_id] = [];
-    sessions[r.session_id].push(r);
-  });
-
-  const html = Object.entries(sessions).slice(0,20).map(([sid, msgs]) => `
-    <div style="border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden">
-      <div style="background:var(--bg);padding:10px 14px;font-size:11px;color:var(--fg4);display:flex;justify-content:space-between">
-        <span>Sessão: ${sid.slice(0,16)}...</span>
-        <span>${msgs.length} mensagens · ${new Date(msgs[msgs.length-1].created_at).toLocaleDateString('pt-BR')}</span>
-      </div>
-      ${msgs.slice(0,4).map(m => `
-        <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-start">
-          <span style="font-size:16px;flex-shrink:0">${m.role==='user'?'👤':'🤖'}</span>
-          <span style="font-size:12px;color:${m.role==='user'?'var(--t)':'var(--m)'};">${m.content.slice(0,120)}${m.content.length>120?'...':''}</span>
-        </div>`).join('')}
-    </div>`).join('');
-  el.innerHTML = html || '<div class="empty">Nenhuma conversa.</div>';
-}
 
 async function loadNicheLeads() {
   const rows = await sbGet('iaem30_niche_leads', '?order=created_at.desc&limit=100');
@@ -5239,121 +4868,13 @@ let _activeSessId    = null;
 let _chatAdminPoll   = null;
 let _chatLastAdminId = null;
 
-async function loadChatSessions() {
-  const el = document.getElementById('chat-sessions-list');
-  if (!el) return;
 
-  let url = SB + '/rest/v1/iaem30_chat_sessions?order=last_msg_at.desc&limit=50&select=*';
-  if (_chatFilter !== 'all') {
-    const statuses = _chatFilter.split(',');
-    url += '&status=in.(' + statuses.join(',') + ')';
-  }
 
-  const rows = await sbGet('iaem30_chat_sessions', url.replace(SB + '/rest/v1/iaem30_chat_sessions', ''));
-  if (!rows) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar</div>'; return; }
 
-  // Count unread (open sessions)
-  const openCount = (rows || []).filter(s => s.status !== 'closed').length;
-  const badge = document.getElementById('chat-suporte-badge');
-  if (badge) { badge.style.display = openCount > 0 ? '' : 'none'; badge.textContent = openCount; }
 
-  if (!rows.length) {
-    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:12px">Nenhuma conversa</div>';
-    return;
-  }
 
-  el.innerHTML = rows.map(s => {
-    const time = new Date(s.last_msg_at).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    const statusColors = {open:'var(--amber)',active:'var(--green)',closed:'var(--fg4)'};
-    const statusLabels = {open:'Aberta',active:'Ativa',closed:'Fechada'};
-    const active = _activeSessId === s.id;
-    return `<div onclick="openChatSession('${s.id}','${escHtml(s.visitor_name)}','${s.visitor_email||''}','${s.status}')"
-      style="padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background .1s;border:1px solid ${active ? 'rgba(212,144,10,.3)' : 'transparent'};background:${active ? 'var(--amberbg)' : 'transparent'}"
-      onmouseover="if('${s.id}'!=='${_activeSessId}')this.style.background='var(--bg2)'"
-      onmouseout="if('${s.id}'!=='${_activeSessId}')this.style.background='transparent'">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-        <span style="font-weight:600;font-size:12.5px;color:var(--fg);flex:1">${escHtml(s.visitor_name)}</span>
-        <span style="font-size:10px;font-weight:600;color:${statusColors[s.status]||'var(--fg4)'}">${statusLabels[s.status]||s.status}</span>
-      </div>
-      ${s.visitor_email ? `<div style="font-size:11px;color:var(--fg4);margin-bottom:3px">${escHtml(s.visitor_email)}</div>` : ''}
-      <div style="font-size:10px;color:var(--fg4)">${time}</div>
-    </div>`;
-  }).join('');
-}
 
-function setChatFilter(btn, filter) {
-  _chatFilter = filter;
-  document.querySelectorAll('.chat-filter-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  loadChatSessions();
-}
 
-async function openChatSession(sessId, name, email, status) {
-  _activeSessId    = sessId;
-  _chatLastAdminId = null;
-
-  // Update UI
-  document.getElementById('chat-empty-state').style.display  = 'none';
-  document.getElementById('chat-convo-view').style.display    = 'flex';
-  document.getElementById('convo-visitor-name').textContent   = name;
-  document.getElementById('convo-visitor-email').textContent  = email;
-  document.getElementById('admin-chat-msgs').innerHTML        = '';
-
-  const statusBadge = document.getElementById('convo-status-badge');
-  if (statusBadge) {
-    statusBadge.textContent = status === 'closed' ? 'Fechada' : status === 'active' ? 'Ativa' : 'Aberta';
-    statusBadge.className = 'tag ' + (status === 'closed' ? 'default' : status === 'active' ? 'green' : 'yellow');
-  }
-
-  // Highlight in list
-  loadChatSessions();
-  await loadAdminChatMsgs(true);
-
-  // Polling
-  if (_chatAdminPoll) clearInterval(_chatAdminPoll);
-  _chatAdminPoll = setInterval(() => loadAdminChatMsgs(false), 3000);
-
-  // Mark as read by agent
-  fetch(SB + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + sessId + '&sender=eq.visitor', {
-    method: 'PATCH', headers: { ...SB_H, Prefer: 'return=minimal' },
-    body: JSON.stringify({ read_by_agent: true })
-  });
-}
-
-async function loadAdminChatMsgs(full) {
-  if (!_activeSessId) return;
-  const el = document.getElementById('admin-chat-msgs');
-  if (!el) return;
-
-  let query = '?session_id=eq.' + _activeSessId + '&order=created_at.asc&limit=100';
-  if (!full && _chatLastAdminId) query += '&id=gt.' + _chatLastAdminId;
-
-  const rows = await sbGet('iaem30_chat_live_messages', query);
-  if (!rows || !rows.length) return;
-
-  const wasBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
-  rows.forEach(msg => {
-    if (document.getElementById('amsg-' + msg.id)) return;
-    const div = document.createElement('div');
-    div.id = 'amsg-' + msg.id;
-    const isAgent   = msg.sender === 'agent';
-    const t = new Date(msg.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
-    div.style.cssText = `display:flex;gap:8px;align-items:flex-end;${isAgent?'flex-direction:row-reverse;':''}max-width:85%;${isAgent?'align-self:flex-end':'align-self:flex-start'}`;
-    const avatarHtml = isAgent
-      ? (_currentUser?.avatar && _currentUser.avatar.startsWith('data:')
-          ? `<div style="width:26px;height:26px;border-radius:50%;background:url('${_currentUser.avatar}') center/cover;flex-shrink:0"></div>`
-          : `<div style="width:26px;height:26px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🤖</div>`)
-      : `<div style="width:26px;height:26px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">👤</div>`;
-    const bubbleStyle = isAgent
-      ? 'background:var(--fg);color:var(--bg1);border-radius:14px 14px 4px 14px;'
-      : 'background:var(--bg3);color:var(--fg);border:1px solid var(--line);border-radius:14px 14px 14px 4px;';
-    div.innerHTML = avatarHtml + `<div><div style="padding:8px 12px;font-size:13px;line-height:1.5;word-break:break-word;${bubbleStyle}">${escHtml(msg.content)}</div><div style="font-size:10px;color:var(--fg4);margin-top:3px;${isAgent?'text-align:right':''}">${t}${msg.sender==='agent'&&msg.agent_name?' · '+escHtml(msg.agent_name):''}</div></div>`;
-    el.appendChild(div);
-  });
-
-  _chatLastAdminId = rows[rows.length - 1].id;
-  if (wasBottom) el.scrollTop = el.scrollHeight;
-}
 
 async function sendAgentMsg() {
   if (!_activeSessId || !_currentUser) return;
@@ -5431,112 +4952,13 @@ function updateSupportBadge() {
   }
 }
 
-function renderChatsList(chats) {
-  const el = document.getElementById('chats-list');
-  if (!el) return;
-  if (!chats.length) {
-    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Nenhuma conversa</div>';
-    return;
-  }
-  const statusColor = { open:'var(--yellow)', attending:'var(--blue)', resolved:'var(--green)', closed:'var(--fg4)' };
-  const statusLabel = { open:'Aberto', attending:'Em atendimento', resolved:'Resolvido', closed:'Encerrado' };
-  el.innerHTML = chats.map(c => {
-    const time = c.last_message_at ? new Date(c.last_message_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-    const isActive = c.id === _activeChatId;
-    return `<div onclick="openSupportChat('${c.id}')" style="padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;background:${isActive?'var(--amberbg)':'transparent'};transition:background .1s${c.unread_admin>0?';font-weight:500':''}"
-      onmouseover="if('${c.id}'!=='${_activeChatId}')this.style.background='var(--bg2)'" onmouseout="this.style.background='${isActive?'var(--amberbg)':'transparent'}'">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:8px;height:8px;border-radius:50%;background:${statusColor[c.status]||'var(--fg4)'};flex-shrink:0"></div>
-          <span style="font-size:13px;font-weight:600;color:var(--fg)">${escHtml(c.visitor_name||'Visitante')}</span>
-          ${c.unread_admin>0?`<span style="background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">${c.unread_admin}</span>`:''}
-        </div>
-        <span style="font-size:10px;color:var(--fg4)">${time}</span>
-      </div>
-      <div style="font-size:12px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(c.last_message||'')}</div>
-      ${c.visitor_email?`<div style="font-size:11px;color:var(--fg4);margin-top:2px">${escHtml(c.visitor_email)}</div>`:''}
-    </div>`;
-  }).join('');
-}
 
-function filterChats(status) {
-  _supportFilter = status;
-  ['open','attending','resolved','all'].forEach(s => {
-    const btn = document.getElementById('filter-' + s);
-    if (btn) {
-      btn.style.background = s === status ? 'var(--amberbg)' : '';
-      btn.style.color = s === status ? 'var(--amber)' : '';
-      btn.style.borderColor = s === status ? 'rgba(212,144,10,.3)' : '';
-    }
-  });
-  loadSupport();
-}
 
-function filterChatSearch(query) {
-  if (!query) { renderChatsList(_supportChats); return; }
-  const q = query.toLowerCase();
-  renderChatsList(_supportChats.filter(c =>
-    (c.visitor_name||'').toLowerCase().includes(q) ||
-    (c.visitor_email||'').toLowerCase().includes(q) ||
-    (c.last_message||'').toLowerCase().includes(q)
-  ));
-}
 
-async function openSupportChat(chatId) {
-  _activeChatId = chatId;
-  _lastSupportMsgId = null;
-  renderChatsList(_supportChats); // re-render to highlight active
 
-  const chat = _supportChats.find(c => c.id === chatId);
-  if (!chat) return;
 
-  const area = document.getElementById('support-chat-area');
-  if (!area) return;
 
-  // Render chat UI
-  area.innerHTML = `
-    <!-- Header -->
-    <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
-      <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);border:1px solid rgba(212,144,10,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:13px;color:var(--fg)">${escHtml(chat.visitor_name||'Visitante')}</div>
-        <div style="font-size:11px;color:var(--fg4)">${chat.visitor_email||'Sem email'} · ${new Date(chat.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        ${chat.status==='open'?`<button class="btn success" onclick="changeStatus('${chatId}','attending')" style="font-size:11px;padding:5px 10px">▶ Assumir</button>`:''}
-        ${chat.status==='attending'?`<button class="btn success" onclick="changeStatus('${chatId}','resolved')" style="font-size:11px;padding:5px 10px">✓ Resolver</button>`:''}
-        ${chat.status!=='closed'?`<button class="btn ghost" onclick="changeStatus('${chatId}','closed')" style="font-size:11px;padding:5px 10px">Encerrar</button>`:''}
-      </div>
-    </div>
-    <!-- Messages -->
-    <div id="support-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)"></div>
-    <!-- Input -->
-    <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0;background:var(--bg1)">
-      <input type="text" id="support-input" placeholder="Digite uma resposta..." style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif;transition:border-color .15s"
-        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSupportMsg()}"
-        onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''">
-      <button onclick="sendSupportMsg()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='var(--amber2)'" onmouseout="this.style.background='var(--amber)'">
-        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-      </button>
-    </div>
-  `;
 
-  // Load messages
-  await loadSupportMessages(true);
-
-  // Mark as read
-  await sbPatch('iaem30_support_chats', '?id=eq.' + chatId, { unread_admin: 0 });
-  const chatObj = _supportChats.find(c => c.id === chatId);
-  if (chatObj) chatObj.unread_admin = 0;
-  updateSupportBadge();
-
-  // Start polling
-  if (_supportPoll) clearInterval(_supportPoll);
-  _supportPoll = setInterval(() => {
-    if (_activeChatId === chatId) loadSupportMessages(false);
-    else clearInterval(_supportPoll);
-  }, 3000);
-}
 
 async function loadSupportMessages(initial) {
   let q = '?chat_id=eq.' + _activeChatId + '&order=created_at.asc';
@@ -6252,127 +5674,17 @@ let _inboxSessions = [];   // cache da lista
 // loadInbox defined below
 
 
-function renderInboxList(sessions) {
-  const el = document.getElementById('inbox-list');
-  if (!el) return;
-  if (!sessions.length) {
-    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Nenhuma conversa</div>';
-    return;
-  }
-  el.innerHTML = sessions.map(s => {
-    const isActive = _inboxSession?.id === s.id;
-    const time = new Date(s.last_msg_at).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    const statusColors = { open:'var(--amber)', attending:'var(--blue)', resolved:'var(--green)', spam:'var(--red)' };
-    const statusLabels = { open:'Aberta', attending:'Atendendo', resolved:'Resolvida', spam:'Spam' };
-    return `<div onclick="openInboxSession('${s.id}')" style="padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;${isActive ? 'background:var(--amberbg);border-left:2px solid var(--amber);' : ''}" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='${isActive ? 'var(--amberbg)' : ''}'">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-        <span style="font-weight:600;font-size:13px;color:var(--fg)">${escInbox(s.visitor_name)}</span>
-        <span style="font-size:10px;color:var(--fg4);flex-shrink:0;margin-left:6px">${time}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:100px;background:${statusColors[s.status]}22;color:${statusColors[s.status]}">${statusLabels[s.status]||s.status}</span>
-        ${s.visitor_email ? '<span style="font-size:11px;color:var(--fg4)">'+escInbox(s.visitor_email)+'</span>' : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
 
-function filterInboxList() {
-  const q = (document.getElementById('inbox-search')?.value || '').toLowerCase();
-  const filtered = _inboxSessions.filter(s => s.visitor_name.toLowerCase().includes(q) || (s.visitor_email||'').toLowerCase().includes(q));
-  renderInboxList(filtered);
-}
 
-async function openInboxSession(sessionId) {
-  const session = _inboxSessions.find(s => s.id === sessionId);
-  if (!session) return;
-  _inboxSession = session;
 
-  // Update header
-  const hdr = document.getElementById('inbox-chat-header');
-  const statusColors = { open:'var(--amber)', attending:'var(--blue)', resolved:'var(--green)', spam:'var(--red)' };
-  const statusLabels = { open:'Aberta', attending:'Em atendimento', resolved:'Resolvida', spam:'Spam' };
-  hdr.innerHTML = `
-    <div style="width:38px;height:38px;border-radius:50%;background:var(--amberbg);border:1.5px solid rgba(232,160,32,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${session.visitor_name[0].toUpperCase()}</div>
-    <div style="flex:1">
-      <div style="font-weight:700;font-size:14px;color:var(--fg);letter-spacing:-.02em">${escInbox(session.visitor_name)}</div>
-      <div style="font-size:11px;color:var(--fg4);display:flex;gap:8px;align-items:center">
-        <span style="padding:1px 7px;border-radius:100px;background:${statusColors[session.status]}22;color:${statusColors[session.status]};font-weight:600">${statusLabels[session.status]}</span>
-        ${session.visitor_email ? '<span>'+escInbox(session.visitor_email)+'</span>' : ''}
-        <span>${new Date(session.created_at).toLocaleDateString('pt-BR')}</span>
-      </div>
-    </div>
-    <div style="display:flex;gap:6px">
-      <button class="btn ghost" onclick="markAsSpam('${session.id}')" style="font-size:11px;padding:4px 10px">🚫 Spam</button>
-      <button class="btn secondary" onclick="assignToMe('${session.id}')" style="font-size:11px;padding:4px 10px">Assumir</button>
-    </div>`;
 
-  // Show reply area
-  const replyArea = document.getElementById('inbox-reply-area');
-  if (replyArea) replyArea.style.display = session.status === 'resolved' ? 'none' : '';
 
-  // Resolve button
-  const btnResolve = document.getElementById('btn-resolve');
-  if (btnResolve) btnResolve.style.display = session.status === 'resolved' ? 'none' : '';
-
-  // Load messages
-  await loadInboxMessages(sessionId);
-
-  // Mark as attending if open
-  if (session.status === 'open') {
-    await sbPatch('iaem30_chat_sessions', 'id=eq.'+sessionId, { status: 'attending' });
-    session.status = 'attending';
-    renderInboxList(_inboxSessions);
-  }
-
-  // Mark agent messages as read
-  await sbPatch('iaem30_chat_messages', 'session_id=eq.'+sessionId+'&sender=eq.visitor&read_by_agent=eq.false', { read_by_agent: true });
-
-  // Start polling for this session
-  if (_inboxPoll) clearInterval(_inboxPoll);
-  _inboxPoll = setInterval(() => pollInboxSession(sessionId), 4000);
-}
 
 let _lastInboxMsgId = null;
 
-async function pollInboxSession(sessionId) {
-  const msgs = await sbGet('iaem30_chat_messages', '?session_id=eq.'+sessionId+'&order=created_at.asc&limit=80');
-  if (!msgs || !msgs.length) return;
-  const last = msgs[msgs.length-1];
-  if (last.id !== _lastInboxMsgId) {
-    const el = document.getElementById('inbox-messages');
-    if (el) {
-      el.innerHTML = msgs.map(m => renderInboxMsg(m)).join('');
-      el.scrollTop = el.scrollHeight;
-      _lastInboxMsgId = last.id;
-    }
-    // Mark visitor messages as read
-    await sbPatch('iaem30_chat_messages', 'session_id=eq.'+sessionId+'&sender=eq.visitor&read_by_agent=eq.false', { read_by_agent: true });
-  }
-  // Also refresh unread badge
-  updateInboxBadge();
-}
 
-async function sendInboxReply() {
-  if (!_inboxSession || !_currentUser) return;
-  const input = document.getElementById('inbox-input');
-  const content = input.value.trim();
-  if (!content) return;
-  input.value = '';
 
-  await sbPost('iaem30_chat_messages', {
-    session_id: _inboxSession.id,
-    sender: 'agent',
-    agent_id: _currentUser.id,
-    agent_name: _currentUser.name,
-    content,
-    read_by_visitor: false,
-    read_by_agent: true
-  });
-  await sbPatch('iaem30_chat_sessions', 'id=eq.'+_inboxSession.id, { last_msg_at: new Date().toISOString() });
-  logActivity('Respondeu no chat', 'inbox', _inboxSession.visitor_name, '💬');
-  await loadInboxMessages(_inboxSession.id);
-}
+
 
 function useQuickReply(btn) {
   const input = document.getElementById('inbox-input');
@@ -6407,9 +5719,7 @@ async function markAsSpam(sessionId) {
   loadInbox();
 }
 
-function escInbox(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+
 
 // Auto-refresh inbox badge every 30s
 setInterval(updateInboxBadge, 30000);
