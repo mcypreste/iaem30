@@ -894,6 +894,10 @@ code, .mono {
 
   <!-- Footer -->
   <div class="sb-footer">
+    <button class="ni" onclick="go('equipe',this)">
+      <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
+      <span class="lbl">Equipe & Perfil</span>
+    </button>
     <button class="ni" onclick="go('e-config',this)">
       <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path stroke="currentColor" stroke-width="1.5" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
       <span class="lbl">Configurações</span>
@@ -2039,7 +2043,161 @@ code, .mono {
     </div>
 
     <!-- CONFIG -->
-    <div class="panel" id="p-e-config">
+    <!-- ══ EQUIPE & PERFIL ══ -->
+<div class="panel" id="p-equipe">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Equipe &amp; Perfil</h2>
+      <p>Gerencie usuários com acesso ao painel admin</p>
+    </div>
+    <div class="page-header-right">
+      <button class="btn primary" onclick="openAddUser()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+        Novo Usuário
+      </button>
+    </div>
+  </div>
+
+  <!-- Meu Perfil -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-head"><h3>👤 Meu Perfil</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:start">
+        <!-- Avatar -->
+        <div style="text-align:center">
+          <div id="profile-avatar-display" style="width:80px;height:80px;border-radius:50%;background:var(--amberbg);border:2px solid rgba(212,144,10,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 10px;cursor:pointer;overflow:hidden;transition:all .2s" onclick="document.getElementById('avatar-input').click()" title="Clique para alterar foto">
+            <span id="profile-avatar-emoji">👤</span>
+          </div>
+          <input type="file" id="avatar-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+          <div style="font-size:11px;color:var(--fg4)">Clique para alterar</div>
+        </div>
+        <!-- Info -->
+        <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="field">
+              <label>Nome completo</label>
+              <input type="text" id="profile-name" placeholder="Seu nome">
+            </div>
+            <div class="field">
+              <label>Username</label>
+              <input type="text" id="profile-username" placeholder="username" readonly style="opacity:.6;cursor:not-allowed">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="profile-email" placeholder="seu@email.com">
+            </div>
+            <div class="field">
+              <label>Cargo / Role</label>
+              <input type="text" id="profile-role-display" readonly style="opacity:.6;cursor:not-allowed">
+            </div>
+          </div>
+          <button class="btn primary" onclick="saveProfile()" style="margin-right:8px">Salvar perfil</button>
+          <button class="btn ghost" onclick="openChangePassword()">Alterar senha</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de usuários -->
+  <div class="card">
+    <div class="card-head">
+      <h3>👥 Usuários com Acesso</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="font-size:12px;color:var(--fg3)" id="users-count">Carregando...</div>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div id="users-list-wrap" style="overflow-x:auto">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Último acesso</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="users-list">
+            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--fg4)">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role legend -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px">
+    <div class="card" style="padding:14px">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:var(--amber)">👑 Owner</div>
+      <div style="font-size:11px;color:var(--fg3)">Acesso total, não pode ser removido</div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:var(--blue)">🔧 Admin</div>
+      <div style="font-size:11px;color:var(--fg3)">Acesso total exceto gerenciar usuários</div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:var(--green)">✏️ Editor</div>
+      <div style="font-size:11px;color:var(--fg3)">Pode editar o site, sem acesso financeiro</div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px;color:var(--fg3)">👁️ Viewer</div>
+      <div style="font-size:11px;color:var(--fg3)">Somente visualizar dashboards e relatórios</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Novo / Editar Usuário -->
+<div id="modal-user" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeUserModal()">
+  <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:14px;padding:28px;width:100%;max-width:460px;box-shadow:var(--shadow3);animation:panelIn .2s ease;position:relative">
+    <button onclick="closeUserModal()" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:1px solid var(--line);color:var(--fg3);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;margin-bottom:20px;letter-spacing:-.02em" id="user-modal-title">Novo Usuário</h3>
+    <input type="hidden" id="edit-user-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="field"><label>Nome completo *</label><input type="text" id="new-user-name" placeholder="João Silva"></div>
+      <div class="field"><label>Username *</label><input type="text" id="new-user-username" placeholder="joao.silva" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'')"></div>
+    </div>
+    <div class="field" style="margin-bottom:14px"><label>Email *</label><input type="email" id="new-user-email" placeholder="joao@empresa.com"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="field">
+        <label>Role *</label>
+        <select id="new-user-role">
+          <option value="viewer">👁️ Viewer — Somente visualizar</option>
+          <option value="editor">✏️ Editor — Editar site</option>
+          <option value="admin">🔧 Admin — Acesso total</option>
+        </select>
+      </div>
+      <div class="field" id="password-field-wrap">
+        <label>Senha *</label>
+        <input type="password" id="new-user-password" placeholder="Mínimo 6 caracteres">
+      </div>
+    </div>
+    <div id="user-modal-error" style="background:var(--redbg);border:1px solid var(--red2);color:var(--red);border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn primary" onclick="saveUser()" id="btn-save-user">Criar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Alterar Senha -->
+<div id="modal-change-pw" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:14px;padding:28px;width:100%;max-width:380px;box-shadow:var(--shadow3);position:relative">
+    <button onclick="document.getElementById('modal-change-pw').style.display='none'" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:1px solid var(--line);color:var(--fg3);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;margin-bottom:20px;letter-spacing:-.02em">Alterar Senha</h3>
+    <div class="field" style="margin-bottom:12px"><label>Senha atual</label><input type="password" id="pw-current" placeholder="••••••••"></div>
+    <div class="field" style="margin-bottom:12px"><label>Nova senha</label><input type="password" id="pw-new" placeholder="Mínimo 6 caracteres"></div>
+    <div class="field" style="margin-bottom:16px"><label>Confirmar nova senha</label><input type="password" id="pw-confirm" placeholder="Repita a senha"></div>
+    <div id="pw-error" style="background:var(--redbg);border:1px solid var(--red2);color:var(--red);border-radius:8px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn ghost" onclick="document.getElementById('modal-change-pw').style.display='none'">Cancelar</button>
+      <button class="btn primary" onclick="changePassword()">Alterar Senha</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="p-e-config">
       <div class="pg2" style="max-width:700px">
         <div class="card"><div class="card-head"><h3>🔐 Alterar Senha</h3></div><div class="card-body">
           <div class="field" style="margin-bottom:10px"><label>Senha Atual</label><input type="password" id="pw-o"></div>
@@ -2144,6 +2302,7 @@ async function doLogin(){
   const ih=await sha256(p),sh=await getHash();
   if(u==='admin'&&ih===sh){
     sessionStorage.setItem('ok','1');
+    sessionStorage.setItem('admin_username', lu);
     document.getElementById('login').style.display='none';
     document.getElementById('admin').style.display='flex';
     await boot();
@@ -2237,6 +2396,7 @@ const PTITLES={
   'e-depos':'Depoimentos','e-faq':'FAQ','e-conv':'Conversão & Urgência',
   'e-paraquem':'Para quem é','e-bonus':'Bônus','e-obrigado':'Página de Obrigado',
   'e-config':'Configurações',
+  'equipe':'Equipe & Perfil',
 };
 let currentPanel='overview';
 function go(id,el){
@@ -4063,6 +4223,321 @@ function generateQRForLink(slug) {
     generateQR();
     document.getElementById('qr-result').scrollIntoView({behavior:'smooth'});
   }, 100);
+}
+
+
+
+// ═══════════════════════════════════════
+// EQUIPE & PERFIL
+// ═══════════════════════════════════════
+
+let _currentUser = null; // logged-in user object
+
+// Role config
+const ROLES = {
+  owner:  { label:'👑 Owner',   color:'var(--amber)',  can:['all'] },
+  admin:  { label:'🔧 Admin',   color:'var(--blue)',   can:['all','except_users'] },
+  editor: { label:'✏️ Editor',   color:'var(--green)',  can:['edit_site'] },
+  viewer: { label:'👁️ Viewer',  color:'var(--fg3)',    can:['view'] },
+};
+
+// ── LOAD CURRENT USER ──
+async function loadCurrentUser() {
+  const username = sessionStorage.getItem('admin_username') || 'admin';
+  const rows = await sbGet('iaem30_admin_users', `?username=eq.${username}&select=*`);
+  if (rows && rows[0]) {
+    _currentUser = rows[0];
+    renderProfilePanel();
+    // Update last_login
+    await sbPatch('iaem30_admin_users', `?id=eq.${rows[0].id}`, { last_login: new Date().toISOString() });
+  }
+}
+
+// ── RENDER PROFILE ──
+function renderProfilePanel() {
+  if (!_currentUser) return;
+  const u = _currentUser;
+  document.getElementById('profile-name').value = u.name || '';
+  document.getElementById('profile-username').value = u.username || '';
+  document.getElementById('profile-email').value = u.email || '';
+  document.getElementById('profile-role-display').value = (ROLES[u.role] || {}).label || u.role;
+  // Avatar
+  const avatarEl = document.getElementById('profile-avatar-display');
+  const emojiEl  = document.getElementById('profile-avatar-emoji');
+  if (u.avatar && u.avatar.startsWith('data:')) {
+    emojiEl.style.display = 'none';
+    avatarEl.style.backgroundImage = `url('${u.avatar}')`;
+    avatarEl.style.backgroundSize = 'cover';
+    avatarEl.style.backgroundPosition = 'center';
+  } else if (u.avatar) {
+    emojiEl.textContent = u.avatar;
+    emojiEl.style.display = '';
+  }
+}
+
+// ── SAVE PROFILE ──
+async function saveProfile() {
+  if (!_currentUser) return;
+  const name  = document.getElementById('profile-name').value.trim();
+  const email = document.getElementById('profile-email').value.trim();
+  if (!name || !email) { toast('⚠️ Preencha nome e email'); return; }
+  const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, { name, email });
+  if (ok) {
+    _currentUser.name  = name;
+    _currentUser.email = email;
+    toast('✓ Perfil salvo com sucesso!');
+  } else {
+    toast('❌ Erro ao salvar perfil');
+  }
+}
+
+// ── AVATAR UPLOAD ──
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const dataUrl = e.target.result;
+    // Resize to max 200x200
+    const img = new Image();
+    img.onload = async function() {
+      const canvas = document.createElement('canvas');
+      const max = 200;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > max) { h *= max/w; w = max; } }
+      else       { if (h > max) { w *= max/h; h = max; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const compressed = canvas.toDataURL('image/jpeg', 0.8);
+      // Save
+      const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, { avatar: compressed });
+      if (ok) {
+        _currentUser.avatar = compressed;
+        const emojiEl = document.getElementById('profile-avatar-emoji');
+        const avatarEl = document.getElementById('profile-avatar-display');
+        emojiEl.style.display = 'none';
+        avatarEl.style.backgroundImage = `url('${compressed}')`;
+        avatarEl.style.backgroundSize = 'cover';
+        avatarEl.style.backgroundPosition = 'center';
+        toast('✓ Foto atualizada!');
+      }
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── CHANGE PASSWORD ──
+function openChangePassword() {
+  document.getElementById('modal-change-pw').style.display = 'flex';
+  document.getElementById('pw-current').value = '';
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  document.getElementById('pw-error').style.display = 'none';
+}
+
+async function changePassword() {
+  const current = document.getElementById('pw-current').value;
+  const newPw   = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  const errEl   = document.getElementById('pw-error');
+  errEl.style.display = 'none';
+
+  if (!current || !newPw || !confirm) { errEl.textContent = 'Preencha todos os campos.'; errEl.style.display = 'block'; return; }
+  if (newPw.length < 6) { errEl.textContent = 'A nova senha precisa ter pelo menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if (newPw !== confirm) { errEl.textContent = 'As senhas não coincidem.'; errEl.style.display = 'block'; return; }
+
+  // Verify current password
+  const currentHash = await getHash(current);
+  if (currentHash !== _currentUser.password_hash) {
+    errEl.textContent = 'Senha atual incorreta.'; errEl.style.display = 'block'; return;
+  }
+
+  const newHash = await getHash(newPw);
+  const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, { password_hash: newHash });
+  if (ok) {
+    _currentUser.password_hash = newHash;
+    document.getElementById('modal-change-pw').style.display = 'none';
+    toast('✓ Senha alterada com sucesso!');
+  } else {
+    errEl.textContent = 'Erro ao alterar senha.'; errEl.style.display = 'block';
+  }
+}
+
+// ── LOAD USERS LIST ──
+async function loadEquipe() {
+  loadCurrentUser();
+  const rows = await sbGet('iaem30_admin_users', '?select=*&order=created_at.asc');
+  if (!rows) { document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar usuários</td></tr>'; return; }
+
+  document.getElementById('users-count').textContent = `${rows.length} usuário${rows.length !== 1 ? 's' : ''}`;
+
+  if (!rows.length) {
+    document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--fg4)">Nenhum usuário cadastrado</td></tr>';
+    return;
+  }
+
+  const isSelf = u => _currentUser && u.id === _currentUser.id;
+  const isOwner = u => u.role === 'owner';
+
+  document.getElementById('users-list').innerHTML = rows.map(u => {
+    const role = ROLES[u.role] || { label: u.role, color: 'var(--fg3)' };
+    const lastLogin = u.last_login ? new Date(u.last_login).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }) : '—';
+    const avatarHtml = u.avatar && u.avatar.startsWith('data:')
+      ? `<div style="width:32px;height:32px;border-radius:50%;background:url('${u.avatar}') center/cover;flex-shrink:0"></div>`
+      : `<div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${u.avatar || '👤'}</div>`;
+    const canEdit = !isOwner(u) || isSelf(u);
+    const canToggle = !isSelf(u) && !isOwner(u);
+    const canDelete = !isSelf(u) && !isOwner(u);
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${avatarHtml}
+          <div>
+            <div style="font-weight:600;font-size:13px;color:var(--fg)">${u.name}${isSelf(u) ? ' <span style="font-size:10px;background:var(--amberbg);color:var(--amber);padding:1px 7px;border-radius:10px;font-weight:600">Você</span>' : ''}</div>
+            <div style="font-size:11px;color:var(--fg4)">@${u.username}</div>
+          </div>
+        </div>
+      </td>
+      <td style="color:var(--fg3);font-size:12.5px">${u.email}</td>
+      <td><span style="font-size:12px;font-weight:600;color:${role.color}">${role.label}</span></td>
+      <td style="color:var(--fg4);font-size:12px">${lastLogin}</td>
+      <td>
+        <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;${u.active ? 'background:var(--greenbg);color:var(--green)' : 'background:var(--redbg);color:var(--red)'}">
+          ${u.active ? 'Ativo' : 'Inativo'}
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:6px">
+          ${canEdit ? `<button class="btn-sm ghost" onclick="openEditUser('${u.id}')" style="padding:4px 10px;font-size:11px">Editar</button>` : ''}
+          ${canToggle ? `<button class="btn-sm ${u.active ? 'danger' : 'success'}" onclick="toggleUserActive('${u.id}', ${!u.active})" style="padding:4px 10px;font-size:11px">${u.active ? 'Desativar' : 'Ativar'}</button>` : ''}
+          ${canDelete ? `<button class="btn-sm danger" onclick="deleteUser('${u.id}', '${u.name}')" style="padding:4px 10px;font-size:11px">Remover</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── ADD / EDIT USER MODAL ──
+function openAddUser() {
+  document.getElementById('user-modal-title').textContent = 'Novo Usuário';
+  document.getElementById('edit-user-id').value = '';
+  document.getElementById('new-user-name').value = '';
+  document.getElementById('new-user-username').value = '';
+  document.getElementById('new-user-email').value = '';
+  document.getElementById('new-user-role').value = 'viewer';
+  document.getElementById('new-user-password').value = '';
+  document.getElementById('new-user-password').required = true;
+  document.getElementById('btn-save-user').textContent = 'Criar Usuário';
+  document.getElementById('password-field-wrap').style.display = 'block';
+  document.getElementById('user-modal-error').style.display = 'none';
+  document.getElementById('modal-user').style.display = 'flex';
+}
+
+async function openEditUser(userId) {
+  const rows = await sbGet('iaem30_admin_users', `?id=eq.${userId}&select=*`);
+  if (!rows || !rows[0]) return;
+  const u = rows[0];
+  document.getElementById('user-modal-title').textContent = 'Editar Usuário';
+  document.getElementById('edit-user-id').value = u.id;
+  document.getElementById('new-user-name').value = u.name;
+  document.getElementById('new-user-username').value = u.username;
+  document.getElementById('new-user-email').value = u.email;
+  document.getElementById('new-user-role').value = u.role;
+  document.getElementById('new-user-password').value = '';
+  document.getElementById('new-user-password').required = false;
+  document.getElementById('btn-save-user').textContent = 'Salvar Alterações';
+  document.getElementById('password-field-wrap').querySelector('label').textContent = 'Nova senha (deixe em branco para não alterar)';
+  document.getElementById('user-modal-error').style.display = 'none';
+  document.getElementById('modal-user').style.display = 'flex';
+}
+
+function closeUserModal() {
+  document.getElementById('modal-user').style.display = 'none';
+}
+
+async function saveUser() {
+  const editId   = document.getElementById('edit-user-id').value;
+  const name     = document.getElementById('new-user-name').value.trim();
+  const username = document.getElementById('new-user-username').value.trim();
+  const email    = document.getElementById('new-user-email').value.trim();
+  const role     = document.getElementById('new-user-role').value;
+  const password = document.getElementById('new-user-password').value;
+  const errEl    = document.getElementById('user-modal-error');
+  errEl.style.display = 'none';
+
+  // Validation
+  if (!name || !username || !email) { errEl.textContent = 'Preencha nome, username e email.'; errEl.style.display = 'block'; return; }
+  if (!editId && !password) { errEl.textContent = 'Senha obrigatória para novo usuário.'; errEl.style.display = 'block'; return; }
+  if (password && password.length < 6) { errEl.textContent = 'Senha deve ter pelo menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+  if (!/^[a-z0-9._]+$/.test(username)) { errEl.textContent = 'Username: apenas letras minúsculas, números, ponto e underscore.'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('btn-save-user');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+
+  try {
+    if (editId) {
+      // Edit existing
+      const data = { name, email, role };
+      if (password) data.password_hash = await getHash(password);
+      const ok = await sbPatch('iaem30_admin_users', `?id=eq.${editId}`, data);
+      if (!ok) throw new Error('Erro ao atualizar usuário');
+    } else {
+      // Create new - check uniqueness
+      const existing = await sbGet('iaem30_admin_users', `?username=eq.${username}`);
+      if (existing && existing.length) { throw new Error('Username já em uso'); }
+      const emailEx = await sbGet('iaem30_admin_users', `?email=eq.${encodeURIComponent(email)}`);
+      if (emailEx && emailEx.length) { throw new Error('Email já cadastrado'); }
+
+      const hash = await getHash(password);
+      const ok = await sbPost('iaem30_admin_users', {
+        username, name, email, role,
+        password_hash: hash,
+        active: true,
+        created_by: _currentUser?.id || null
+      });
+      if (!ok) throw new Error('Erro ao criar usuário');
+    }
+    closeUserModal();
+    toast(editId ? '✓ Usuário atualizado!' : '✓ Usuário criado com sucesso!');
+    loadEquipe();
+  } catch(err) {
+    errEl.textContent = err.message || 'Erro ao salvar usuário';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editId ? 'Salvar Alterações' : 'Criar Usuário';
+  }
+}
+
+async function toggleUserActive(userId, active) {
+  const ok = await sbPatch('iaem30_admin_users', `?id=eq.${userId}`, { active });
+  if (ok) { toast(active ? '✓ Usuário ativado' : '✓ Usuário desativado'); loadEquipe(); }
+  else toast('❌ Erro ao alterar status');
+}
+
+async function deleteUser(userId, name) {
+  if (!confirm(`Remover o usuário "${name}"? Esta ação não pode ser desfeita.`)) return;
+  const r = await fetch(`${SB_URL}/rest/v1/iaem30_admin_users?id=eq.${userId}`, {
+    method: 'DELETE', headers: { ...SB_H, Prefer: 'return=minimal' }
+  });
+  if (r.ok) { toast('✓ Usuário removido'); loadEquipe(); }
+  else toast('❌ Erro ao remover usuário');
+}
+
+// ── HOOK INTO loadPanel ──
+const _origGo = go;
+function go(panel, btn) {
+  _origGo(panel, btn);
+  if (panel === 'equipe') loadEquipe();
+}
+
+// ── LOAD USER ON BOOT ──
+// Hook into the boot function
+const _origBoot = boot;
+async function boot() {
+  await _origBoot();
+  await loadCurrentUser();
 }
 
 </script>
