@@ -2482,6 +2482,12 @@ async function doLogin(){
 
     if(rows && rows[0] && rows[0].password_hash === hash) {
       const user = rows[0];
+      // Clear any previous session first
+      sessionStorage.removeItem('admin_role');
+      sessionStorage.removeItem('admin_username');
+      sessionStorage.removeItem('admin_user_json');
+      window._allowedPanels = null;
+      window._currentRole = null;
       sessionStorage.setItem('ok','1');
       sessionStorage.setItem('admin_username', user.username);
       sessionStorage.setItem('admin_role', user.role);
@@ -4693,9 +4699,10 @@ let _msgPollInterval = null;
 
 async function loadContacts() {
   const el = document.getElementById('msg-contacts');
-  if (!el) return;
+  if (!el) { console.warn('[Chat] msg-contacts element not found'); return; }
   const rows = await sbGet('iaem30_admin_users', '?active=eq.true&select=id,username,name,avatar,job_title,role&order=name.asc');
-  if (!rows) return;
+  if (!rows) { el.innerHTML = '<div style="padding:12px;color:var(--fg4);font-size:12px">Erro ao carregar contatos</div>'; return; }
+  if (!rows.length) { el.innerHTML = '<div style="padding:12px;color:var(--fg4);font-size:12px">Nenhum outro usuário</div>'; return; }
 
   const others = rows.filter(u => u.id !== _currentUser?.id);
   el.innerHTML = others.map(u => {
@@ -4765,7 +4772,7 @@ async function selectMsgContact(userId, name, role, avatar) {
 
 async function loadMessages() {
   const el = document.getElementById('chat-messages');
-  if (!el) return;
+  if (!el) { console.warn('[Chat] chat-messages not found'); return; }
 
   let query;
   if (_currentContact === 'all') {
@@ -4936,6 +4943,14 @@ function applyRoleAccess(role) {
 
   // ── 5. Block go() for restricted panels ──
   window._allowedPanels = access.panels === '*' ? null : access.panels;
+
+  // ── 6. Ensure equipe button visible for all roles (it's controlled by sub-tabs inside) ──
+  document.querySelectorAll('.ni').forEach(btn => {
+    const oc = btn.getAttribute('onclick') || '';
+    if (oc.includes("go('equipe'")) {
+      btn.style.display = ''; // always show equipe button - access controlled inside panel
+    }
+  });
 }
 
 function addRoleBadge(role) {
