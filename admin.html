@@ -2087,9 +2087,13 @@ code, .mono {
               <input type="email" id="profile-email" placeholder="seu@email.com">
             </div>
             <div class="field">
-              <label>Cargo / Role</label>
-              <input type="text" id="profile-role-display" readonly style="opacity:.6;cursor:not-allowed">
+              <label>Cargo</label>
+              <input type="text" id="profile-job-title" placeholder="Ex: Gestor de Marketing">
             </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:8px 12px;background:var(--bg2);border-radius:8px;border:1px solid var(--line)">
+            <span style="font-size:11px;color:var(--fg4);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Permissão:</span>
+            <span id="profile-role-badge" style="font-size:12px;font-weight:700"></span>
           </div>
           <button class="btn primary" onclick="saveProfile()" style="margin-right:8px">Salvar perfil</button>
           <button class="btn ghost" onclick="openChangePassword()">Alterar senha</button>
@@ -2124,6 +2128,26 @@ code, .mono {
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- Log de Atividade -->
+  <div class="card" style="margin-top:16px">
+    <div class="card-head" style="justify-content:space-between">
+      <h3>📋 Log de Atividade</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="log-filter-user" onchange="loadActivityLog()" style="font-size:12px;padding:4px 8px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
+          <option value="">Todos os usuários</option>
+        </select>
+        <button class="btn ghost" onclick="loadActivityLog()" style="padding:5px 10px;font-size:11px">↻ Atualizar</button>
+      </div>
+    </div>
+    <div id="activity-log-list" style="max-height:380px;overflow-y:auto">
+      <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando atividades...</div>
+    </div>
+    <div id="activity-log-footer" style="padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:var(--fg4)" id="activity-log-count"></span>
+      <button class="btn ghost" onclick="loadMoreActivity()" id="btn-load-more-activity" style="font-size:11px;padding:4px 10px;display:none">Ver mais</button>
     </div>
   </div>
 
@@ -2315,6 +2339,8 @@ async function doLogin(){
       _currentUser = user;
       // Update last_login
       sbPatch('iaem30_admin_users', '?id=eq.'+user.id, { last_login: new Date().toISOString() });
+      // Log login activity
+      setTimeout(()=>sbPost('iaem30_activity_log',{user_id:user.id,username:user.username,action:'Login no painel',entity:'auth',detail:'Acesso via '+navigator.userAgent.slice(0,60),icon:'🔑'}),500);
       applyRoleAccess(user.role);
       document.getElementById('login').style.display='none';
       document.getElementById('admin').style.display='flex';
@@ -4395,6 +4421,127 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ═══════════════════════════════════════
+// LOG DE ATIVIDADE
+// ═══════════════════════════════════════
+
+let _activityOffset = 0;
+const ACTIVITY_PAGE = 20;
+
+// Registra uma ação no log
+async function logActivity(action, entity='', detail='', icon='📋') {
+  if (!_currentUser) return;
+  try {
+    await sbPost('iaem30_activity_log', {
+      user_id:  _currentUser.id,
+      username: _currentUser.username,
+      action, entity, detail, icon
+    });
+  } catch(e) {}
+}
+
+// Carrega o log no painel
+async function loadActivityLog(reset=true) {
+  if (reset) _activityOffset = 0;
+
+  const filterUser = document.getElementById('log-filter-user')?.value || '';
+  let query = '?order=created_at.desc&limit=' + (ACTIVITY_PAGE + 1) + '&offset=' + _activityOffset;
+  if (filterUser) query += '&username=eq.' + encodeURIComponent(filterUser);
+
+  const rows = await sbGet('iaem30_activity_log', query);
+  const el   = document.getElementById('activity-log-list');
+  const countEl = document.getElementById('activity-log-count');
+  const moreBtn  = document.getElementById('btn-load-more-activity');
+  if (!el) return;
+
+  const hasMore = rows && rows.length > ACTIVITY_PAGE;
+  const items   = rows ? rows.slice(0, ACTIVITY_PAGE) : [];
+
+  if (reset) {
+    if (!items.length) {
+      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Nenhuma atividade registrada ainda</div>';
+      if (moreBtn) moreBtn.style.display = 'none';
+      if (countEl) countEl.textContent = '';
+      return;
+    }
+    el.innerHTML = '';
+  }
+
+  items.forEach(row => {
+    const time = new Date(row.created_at);
+    const timeStr = time.toLocaleString('pt-BR', {
+      day:'2-digit', month:'2-digit', year:'2-digit',
+      hour:'2-digit', minute:'2-digit'
+    });
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);transition:background .1s';
+    div.onmouseover = () => div.style.background = 'var(--bg2)';
+    div.onmouseout  = () => div.style.background = '';
+    div.innerHTML = `
+      <div style="width:30px;height:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px">${row.icon || '📋'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <span style="font-size:12.5px;font-weight:600;color:var(--fg)">${escHtml(row.action)}</span>
+          ${row.entity ? '<span style="font-size:11px;color:var(--fg4);background:var(--bg3);padding:1px 7px;border-radius:4px;border:1px solid var(--line)">'+escHtml(row.entity)+'</span>' : ''}
+        </div>
+        ${row.detail ? '<div style="font-size:12px;color:var(--fg3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(row.detail)+'</div>' : ''}
+        <div style="font-size:11px;color:var(--fg4);margin-top:3px;display:flex;align-items:center;gap:6px">
+          <span style="font-weight:500;color:var(--amber)">@${escHtml(row.username)}</span>
+          <span>·</span>
+          <span>${timeStr}</span>
+        </div>
+      </div>`;
+    el.appendChild(div);
+  });
+
+  // Remove border from last item
+  const lastItem = el.lastElementChild;
+  if (lastItem) lastItem.style.borderBottom = 'none';
+
+  if (moreBtn) moreBtn.style.display = hasMore ? 'block' : 'none';
+  if (countEl) countEl.textContent = _activityOffset + items.length + ' atividades carregadas';
+  _activityOffset += items.length;
+}
+
+async function loadMoreActivity() {
+  await loadActivityLog(false);
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Populate user filter dropdown
+async function populateActivityUserFilter() {
+  const sel = document.getElementById('log-filter-user');
+  if (!sel) return;
+  const rows = await sbGet('iaem30_admin_users', '?select=username,name&order=name.asc&active=eq.true');
+  if (!rows) return;
+  // Keep first option
+  while (sel.options.length > 1) sel.remove(1);
+  rows.forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.username;
+    opt.textContent = u.name + ' (@' + u.username + ')';
+    sel.appendChild(opt);
+  });
+}
+
+// ═══════════════════════════════════════
+// CARGO NO PERFIL
+// ═══════════════════════════════════════
+
+const ROLE_LABELS = {
+  owner:  '👑 Owner',
+  admin:  '🔧 Admin',
+  editor: '✏️ Editor',
+  viewer: '👁️ Viewer',
+};
+const ROLE_COLORS = {
+  owner: 'var(--amber)', admin: 'var(--blue)', editor: 'var(--green)', viewer: 'var(--fg3)'
+};
+
+// ═══════════════════════════════════════
 // EQUIPE & PERFIL
 // ═══════════════════════════════════════
 
@@ -4427,7 +4574,14 @@ function renderProfilePanel() {
   document.getElementById('profile-name').value = u.name || '';
   document.getElementById('profile-username').value = u.username || '';
   document.getElementById('profile-email').value = u.email || '';
-  document.getElementById('profile-role-display').value = (ROLES[u.role] || {}).label || u.role;
+  const jobEl = document.getElementById('profile-job-title');
+  if (jobEl) jobEl.value = u.job_title || '';
+  // Role badge
+  const badgeEl = document.getElementById('profile-role-badge');
+  if (badgeEl) {
+    badgeEl.textContent = ROLE_LABELS[u.role] || u.role;
+    badgeEl.style.color = ROLE_COLORS[u.role] || 'var(--fg3)';
+  }
   // Avatar
   const avatarEl = document.getElementById('profile-avatar-display');
   const emojiEl  = document.getElementById('profile-avatar-emoji');
@@ -4445,14 +4599,19 @@ function renderProfilePanel() {
 // ── SAVE PROFILE ──
 async function saveProfile() {
   if (!_currentUser) return;
-  const name  = document.getElementById('profile-name').value.trim();
-  const email = document.getElementById('profile-email').value.trim();
+  const name      = document.getElementById('profile-name').value.trim();
+  const email     = document.getElementById('profile-email').value.trim();
+  const jobTitle  = (document.getElementById('profile-job-title')?.value || '').trim();
   if (!name || !email) { toast('⚠️ Preencha nome e email'); return; }
-  const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, { name, email });
+  const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, {
+    name, email, job_title: jobTitle || null
+  });
   if (ok) {
-    _currentUser.name  = name;
-    _currentUser.email = email;
+    _currentUser.name      = name;
+    _currentUser.email     = email;
+    _currentUser.job_title = jobTitle;
     toast('✓ Perfil salvo com sucesso!');
+    logActivity('Perfil atualizado', 'perfil', `Nome: ${name}`, '👤');
   } else {
     toast('❌ Erro ao salvar perfil');
   }
@@ -4526,6 +4685,7 @@ async function changePassword() {
     _currentUser.password_hash = newHash;
     document.getElementById('modal-change-pw').style.display = 'none';
     toast('✓ Senha alterada com sucesso!');
+    logActivity('Senha alterada', 'segurança', 'Senha atualizada com sucesso', '🔒');
   } else {
     errEl.textContent = 'Erro ao alterar senha.'; errEl.style.display = 'block';
   }
@@ -4538,6 +4698,8 @@ async function loadEquipe() {
   if (!rows) { document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar usuários</td></tr>'; return; }
 
   document.getElementById('users-count').textContent = `${rows.length} usuário${rows.length !== 1 ? 's' : ''}`;
+  populateActivityUserFilter();
+  loadActivityLog();
 
   if (!rows.length) {
     document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--fg4)">Nenhum usuário cadastrado</td></tr>';
@@ -4562,7 +4724,7 @@ async function loadEquipe() {
           ${avatarHtml}
           <div>
             <div style="font-weight:600;font-size:13px;color:var(--fg)">${u.name}${isSelf(u) ? ' <span style="font-size:10px;background:var(--amberbg);color:var(--amber);padding:1px 7px;border-radius:10px;font-weight:600">Você</span>' : ''}</div>
-            <div style="font-size:11px;color:var(--fg4)">@${u.username}</div>
+            <div style="font-size:11px;color:var(--fg4)">@${u.username}${u.job_title ? ' · <span style="color:var(--fg3)">'+u.job_title+'</span>' : ''}</div>
           </div>
         </div>
       </td>
@@ -4667,6 +4829,12 @@ async function saveUser() {
     }
     closeUserModal();
     toast(editId ? '✓ Usuário atualizado!' : '✓ Usuário criado com sucesso!');
+    logActivity(
+      editId ? 'Usuário editado' : 'Novo usuário criado',
+      'equipe',
+      `@${username} — ${ROLE_LABELS[role] || role}`,
+      editId ? '✏️' : '👤'
+    );
     loadEquipe();
   } catch(err) {
     errEl.textContent = err.message || 'Erro ao salvar usuário';
@@ -4679,8 +4847,11 @@ async function saveUser() {
 
 async function toggleUserActive(userId, active) {
   const ok = await sbPatch('iaem30_admin_users', `?id=eq.${userId}`, { active });
-  if (ok) { toast(active ? '✓ Usuário ativado' : '✓ Usuário desativado'); loadEquipe(); }
-  else toast('❌ Erro ao alterar status');
+  if (ok) {
+    toast(active ? '✓ Usuário ativado' : '✓ Usuário desativado');
+    logActivity(active ? 'Usuário ativado' : 'Usuário desativado', 'equipe', 'ID: '+userId, active ? '✅' : '🚫');
+    loadEquipe();
+  } else toast('❌ Erro ao alterar status');
 }
 
 async function deleteUser(userId, name) {
@@ -4688,8 +4859,11 @@ async function deleteUser(userId, name) {
   const r = await fetch(`${SB_URL}/rest/v1/iaem30_admin_users?id=eq.${userId}`, {
     method: 'DELETE', headers: { ...SB_H, Prefer: 'return=minimal' }
   });
-  if (r.ok) { toast('✓ Usuário removido'); loadEquipe(); }
-  else toast('❌ Erro ao remover usuário');
+  if (r.ok) {
+    toast('✓ Usuário removido');
+    logActivity('Usuário removido', 'equipe', name, '🗑️');
+    loadEquipe();
+  } else toast('❌ Erro ao remover usuário');
 }
 
 // go() override handled by ROLE_ACCESS system above
