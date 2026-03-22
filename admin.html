@@ -2443,6 +2443,12 @@ const PTITLES={
 };
 let currentPanel='overview';
 function go(id,el){
+  // Role access control
+  const _allowed=window._allowedPanels;
+  if(_allowed&&!_allowed.includes(id)){toast('⛔ Sem permissão para esta área');return;}
+  // Auto-load equipe panel
+  if(id==='equipe')setTimeout(()=>{if(typeof loadEquipe==='function')loadEquipe();},50);
+
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   const panel=document.getElementById('p-'+id);
   if(panel) panel.classList.add('on');
@@ -4324,9 +4330,11 @@ function applyRoleAccess(role) {
   // ── 1. Hide/show nav items ──
   if (access.hideNav) {
     access.hideNav.forEach(panelId => {
-      // Find all .ni buttons that go to this panel
-      document.querySelectorAll(`.ni[onclick*="go('${panelId}'"]`).forEach(btn => {
-        btn.style.display = 'none';
+      document.querySelectorAll('.ni').forEach(btn => {
+        const oc = btn.getAttribute('onclick') || '';
+        if(oc.includes("go('"+panelId+"'") || oc.includes('go("'+panelId+'"')) {
+          btn.style.display = 'none';
+        }
       });
     });
   }
@@ -4341,9 +4349,9 @@ function applyRoleAccess(role) {
 
   // ── 3. Hide equipe section for non-owners ──
   if (role !== 'owner') {
-    // Hide equipe nav button
-    document.querySelectorAll(".ni").forEach(btn => {
-      if (btn.textContent.includes('Equipe')) btn.style.display = 'none';
+    document.querySelectorAll('.ni').forEach(btn => {
+      const oc = btn.getAttribute('onclick') || '';
+      if(oc.includes("go('equipe'")) btn.style.display = 'none';
     });
   }
 
@@ -4374,28 +4382,17 @@ function addRoleBadge(role) {
   tbRight.prepend(badge);
 }
 
-// Override go() to enforce access control
-const _goOriginal = go;
-function go(panel, btn) {
-  const allowed = window._allowedPanels;
-  if (allowed && !allowed.includes(panel)) {
-    toast('⛔ Sem permissão para acessar esta área');
-    return;
-  }
-  _goOriginal(panel, btn);
-  if (panel === 'equipe') setTimeout(() => { if(typeof loadEquipe==='function') loadEquipe(); }, 50);
-}
+// go() access control is handled inside the original go() function
 
-// Restore role on page reload
-(function restoreSession() {
+// Restore role on page reload (after DOM ready)
+document.addEventListener('DOMContentLoaded', function() {
   const role = sessionStorage.getItem('admin_role');
   const userJson = sessionStorage.getItem('admin_user_json');
   if (role) {
     if (userJson) try { _currentUser = JSON.parse(userJson); } catch(e) {}
-    // Apply after DOM is ready
-    setTimeout(() => applyRoleAccess(role), 100);
+    setTimeout(() => applyRoleAccess(role), 150);
   }
-})();
+});
 
 // ═══════════════════════════════════════
 // EQUIPE & PERFIL
