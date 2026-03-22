@@ -2259,9 +2259,8 @@ function renderCmd(items){const el=document.getElementById("cmd-results");if(!it
 function selectCmdItem(i){const item=cmdFiltered[i];if(!item)return;closeCmdPalette();go(item.id,null);}
 function handleCmdKey(e){const items=document.querySelectorAll(".cmd-item");if(e.key==="ArrowDown"){e.preventDefault();cmdActive=Math.min(cmdActive+1,cmdFiltered.length-1);items.forEach((el,i)=>el.classList.toggle("active",i===cmdActive));items[cmdActive]?.scrollIntoView({block:"nearest"});}else if(e.key==="ArrowUp"){e.preventDefault();cmdActive=Math.max(cmdActive-1,0);items.forEach((el,i)=>el.classList.toggle("active",i===cmdActive));items[cmdActive]?.scrollIntoView({block:"nearest"});}else if(e.key==="Enter"){if(cmdActive>=0)selectCmdItem(cmdActive);else if(cmdFiltered.length>0)selectCmdItem(0);}else if(e.key==="Escape")closeCmdPalette();}
 document.addEventListener("keydown",function(e){if((e.metaKey||e.ctrlKey)&&e.key==="k"){e.preventDefault();document.getElementById("cmd-overlay").classList.contains("open")?closeCmdPalette():openCmdPalette();}if(e.key==="Escape")closeCmdPalette();});
-function toggleSb(){const sb=document.getElementById("sb"),main=document.getElementById("main"),topbar=document.getElementById("main-topbar");const c=sb.classList.toggle("collapsed");if(main)main.classList.toggle("collapsed",c);if(topbar)topbar.classList.toggle("collapsed",c);}
-function switchTab(tab){const nV=document.getElementById("nav-vendas"),nE=document.getElementById("nav-edit"),tV=document.getElementById("tab-vendas"),tE=document.getElementById("tab-edit");const v=tab==="vendas";if(nV)nV.style.display=v?"block":"none";if(nE)nE.style.display=v?"none":"block";[tV,tE].forEach((t,i)=>{if(!t)return;const a=(i===0)===v;t.style.color=a?"var(--fg)":"var(--fg4)";t.style.borderBottom=a?"2px solid var(--fg)":"2px solid transparent";t.style.fontWeight=a?"500":"400";t.classList.toggle("on",a);});}
-document.addEventListener("DOMContentLoaded",()=>switchTab("vendas"));
+// toggleSb handled by main JS
+// switchTab handled by main JS
 </script>
 <script>
 // ══════════════════════════════════════
@@ -2346,6 +2345,8 @@ async function boot(){
   loadFunil();
   loadMiniAnalytics();
   loadPPStatus();
+  // Load current user profile
+  setTimeout(()=>{ if(typeof loadCurrentUser==='function') loadCurrentUser(); }, 300);
 }
 window.addEventListener('load',()=>{
   if(sessionStorage.getItem('ok')==='1'){
@@ -4348,12 +4349,12 @@ async function changePassword() {
   if (newPw !== confirm) { errEl.textContent = 'As senhas não coincidem.'; errEl.style.display = 'block'; return; }
 
   // Verify current password
-  const currentHash = await getHash(current);
+  const currentHash = await sha256(current);
   if (currentHash !== _currentUser.password_hash) {
     errEl.textContent = 'Senha atual incorreta.'; errEl.style.display = 'block'; return;
   }
 
-  const newHash = await getHash(newPw);
+  const newHash = await sha256(newPw);
   const ok = await sbPatch('iaem30_admin_users', `?id=eq.${_currentUser.id}`, { password_hash: newHash });
   if (ok) {
     _currentUser.password_hash = newHash;
@@ -4479,7 +4480,7 @@ async function saveUser() {
     if (editId) {
       // Edit existing
       const data = { name, email, role };
-      if (password) data.password_hash = await getHash(password);
+      if (password) data.password_hash = await sha256(password);
       const ok = await sbPatch('iaem30_admin_users', `?id=eq.${editId}`, data);
       if (!ok) throw new Error('Erro ao atualizar usuário');
     } else {
@@ -4489,7 +4490,7 @@ async function saveUser() {
       const emailEx = await sbGet('iaem30_admin_users', `?email=eq.${encodeURIComponent(email)}`);
       if (emailEx && emailEx.length) { throw new Error('Email já cadastrado'); }
 
-      const hash = await getHash(password);
+      const hash = await sha256(password);
       const ok = await sbPost('iaem30_admin_users', {
         username, name, email, role,
         password_hash: hash,
@@ -4525,20 +4526,7 @@ async function deleteUser(userId, name) {
   else toast('❌ Erro ao remover usuário');
 }
 
-// ── HOOK INTO loadPanel ──
-const _origGo = go;
-function go(panel, btn) {
-  _origGo(panel, btn);
-  if (panel === 'equipe') loadEquipe();
-}
-
-// ── LOAD USER ON BOOT ──
-// Hook into the boot function
-const _origBoot = boot;
-async function boot() {
-  await _origBoot();
-  await loadCurrentUser();
-}
+// ── Equipe panel auto-load handled via loadPanel hook below ──
 
 </script>
 </body>
