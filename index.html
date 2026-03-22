@@ -2738,4 +2738,1229 @@ window.addEventListener('load', () => {
   <img src="logo.svg" alt="IA em 30 Dias" class="cw-logo">
   <h3 class="cw-title">Pagamento aberto! ✅</h3>
   <p class="cw-sub">Finalize sua compra na tela que abriu. Ela pode estar minimizada no seu navegador.</p>
-  <a href="#" class="cw-btn" target="
+  <a href="#" class="cw-btn" target=<script>
+// ═══════════════════════════════════════════════════════
+//  IA em 30 Dias — Live Chat Widget
+//  Injete este script no index.html antes de 
+<!-- ═══════════════════════════════
+     LIVE CHAT WIDGET — iaem30.com.br
+     ═══════════════════════════════ -->
+<style>
+#lc-btn{
+  position:fixed;bottom:24px;right:24px;z-index:9000;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--amber,#e8a020),var(--amber2,#f4bc55));
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(232,160,32,.4);
+  transition:all .25s;
+  font-size:24px;
+}
+#lc-btn:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(232,160,32,.55);}
+#lc-badge{
+  position:absolute;top:-3px;right:-3px;
+  width:18px;height:18px;border-radius:50%;
+  background:#e53935;color:#fff;
+  font-size:10px;font-weight:700;
+  display:none;align-items:center;justify-content:center;
+  border:2px solid var(--ink,#08070c);
+  font-family:'Instrument Sans',sans-serif;
+}
+#lc-window{
+  position:fixed;bottom:90px;right:24px;z-index:9001;
+  width:360px;max-width:calc(100vw - 32px);
+  background:var(--ink1,#0d0c14);
+  border:1px solid rgba(232,160,32,.2);
+  border-radius:18px;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+  display:none;flex-direction:column;overflow:hidden;
+  font-family:'Instrument Sans',sans-serif;
+  animation:lcSlideUp .25s cubic-bezier(.34,1.56,.64,1);
+  max-height:520px;
+}
+@keyframes lcSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+#lc-header{
+  background:linear-gradient(135deg,var(--amber,#e8a020),#d4900a);
+  padding:16px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.lc-agent-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(0,0,0,.2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  flex-shrink:0;
+}
+.lc-agent-info strong{display:block;font-size:14px;font-weight:700;color:#000;letter-spacing:-.02em;}
+.lc-agent-info span{font-size:11px;color:rgba(0,0,0,.6);display:flex;align-items:center;gap:4px;}
+.lc-online-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+#lc-close-btn{
+  margin-left:auto;background:rgba(0,0,0,.15);border:none;
+  width:26px;height:26px;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:#000;font-size:14px;transition:background .15s;flex-shrink:0;
+}
+#lc-close-btn:hover{background:rgba(0,0,0,.25);}
+
+/* Start screen */
+#lc-start{
+  padding:24px;display:flex;flex-direction:column;gap:12px;
+  overflow-y:auto;flex:1;
+}
+#lc-start p{font-size:13.5px;color:var(--cream2,#d4cbbf);line-height:1.65;margin-bottom:4px;}
+.lc-input{
+  width:100%;padding:10px 13px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;color:var(--cream,#f5f0e8);
+  font-size:13px;outline:none;transition:all .2s;
+  font-family:'Instrument Sans',sans-serif;box-sizing:border-box;
+}
+.lc-input:focus{border-color:var(--amber,#e8a020);background:rgba(255,255,255,.1);}
+.lc-input::placeholder{color:rgba(255,255,255,.3);}
+#lc-start-btn{
+  background:linear-gradient(135deg,var(--amber,#e8a020),#d4900a);
+  color:#000;border:none;border-radius:10px;padding:11px;
+  font-size:13.5px;font-weight:700;cursor:pointer;
+  font-family:'Instrument Sans',sans-serif;
+  transition:all .2s;letter-spacing:-.01em;
+}
+#lc-start-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(232,160,32,.4);}
+
+/* Chat screen */
+#lc-chat{display:none;flex-direction:column;flex:1;min-height:0;}
+#lc-messages{
+  flex:1;overflow-y:auto;padding:14px;
+  display:flex;flex-direction:column;gap:8px;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;
+}
+.lc-msg{display:flex;flex-direction:column;max-width:82%;}
+.lc-msg.visitor{align-self:flex-end;align-items:flex-end;}
+.lc-msg.agent,.lc-msg.bot{align-self:flex-start;}
+.lc-bubble{
+  padding:9px 13px;border-radius:14px;
+  font-size:13px;line-height:1.55;word-break:break-word;
+}
+.lc-msg.visitor .lc-bubble{
+  background:linear-gradient(135deg,var(--amber,#e8a020),#d4900a);
+  color:#000;border-radius:14px 4px 14px 14px;
+}
+.lc-msg.agent .lc-bubble,.lc-msg.bot .lc-bubble{
+  background:rgba(255,255,255,.09);
+  color:var(--cream,#f5f0e8);border-radius:4px 14px 14px 14px;
+  border:1px solid rgba(255,255,255,.07);
+}
+.lc-msg-meta{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px;padding:0 2px;}
+.lc-msg.visitor .lc-msg-meta{text-align:right;}
+.lc-typing{
+  display:none;align-self:flex-start;
+  background:rgba(255,255,255,.09);
+  border:1px solid rgba(255,255,255,.07);
+  padding:10px 14px;border-radius:4px 14px 14px 14px;
+  gap:4px;align-items:center;
+}
+.lc-typing span{
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(255,255,255,.4);
+  animation:lcBounce 1.2s infinite;
+}
+.lc-typing span:nth-child(2){animation-delay:.15s;}
+.lc-typing span:nth-child(3){animation-delay:.3s;}
+@keyframes lcBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+#lc-input-area{
+  padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+#lc-msg-input{
+  flex:1;padding:9px 13px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;color:var(--cream,#f5f0e8);
+  font-size:13px;outline:none;
+  font-family:'Instrument Sans',sans-serif;
+  transition:border-color .2s;
+}
+#lc-msg-input:focus{border-color:var(--amber,#e8a020);}
+#lc-msg-input::placeholder{color:rgba(255,255,255,.3);}
+#lc-send-btn{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--amber,#e8a020);border:none;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:all .2s;
+}
+#lc-send-btn:hover{background:#d4900a;transform:scale(1.08);}
+#lc-send-btn svg{color:#000;}
+@media(max-width:400px){#lc-window{right:8px;bottom:80px;width:calc(100vw - 16px);}}
+
+/* ══════════════════════════════════════
+   LIVE CHAT WIDGET
+══════════════════════════════════════ */
+#chat-widget {
+  position: fixed; bottom: 90px; right: 24px; z-index: 500;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+}
+#chat-bubble {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: 0 4px 20px rgba(232,160,32,.4);
+  transition: all .25s; border: none; position: relative;
+  flex-shrink: 0;
+}
+#chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(232,160,32,.5); }
+#chat-bubble svg { transition: all .25s; }
+#chat-bubble.open svg.ico-chat { display: none; }
+#chat-bubble.open svg.ico-close { display: block !important; }
+#chat-unread-dot {
+  position: absolute; top: 2px; right: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--red); border: 2px solid var(--ink);
+  font-size: 8px; font-weight: 700; color: #fff;
+  display: none; align-items: center; justify-content: center;
+}
+#chat-box {
+  width: 340px; max-width: calc(100vw - 32px);
+  background: var(--ink1); border: 1px solid var(--line2);
+  border-radius: 20px; overflow: hidden;
+  box-shadow: 0 12px 48px rgba(0,0,0,.6);
+  display: none; flex-direction: column;
+  animation: chatSlideUp .25s cubic-bezier(.34,1.56,.64,1);
+  max-height: 520px;
+}
+#chat-box.open { display: flex; }
+@keyframes chatSlideUp { from{opacity:0;transform:translateY(16px) scale(.97)} to{opacity:1;transform:none} }
+
+/* Chat header */
+.chat-header {
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.chat-header-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(0,0,0,.2); display: flex; align-items: center;
+  justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.chat-header-info strong {
+  display: block; font-family: 'Fraunces', serif;
+  font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.02em;
+}
+.chat-header-info span { font-size: 11px; color: rgba(8,7,12,.65); }
+.chat-header-status {
+  margin-left: auto; display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: rgba(8,7,12,.7); flex-shrink: 0;
+}
+.chat-header-status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #059669;
+  box-shadow: 0 0 6px rgba(5,150,105,.6);
+  animation: livePulse 2s infinite;
+}
+
+/* Pre-chat form */
+#chat-pre {
+  padding: 20px 18px; flex: 1; overflow-y: auto;
+}
+.chat-welcome { font-size: 14px; color: var(--cream2); line-height: 1.6; margin-bottom: 16px; }
+.chat-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.chat-field label { font-size: 11.5px; font-weight: 600; color: var(--warm); }
+.chat-field input {
+  padding: 9px 13px; background: var(--ink2);
+  border: 1px solid var(--line2); border-radius: 10px;
+  color: var(--cream); font-size: 13px; outline: none;
+  font-family: 'Instrument Sans', sans-serif; transition: all .2s;
+}
+.chat-field input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px var(--amberbg); }
+.chat-field input::placeholder { color: var(--warm2); }
+.chat-start-btn {
+  width: 100%; padding: 11px; margin-top: 4px;
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  color: var(--ink); border: none; border-radius: 10px;
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: all .2s; letter-spacing: -.01em;
+}
+.chat-start-btn:hover { opacity: .9; transform: translateY(-1px); }
+
+/* Messages area */
+#chat-msgs {
+  flex: 1; overflow-y: auto; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--ink3) transparent;
+}
+.chat-msg { display: flex; gap: 8px; align-items: flex-end; max-width: 85%; }
+.chat-msg.visitor { flex-direction: row-reverse; align-self: flex-end; }
+.chat-msg.agent   { align-self: flex-start; }
+.chat-msg-bubble {
+  padding: 9px 13px; border-radius: 14px;
+  font-size: 13px; line-height: 1.5; word-break: break-word;
+}
+.chat-msg.visitor .chat-msg-bubble {
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  color: var(--ink); border-radius: 14px 14px 4px 14px;
+}
+.chat-msg.agent .chat-msg-bubble {
+  background: var(--ink2); color: var(--cream2);
+  border: 1px solid var(--line); border-radius: 14px 14px 14px 4px;
+}
+.chat-msg-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--ink3); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; flex-shrink: 0;
+}
+.chat-msg-time { font-size: 10px; color: var(--warm2); margin-top: 3px; text-align: right; }
+.chat-msg.agent .chat-msg-time { text-align: left; }
+
+/* Typing indicator */
+.chat-typing {
+  display: flex; gap: 4px; align-items: center; padding: 10px 14px;
+  background: var(--ink2); border-radius: 14px 14px 14px 4px;
+  width: fit-content;
+}
+.chat-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--warm);
+  animation: typingDot 1.2s infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: .2s; }
+.chat-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typingDot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+/* Input area */
+#chat-input-area {
+  padding: 12px 14px; border-top: 1px solid var(--line);
+  display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+  background: var(--ink1);
+}
+#chat-visitor-input {
+  flex: 1; padding: 9px 13px;
+  background: var(--ink2); border: 1px solid var(--line2);
+  border-radius: 20px; color: var(--cream);
+  font-size: 13px; outline: none; font-family: 'Instrument Sans', sans-serif;
+  transition: all .2s;
+}
+#chat-visitor-input:focus { border-color: var(--amber); }
+#chat-visitor-input::placeholder { color: var(--warm2); }
+#chat-send-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--amber); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s; flex-shrink: 0;
+}
+#chat-send-btn:hover { background: var(--amber2); transform: scale(1.05); }
+
+/* Offline message */
+#chat-offline-msg {
+  padding: 20px; text-align: center; flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+}
+#chat-offline-msg .offline-ico { font-size: 32px; }
+#chat-offline-msg p { font-size: 13px; color: var(--warm); line-height: 1.6; }
+
+@media(max-width:480px) {
+  #chat-widget { bottom: 80px; right: 14px; }
+  #chat-box { width: calc(100vw - 28px); }
+}
+</style>
+
+<div id="lc-btn" onclick="lcToggle()" title="Falar com a equipe">
+  <span id="lc-btn-icon">💬</span>
+  <span id="lc-badge"></span>
+</div>
+
+<div id="lc-window">
+  <div id="lc-header">
+    <div class="lc-agent-avatar" id="lc-agent-avatar">🤖</div>
+    <div class="lc-agent-info">
+      <strong id="lc-agent-name">Suporte</strong>
+      <span><span class="lc-online-dot"></span> Online agora</span>
+    </div>
+    <button id="lc-close-btn" onclick="lcToggle()">✕</button>
+  </div>
+
+  <!-- Tela inicial -->
+  <div id="lc-start">
+    <p id="lc-welcome-msg">Olá! 👋 Como posso te ajudar hoje?</p>
+    <input class="lc-input" id="lc-visitor-name" placeholder="Seu nome *" maxlength="60">
+    <input class="lc-input" id="lc-visitor-email" placeholder="Email (opcional)" type="email" style="display:none">
+    <textarea class="lc-input" id="lc-first-msg" placeholder="Digite sua dúvida..." rows="3" style="resize:none"></textarea>
+    <button id="lc-start-btn" onclick="lcStartChat()">Iniciar conversa →</button>
+  </div>
+
+  <!-- Tela de chat -->
+  <div id="lc-chat">
+    <div id="lc-messages">
+      <div class="lc-typing" id="lc-typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <div id="lc-input-area">
+      <input type="text" id="lc-msg-input" placeholder="Digite uma mensagem..." maxlength="1000"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSend()}">
+      <button id="lc-send-btn" onclick="lcSend()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const LC_URL =  + LC_URL + ;
+  let _sid = null, _pollTimer = null, _lastTs = null, _name = '';
+  const STORAGE_KEY = 'lc_session_iaem30';
+
+  // Restaurar sessão existente
+  function lcRestoreSession(){
+    try {
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      if(stored){
+        const s = JSON.parse(stored);
+        if(s.id && s.name && Date.now() - s.ts < 86400000){
+          _sid = s.id; _name = s.name; _lastTs = s.lastTs || null;
+          lcShowChat();
+          lcLoadHistory();
+          lcStartPoll();
+          return;
+        }
+      }
+    } catch(e){}
+  }
+
+  function lcSaveSession(){ 
+    try{ sessionStorage.setItem(STORAGE_KEY, JSON.stringify({id:_sid,name:_name,ts:Date.now(),lastTs:_lastTs})); }catch(e){} 
+  }
+
+  // Carregar config
+  async function lcLoadConfig(){
+    try{
+      const r = await fetch(LC_URL+'?action=config');
+      const cfg = await r.json();
+      if(cfg.welcomeMessage) document.getElementById('lc-welcome-msg').textContent = cfg.welcomeMessage;
+      if(cfg.agentName) document.getElementById('lc-agent-name').textContent = cfg.agentName;
+      if(cfg.agentAvatar) document.getElementById('lc-agent-avatar').textContent = cfg.agentAvatar;
+      if(cfg.collectEmail) document.getElementById('lc-visitor-email').style.display = '';
+    }catch(e){}
+  }
+
+  function lcToggle(){
+    const w = document.getElementById('lc-window');
+    const open = w.style.display === 'flex';
+    w.style.display = open ? 'none' : 'flex';
+    document.getElementById('lc-btn-icon').textContent = open ? '💬' : '✕';
+    if(!open){
+      document.getElementById('lc-badge').style.display = 'none';
+      if(_sid) lcMarkRead();
+    }
+  }
+
+  async function lcStartChat(){
+    const nameEl = document.getElementById('lc-visitor-name');
+    const emailEl = document.getElementById('lc-visitor-email');
+    const msgEl  = document.getElementById('lc-first-msg');
+    const name   = nameEl.value.trim();
+    const msg    = msgEl.value.trim();
+    if(!name){ nameEl.focus(); nameEl.style.borderColor='#e53935'; setTimeout(()=>nameEl.style.borderColor='',2000); return; }
+    if(!msg){ msgEl.focus(); msgEl.style.borderColor='#e53935'; setTimeout(()=>msgEl.style.borderColor='',2000); return; }
+
+    const btn = document.getElementById('lc-start-btn');
+    btn.disabled = true; btn.textContent = 'Conectando...';
+
+    try{
+      const r = await fetch(LC_URL+'?action=start', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          visitor_name: name,
+          visitor_email: emailEl.value.trim() || undefined,
+          visitor_page: location.href,
+          first_message: msg,
+        })
+      });
+      const data = await r.json();
+      if(data.session_id){
+        _sid = data.session_id; _name = name;
+        _lastTs = new Date().toISOString();
+        lcSaveSession();
+        lcShowChat();
+        lcLoadHistory();
+        lcStartPoll();
+      }
+    }catch(e){
+      btn.disabled=false; btn.textContent='Iniciar conversa →';
+    }
+  }
+
+  function lcShowChat(){
+    document.getElementById('lc-start').style.display = 'none';
+    document.getElementById('lc-chat').style.display = 'flex';
+  }
+
+  async function lcLoadHistory(){
+    try{
+      const r = await fetch(LC_URL+'?action=history&session_id='+_sid);
+      const data = await r.json();
+      const msgs = data.messages || [];
+      const container = document.getElementById('lc-messages');
+      // Clear except typing indicator
+      const typing = document.getElementById('lc-typing');
+      container.innerHTML = '';
+      container.appendChild(typing);
+      msgs.forEach(m => lcAddBubble(m, false));
+      lcScrollBottom();
+      if(msgs.length) _lastTs = msgs[msgs.length-1].created_at;
+      lcSaveSession();
+    }catch(e){}
+  }
+
+  function lcStartPoll(){
+    if(_pollTimer) clearInterval(_pollTimer);
+    _pollTimer = setInterval(lcPoll, 3000);
+  }
+
+  async function lcPoll(){
+    if(!_sid) return;
+    try{
+      const since = _lastTs || new Date(0).toISOString();
+      const r = await fetch(LC_URL+'?action=poll&session_id='+_sid+'&since='+encodeURIComponent(since));
+      const data = await r.json();
+      const msgs = data.messages || [];
+      if(msgs.length){
+        const win = document.getElementById('lc-window');
+        msgs.forEach(m => {
+          lcAddBubble(m, true);
+          if(m.sender !== 'visitor' && win.style.display !== 'flex'){
+            const badge = document.getElementById('lc-badge');
+            badge.textContent = (parseInt(badge.textContent)||0)+1;
+            badge.style.display = 'flex';
+          }
+        });
+        _lastTs = msgs[msgs.length-1].created_at;
+        lcSaveSession();
+        lcScrollBottom();
+      }
+    }catch(e){}
+  }
+
+  function lcAddBubble(msg, animate){
+    const container = document.getElementById('lc-messages');
+    const typing = document.getElementById('lc-typing');
+    const div = document.createElement('div');
+    div.className = 'lc-msg ' + msg.sender;
+    const time = new Date(msg.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    div.innerHTML = '<div class="lc-bubble">'+escHtml(msg.content)+'</div>'
+      +'<div class="lc-msg-meta">'+(msg.sender!=='visitor'?msg.sender_name+' · ':'')+time+'</div>';
+    if(animate) div.style.animation='lcSlideUp .2s ease';
+    container.insertBefore(div, typing);
+  }
+
+  async function lcSend(){
+    const input = document.getElementById('lc-msg-input');
+    const content = input.value.trim();
+    if(!content || !_sid) return;
+    input.value = '';
+
+    // Mostrar imediatamente
+    const now = new Date().toISOString();
+    lcAddBubble({sender:'visitor',sender_name:_name,content,created_at:now}, true);
+    lcScrollBottom();
+
+    try{
+      await fetch(LC_URL+'?action=send', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({session_id:_sid, sender:'visitor', sender_name:_name, content})
+      });
+      _lastTs = now;
+      lcSaveSession();
+    }catch(e){}
+  }
+
+  async function lcMarkRead(){
+    if(!_sid) return;
+    try{ await fetch(LC_URL+'?action=read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid})}); }catch(e){}
+  }
+
+  function lcScrollBottom(){
+    const el = document.getElementById('lc-messages');
+    if(el) el.scrollTop = el.scrollHeight;
+  }
+
+  function escHtml(s){ 
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); 
+  }
+
+  // Inicializar
+  window.lcToggle    = lcToggle;
+  window.lcStartChat = lcStartChat;
+  window.lcSend      = lcSend;
+
+  lcLoadConfig();
+  lcRestoreSession();
+})();
+</script>
+
+<script src="chat-widget.js"></script>
+
+<!-- ══ LIVE CHAT WIDGET ══ -->
+<div id="chat-widget">
+  <div id="chat-box">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="chat-header-avatar">🤖</div>
+      <div class="chat-header-info">
+        <strong>Suporte IA em 30 Dias</strong>
+        <span>Responderemos em instantes</span>
+      </div>
+      <div class="chat-header-status">
+        <div class="chat-header-status-dot"></div>
+        Online
+      </div>
+    </div>
+
+    <!-- Pre-chat: formulário de nome/email -->
+    <div id="chat-pre">
+      <p class="chat-welcome">Olá! 👋 Tem alguma dúvida sobre o ebook? Estamos aqui para ajudar.</p>
+      <div class="chat-field">
+        <label>Seu nome</label>
+        <input type="text" id="chat-visitor-name" placeholder="Como podemos te chamar?">
+      </div>
+      <div class="chat-field">
+        <label>Email <span style="color:var(--warm2)">(opcional)</span></label>
+        <input type="email" id="chat-visitor-email" placeholder="Para enviarmos a resposta">
+      </div>
+      <button class="chat-start-btn" onclick="startChat()">Iniciar conversa →</button>
+    </div>
+
+    <!-- Área de mensagens (oculta até iniciar) -->
+    <div id="chat-msgs" style="display:none"></div>
+
+    <!-- Input de mensagem (oculto até iniciar) -->
+    <div id="chat-input-area" style="display:none">
+      <input type="text" id="chat-visitor-input" placeholder="Digite sua mensagem..."
+        onkeydown="if(event.key==='Enter')sendVisitorMsg()">
+      <button id="chat-send-btn" onclick="sendVisitorMsg()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Botão flutuante -->
+  <button id="chat-bubble" onclick="toggleChat()" aria-label="Abrir chat">
+    <div id="chat-unread-dot"></div>
+    <svg class="ico-chat" width="22" height="22" fill="none" viewBox="0 0 24 24">
+      <path stroke="var(--ink)" stroke-width="2" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+    <svg class="ico-close" width="20" height="20" fill="none" viewBox="0 0 24 24" style="display:none">
+      <path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+// ══ LIVE CHAT — Visitor Side ══
+const CHAT_SB_URL  = 'https://ihylwxjxjajtdhsnlrfm.supabase.co';
+const CHAT_SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
+const CHAT_H = { Authorization: 'Bearer ' + CHAT_SB_ANON, 'Content-Type': 'application/json', apikey: CHAT_SB_ANON };
+
+let chatSessionId  = null;
+let chatOpen       = false;
+let chatPollTimer  = null;
+let chatLastMsgId  = null;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const box  = document.getElementById('chat-box');
+  const btn  = document.getElementById('chat-bubble');
+  box.classList.toggle('open', chatOpen);
+  btn.classList.toggle('open', chatOpen);
+  if (chatOpen) {
+    clearUnreadDot();
+    if (chatSessionId) scrollChatBottom();
+    else document.getElementById('chat-visitor-name').focus();
+  } else {
+    if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
+  }
+}
+
+async function startChat() {
+  const name  = document.getElementById('chat-visitor-name').value.trim() || 'Visitante';
+  const email = document.getElementById('chat-visitor-email').value.trim();
+  const btn   = document.querySelector('.chat-start-btn');
+  btn.disabled = true; btn.textContent = 'Conectando...';
+
+  try {
+    // Criar sessão
+    const res = await fetch(CHAT_SB_URL + '/rest/v1/iaem30_chat_sessions', {
+      method: 'POST',
+      headers: { ...CHAT_H, Prefer: 'return=representation' },
+      body: JSON.stringify({ visitor_name: name, visitor_email: email || null, page_url: location.href, status: 'open' })
+    });
+    const data = await res.json();
+    if (!data[0]) throw new Error('Erro ao criar sessão');
+    chatSessionId = data[0].id;
+
+    // Enviar mensagem de boas-vindas automática
+    await sendSystemMsg('Olá ' + name + '! 👋 Em que posso ajudar?');
+
+    // Mostrar interface de chat
+    document.getElementById('chat-pre').style.display       = 'none';
+    document.getElementById('chat-msgs').style.display      = 'flex';
+    document.getElementById('chat-input-area').style.display = '';
+    document.getElementById('chat-visitor-input').focus();
+
+    // Carregar mensagens e iniciar polling
+    await loadChatMsgs();
+    chatPollTimer = setInterval(loadChatMsgs, 3000);
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Tentar novamente';
+  }
+}
+
+async function sendSystemMsg(text) {
+  await fetch(CHAT_SB_URL + '/rest/v1/iaem30_chat_live_messages', {
+    method: 'POST',
+    headers: { ...CHAT_H, Prefer: 'return=minimal' },
+    body: JSON.stringify({ session_id: chatSessionId, sender: 'agent', agent_name: 'Sistema', content: text, read_by_visitor: false, read_by_agent: true })
+  });
+}
+
+async function sendVisitorMsg() {
+  const input = document.getElementById('chat-visitor-input');
+  const text  = input.value.trim();
+  if (!text || !chatSessionId) return;
+  input.value = '';
+
+  // Adicionar mensagem na UI imediatamente
+  appendChatMsg({ sender: 'visitor', content: text, created_at: new Date().toISOString() });
+
+  await fetch(CHAT_SB_URL + '/rest/v1/iaem30_chat_live_messages', {
+    method: 'POST',
+    headers: { ...CHAT_H, Prefer: 'return=minimal' },
+    body: JSON.stringify({ session_id: chatSessionId, sender: 'visitor', content: text, read_by_agent: false, read_by_visitor: true })
+  });
+
+  // Atualizar last_msg_at na sessão
+  fetch(CHAT_SB_URL + '/rest/v1/iaem30_chat_sessions?id=eq.' + chatSessionId, {
+    method: 'PATCH',
+    headers: { ...CHAT_H, Prefer: 'return=minimal' },
+    body: JSON.stringify({ last_msg_at: new Date().toISOString(), status: 'active' })
+  });
+}
+
+async function loadChatMsgs() {
+  if (!chatSessionId) return;
+  let url = CHAT_SB_URL + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + chatSessionId + '&order=created_at.asc&limit=80';
+  if (chatLastMsgId) url += '&id=gt.' + chatLastMsgId;
+
+  const res  = await fetch(url, { headers: CHAT_H });
+  const msgs = await res.json();
+  if (!Array.isArray(msgs) || !msgs.length) return;
+
+  const wasBottom = isScrolledToBottom();
+  msgs.forEach(m => { if (!document.getElementById('cmsg-' + m.id)) appendChatMsg(m); });
+  chatLastMsgId = msgs[msgs.length - 1].id;
+
+  // Mostrar badge se chat fechado e há mensagem do agente
+  const newAgentMsgs = msgs.filter(m => m.sender === 'agent' && !m.read_by_visitor);
+  if (!chatOpen && newAgentMsgs.length) showUnreadDot(newAgentMsgs.length);
+  if (wasBottom || chatOpen) scrollChatBottom();
+
+  // Marcar como lida pelo visitante
+  if (newAgentMsgs.length) {
+    fetch(CHAT_SB_URL + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + chatSessionId + '&sender=eq.agent', {
+      method: 'PATCH', headers: { ...CHAT_H, Prefer: 'return=minimal' },
+      body: JSON.stringify({ read_by_visitor: true })
+    });
+  }
+}
+
+function appendChatMsg(msg) {
+  const el = document.getElementById('chat-msgs');
+  if (!el) return;
+  const div = document.createElement('div');
+  div.id = 'cmsg-' + (msg.id || Date.now());
+  div.className = 'chat-msg ' + msg.sender;
+  const t = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  const avatar = msg.sender === 'agent' ? '<div class="chat-msg-avatar">🤖</div>' : '';
+  div.innerHTML = avatar + '<div><div class="chat-msg-bubble">' + escMsg(msg.content) + '</div><div class="chat-msg-time">' + t + '</div></div>';
+  el.appendChild(div);
+}
+
+function escMsg(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function scrollChatBottom() {
+  const el = document.getElementById('chat-msgs');
+  if (el) el.scrollTop = el.scrollHeight;
+}
+
+function isScrolledToBottom() {
+  const el = document.getElementById('chat-msgs');
+  return el ? el.scrollHeight - el.scrollTop - el.clientHeight < 40 : true;
+}
+
+function showUnreadDot(count) {
+  const dot = document.getElementById('chat-unread-dot');
+  if (dot) { dot.style.display = 'flex'; dot.textContent = count > 9 ? '9+' : count; }
+}
+
+function clearUnreadDot() {
+  const dot = document.getElementById('chat-unread-dot');
+  if (dot) dot.style.display = 'none';
+}
+</script>
+
+
+<!-- ═══════════════════════════════════════
+     WIDGET DE SUPORTE — CHAT AO VIVO
+═══════════════════════════════════════ -->
+<style>
+/* Chat widget */
+#chat-widget {
+  position: fixed; bottom: 24px; right: 24px; z-index: 8000;
+  font-family: 'Instrument Sans', sans-serif;
+}
+#chat-btn {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(232,160,32,.4);
+  transition: all .25s; position: relative;
+  color: var(--ink);
+}
+#chat-btn:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(232,160,32,.5); }
+#chat-unread-dot {
+  position: absolute; top: -2px; right: -2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--rose, #ff4f6d); border: 2px solid var(--ink);
+  font-size: 8px; font-weight: 700; color: #fff;
+  display: none; align-items: center; justify-content: center;
+}
+#chat-unread-dot.show { display: flex; }
+
+#chat-box {
+  position: absolute; bottom: 68px; right: 0;
+  width: 360px; height: 520px;
+  background: var(--ink1, #0d0c14);
+  border: 1px solid var(--line, rgba(255,255,255,.06));
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  display: none; flex-direction: column; overflow: hidden;
+  animation: chatOpen .2s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes chatOpen { from{opacity:0;transform:scale(.95) translateY(10px)} to{opacity:1;transform:none} }
+#chat-box.open { display: flex; }
+
+.chat-box-header {
+  padding: 16px 18px; background: var(--ink2, #13121e);
+  border-bottom: 1px solid var(--line, rgba(255,255,255,.06));
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.chat-box-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  flex-shrink: 0;
+}
+.chat-box-info strong { display: block; font-size: 13.5px; font-weight: 700; color: var(--cream, #f5f0e8); }
+.chat-box-info span {
+  font-size: 11px; color: var(--jade, #00c896);
+  display: flex; align-items: center; gap: 5px;
+}
+.chat-online-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--jade, #00c896);
+  box-shadow: 0 0 6px var(--jade, #00c896);
+  animation: chatPulse 2s infinite;
+}
+@keyframes chatPulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+.chat-close-btn {
+  margin-left: auto; background: none; border: none;
+  color: var(--warm, #8a8070); cursor: pointer; font-size: 18px;
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.chat-close-btn:hover { background: rgba(255,255,255,.06); color: var(--cream, #f5f0e8); }
+
+/* Name capture form */
+#chat-intro {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 28px 24px; text-align: center; gap: 16px;
+}
+#chat-intro h4 {
+  font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700;
+  letter-spacing: -.02em; color: var(--cream, #f5f0e8);
+}
+#chat-intro p { font-size: 13px; color: var(--warm, #8a8070); line-height: 1.6; }
+#chat-intro input {
+  width: 100%; padding: 10px 14px;
+  background: var(--ink2, #13121e); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px; color: var(--cream, #f5f0e8); font-size: 13px;
+  font-family: 'Instrument Sans', sans-serif; outline: none; transition: all .2s;
+}
+#chat-intro input:focus { border-color: var(--amber, #e8a020); box-shadow: 0 0 0 3px rgba(232,160,32,.1); }
+#chat-intro button {
+  width: 100%; padding: 11px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--amber, #e8a020), var(--amber2, #f4bc55));
+  color: var(--ink, #08070c); border: none; cursor: pointer;
+  font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700;
+  transition: all .2s;
+}
+#chat-intro button:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,160,32,.3); }
+
+/* Messages area */
+#chat-messages-area {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: none; flex-direction: column; gap: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--ink3, #1c1a2c) transparent;
+}
+#chat-messages-area.active { display: flex; }
+
+.chat-msg {
+  display: flex; gap: 8px; align-items: flex-end;
+}
+.chat-msg.from-visitor { flex-direction: row-reverse; }
+.chat-msg-bubble {
+  max-width: 75%; padding: 9px 13px; border-radius: 14px;
+  font-size: 13px; line-height: 1.55; word-break: break-word;
+}
+.from-agent .chat-msg-bubble {
+  background: var(--ink3, #1c1a2c);
+  border: 1px solid rgba(255,255,255,.06);
+  color: var(--cream2, #d4cbbf);
+  border-bottom-left-radius: 4px;
+}
+.from-visitor .chat-msg-bubble {
+  background: linear-gradient(135deg, var(--amber, #e8a020), #d4900a);
+  color: var(--ink, #08070c); font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+.chat-msg-time {
+  font-size: 10px; color: var(--warm2, #4a4438);
+  flex-shrink: 0; padding-bottom: 2px;
+}
+.chat-msg-name { font-size: 10.5px; font-weight: 600; color: var(--amber2, #f4bc55); margin-bottom: 3px; }
+.chat-typing {
+  display: flex; gap: 4px; align-items: center; padding: 10px 14px;
+  background: var(--ink3, #1c1a2c); border-radius: 14px; border-bottom-left-radius: 4px;
+  width: fit-content;
+}
+.chat-typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--warm, #8a8070);
+  animation: typingDot 1.2s infinite;
+}
+.chat-typing span:nth-child(2) { animation-delay: .2s; }
+.chat-typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes typingDot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+/* Input area */
+#chat-input-area {
+  padding: 12px 14px; border-top: 1px solid var(--line, rgba(255,255,255,.06));
+  display: none; gap: 8px; align-items: center; flex-shrink: 0;
+}
+#chat-input-area.active { display: flex; }
+#chat-visitor-input {
+  flex: 1; padding: 9px 13px;
+  background: var(--ink2, #13121e); border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px; color: var(--cream, #f5f0e8); font-size: 13px;
+  font-family: 'Instrument Sans', sans-serif; outline: none; resize: none;
+  line-height: 1.4; max-height: 100px; overflow-y: auto; transition: border-color .2s;
+}
+#chat-visitor-input:focus { border-color: rgba(232,160,32,.3); }
+#chat-visitor-input::placeholder { color: var(--warm, #8a8070); }
+#chat-send-btn {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--amber, #e8a020), var(--amber2, #f4bc55));
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+#chat-send-btn:hover { transform: scale(1.08); }
+</style>
+
+<div id="chat-widget">
+  <div id="chat-box">
+    <!-- Header -->
+    <div class="chat-box-header">
+      <div class="chat-box-avatar">🤖</div>
+      <div class="chat-box-info">
+        <strong>Suporte IA em 30 Dias</strong>
+        <span><span class="chat-online-dot"></span> Online agora</span>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+    </div>
+
+    <!-- Intro / captura de nome -->
+    <div id="chat-intro">
+      <div style="font-size:36px">👋</div>
+      <h4>Olá! Como podemos ajudar?</h4>
+      <p>Tire suas dúvidas sobre o ebook IA em 30 Dias. Responderemos em instantes!</p>
+      <input type="text" id="chat-visitor-name" placeholder="Seu nome" maxlength="50">
+      <input type="email" id="chat-visitor-email" placeholder="Seu email (opcional)" style="margin-top:8px">
+      <button onclick="startChat()">Iniciar conversa →</button>
+    </div>
+
+    <!-- Área de mensagens -->
+    <div id="chat-messages-area"></div>
+
+    <!-- Input -->
+    <div id="chat-input-area">
+      <textarea id="chat-visitor-input" placeholder="Digite sua mensagem..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendVisitorMessage()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+      <button id="chat-send-btn" onclick="sendVisitorMessage()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path stroke="var(--ink,#08070c)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Botão flutuante -->
+  <button id="chat-btn" onclick="toggleChat()" title="Fale conosco">
+    <span id="chat-btn-icon">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+      </svg>
+    </span>
+    <div id="chat-unread-dot"></div>
+  </button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CHAT DE SUPORTE — SITE PÚBLICO
+// ═══════════════════════════════════════
+(function() {
+
+const SB   = 'https://ihylwxjxjajtdhsnlrfm.supabase.co';
+const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
+const H    = { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+
+// Gerar ou recuperar session ID único do visitante
+let SESSION_ID = localStorage.getItem('chat_session') || (() => {
+  const id = 'v_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  localStorage.setItem('chat_session', id);
+  return id;
+})();
+
+let CHAT_ID     = localStorage.getItem('chat_id') || null;
+let CHAT_OPEN   = false;
+let POLL_TIMER  = null;
+let LAST_MSG_ID = null;
+
+// ── API helpers ──
+async function sbGet(table, qs) {
+  try {
+    const r = await fetch(`${SB}/rest/v1/${table}${qs}`, { headers: H });
+    return r.ok ? r.json() : null;
+  } catch { return null; }
+}
+async function sbPost(table, data) {
+  try {
+    const r = await fetch(`${SB}/rest/v1/${table}`, {
+      method: 'POST', headers: { ...H, Prefer: 'return=representation' },
+      body: JSON.stringify(data)
+    });
+    const rows = r.ok ? await r.json() : null;
+    return rows && rows[0] ? rows[0] : null;
+  } catch { return null; }
+}
+async function sbPatch(table, qs, data) {
+  try {
+    await fetch(`${SB}/rest/v1/${table}${qs}`, {
+      method: 'PATCH', headers: { ...H, Prefer: 'return=minimal' },
+      body: JSON.stringify(data)
+    });
+  } catch {}
+}
+
+// ── Toggle chat ──
+window.toggleChat = function() {
+  CHAT_OPEN = !CHAT_OPEN;
+  const box = document.getElementById('chat-box');
+  const dot = document.getElementById('chat-unread-dot');
+  box.classList.toggle('open', CHAT_OPEN);
+  // Update button icon
+  document.getElementById('chat-btn-icon').innerHTML = CHAT_OPEN
+    ? '<svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 18L18 6M6 6l12 12"/></svg>'
+    : '<svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>';
+  if (CHAT_OPEN) {
+    dot.classList.remove('show');
+    if (CHAT_ID) { openExistingChat(); }
+    else { checkExistingSession(); }
+  } else {
+    stopPolling();
+  }
+};
+
+// ── Check if session already has a chat ──
+async function checkExistingSession() {
+  const rows = await sbGet('iaem30_support_chats', `?session_id=eq.${SESSION_ID}&select=id,status,visitor_name`);
+  if (rows && rows[0]) {
+    CHAT_ID = rows[0].id;
+    localStorage.setItem('chat_id', CHAT_ID);
+    openExistingChat(rows[0].visitor_name);
+  }
+}
+
+// ── Start new chat ──
+window.startChat = async function() {
+  const nameEl  = document.getElementById('chat-visitor-name');
+  const emailEl = document.getElementById('chat-visitor-email');
+  const name  = nameEl.value.trim() || 'Visitante';
+  const email = emailEl.value.trim() || null;
+
+  // Check for existing session first
+  const existing = await sbGet('iaem30_support_chats', `?session_id=eq.${SESSION_ID}&select=id`);
+  if (existing && existing[0]) {
+    CHAT_ID = existing[0].id;
+  } else {
+    const chat = await sbPost('iaem30_support_chats', {
+      session_id: SESSION_ID, visitor_name: name, visitor_email: email,
+      status: 'open', unread_admin: 0, unread_visitor: 0
+    });
+    if (!chat) { alert('Erro ao iniciar chat. Tente novamente.'); return; }
+    CHAT_ID = chat.id;
+  }
+  localStorage.setItem('chat_id', CHAT_ID);
+  openExistingChat(name);
+};
+
+// ── Open existing chat ──
+async function openExistingChat(name) {
+  document.getElementById('chat-intro').style.display = 'none';
+  document.getElementById('chat-messages-area').classList.add('active');
+  document.getElementById('chat-input-area').classList.add('active');
+  await loadMessages();
+  startPolling();
+  document.getElementById('chat-visitor-input').focus();
+}
+
+// ── Load messages ──
+async function loadMessages() {
+  const el = document.getElementById('chat-messages-area');
+  if (!el || !CHAT_ID) return;
+  const rows = await sbGet('iaem30_support_messages',
+    `?chat_id=eq.${CHAT_ID}&order=created_at.asc&limit=80`
+  );
+  if (!rows) return;
+
+  el.innerHTML = '';
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--warm,#8a8070);font-size:13px">👋 Diga olá! Nossa equipe vai responder em breve.</div>';
+    return;
+  }
+
+  rows.forEach(msg => addMsgToDOM(msg, false));
+  el.scrollTop = el.scrollHeight;
+
+  // Mark visitor messages as read
+  await sbPatch('iaem30_support_messages', `?chat_id=eq.${CHAT_ID}&sender=eq.agent`, { read: true });
+  await sbPatch('iaem30_support_chats', `?id=eq.${CHAT_ID}`, { unread_visitor: 0 });
+
+  LAST_MSG_ID = rows[rows.length - 1]?.id || null;
+}
+
+// ── Add single message to DOM ──
+function addMsgToDOM(msg, animate) {
+  const el = document.getElementById('chat-messages-area');
+  const isVisitor = msg.sender === 'visitor';
+  const time = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (isVisitor ? 'from-visitor' : 'from-agent');
+  div.dataset.msgId = msg.id;
+  div.innerHTML = `
+    ${!isVisitor ? `<div style="font-size:18px;flex-shrink:0">🤖</div>` : ''}
+    <div>
+      ${!isVisitor && msg.agent_name ? `<div class="chat-msg-name">${msg.agent_name}</div>` : ''}
+      <div class="chat-msg-bubble">${escHtml(msg.content)}</div>
+      <div class="chat-msg-time" style="${isVisitor ? 'text-align:right' : ''}">${time}</div>
+    </div>`;
+  if (animate) { div.style.opacity = '0'; div.style.transform = 'translateY(8px)'; }
+  el.appendChild(div);
+  if (animate) { requestAnimationFrame(() => { div.style.transition = 'all .25s'; div.style.opacity = '1'; div.style.transform = 'none'; }); }
+  el.scrollTop = el.scrollHeight;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/
+/g,'<br>');
+}
+
+// ── Send message ──
+window.sendVisitorMessage = async function() {
+  const input = document.getElementById('chat-visitor-input');
+  const content = input.value.trim();
+  if (!content || !CHAT_ID) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  const msg = await sbPost('iaem30_support_messages', {
+    chat_id: CHAT_ID, sender: 'visitor', content
+  });
+  if (msg) {
+    addMsgToDOM(msg, true);
+    await sbPatch('iaem30_support_chats', `?id=eq.${CHAT_ID}`, {
+      last_message: content.slice(0, 100),
+      last_msg_at: new Date().toISOString(),
+      status: 'active',
+      unread_admin: 99
+    });
+  }
+};
+
+// ── Polling for new messages ──
+function startPolling() {
+  stopPolling();
+  POLL_TIMER = setInterval(pollMessages, 4000);
+}
+function stopPolling() {
+  if (POLL_TIMER) { clearInterval(POLL_TIMER); POLL_TIMER = null; }
+}
+
+async function pollMessages() {
+  if (!CHAT_ID) return;
+  let qs = `?chat_id=eq.${CHAT_ID}&sender=eq.agent&order=created_at.asc`;
+  if (LAST_MSG_ID) qs += `&id=gt.${LAST_MSG_ID}`;
+  else qs += '&limit=10';
+
+  const rows = await sbGet('iaem30_support_messages', qs + '&created_at=gt.' + new Date(Date.now() - 120000).toISOString());
+  if (rows && rows.length) {
+    rows.forEach(msg => {
+      const existing = document.querySelector(`[data-msg-id="${msg.id}"]`);
+      if (!existing) {
+        addMsgToDOM(msg, true);
+        LAST_MSG_ID = msg.id;
+        // Show notification if chat is closed
+        if (!CHAT_OPEN) {
+          const dot = document.getElementById('chat-unread-dot');
+          dot.classList.add('show');
+        }
+      }
+    });
+    await sbPatch('iaem30_support_chats', `?id=eq.${CHAT_ID}`, { unread_visitor: 0 });
+  }
+}
+
+// Verificar sessão existente ao carregar
+window.addEventListener('load', function() {
+  if (SESSION_ID && localStorage.getItem('chat_id')) {
+    CHAT_ID = localStorage.getItem('chat_id');
+    // Verificar se tem mensagens não lidas
+    setTimeout(async function() {
+      const rows = await sbGet('iaem30_support_chats', `?id=eq.${CHAT_ID}&select=unread_visitor`);
+      if (rows && rows[0] && rows[0].unread_visitor > 0) {
+        document.getElementById('chat-unread-dot').classList.add('show');
+      }
+    }, 2000);
+  }
+});
+
+})(); // end IIFE
+</script>
+
+</body></html>

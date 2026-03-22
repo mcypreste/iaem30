@@ -828,7 +828,12 @@ code, .mono {
 
     <div class="sb-section">
       <div class="sb-section-label">IA & Conteúdo</div>
-      <button class="ni" onclick="go('chat-faq',this)">
+      <button class="ni" id="nav-inbox" onclick="go('inbox',this)">
+      <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+      <span class="lbl">Inbox</span>
+      <span class="badge" id="inbox-badge" style="display:none">0</span>
+    </button>
+    <button class="ni" onclick="go('chat-faq',this)">
         <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
         <span class="lbl">Chat FAQ</span>
       </button>
@@ -894,6 +899,20 @@ code, .mono {
 
   <!-- Footer -->
   <div class="sb-footer">
+    <button class="ni" onclick="go('livechat',this)">
+      <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+      <span class="lbl">Live Chat</span>
+      <span class="badge" id="lc-admin-badge" style="display:none">0</span>
+    </button>
+    <button class="ni" onclick="go('chat-suporte',this)" id="nav-chat-suporte">
+      <span class="ico">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+      </span>
+      <span class="lbl">Suporte Chat</span>
+      <span class="badge" id="chat-suporte-badge" style="display:none">0</span>
+    </button>
     <button class="ni" onclick="go('equipe',this)">
       <span class="ico"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path stroke="currentColor" stroke-width="1.5" stroke-linecap="round" d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
       <span class="lbl">Equipe & Perfil</span>
@@ -2043,7 +2062,339 @@ code, .mono {
     </div>
 
     <!-- CONFIG -->
-    <!-- ══ EQUIPE & PERFIL ══ -->
+    <!-- ══ CHAT AO VIVO ══ -->
+<div class="panel" id="p-livechat">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>💬 Chat ao Vivo</h2>
+      <p>Conversas em tempo real com visitantes do site</p>
+    </div>
+    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:6px">
+        <button class="btn ghost" id="lc-filter-open" onclick="lcFilter('open')" style="padding:6px 12px;font-size:12px">Abertas</button>
+        <button class="btn ghost" id="lc-filter-assigned" onclick="lcFilter('assigned')" style="padding:6px 12px;font-size:12px">Em atendimento</button>
+        <button class="btn ghost" id="lc-filter-resolved" onclick="lcFilter('resolved')" style="padding:6px 12px;font-size:12px">Resolvidas</button>
+        <button class="btn ghost" id="lc-filter-all" onclick="lcFilter('all')" style="padding:6px 12px;font-size:12px">Todas</button>
+      </div>
+      <button class="btn ghost" onclick="loadLiveChat()" style="padding:6px 12px;font-size:12px">↻</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px)">
+    <!-- Lista de conversas -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
+        <input type="text" id="lc-search" placeholder="🔍 Buscar visitante..." oninput="lcSearch(this.value)"
+          style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line);border-radius:8px;font-size:12.5px;outline:none;font-family:'Instrument Sans',sans-serif;color:var(--fg)">
+      </div>
+      <div id="lc-sessions" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando conversas...</div>
+      </div>
+    </div>
+
+    <!-- Área de atendimento -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <!-- Estado vazio -->
+      <div id="lc-empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--fg4)">
+        <div style="font-size:48px;opacity:.3">💬</div>
+        <div style="font-size:14px;font-weight:600;color:var(--fg3)">Selecione uma conversa</div>
+        <div style="font-size:12px">As mensagens aparecerão aqui</div>
+      </div>
+
+      <!-- Chat ativo -->
+      <div id="lc-chat-active" style="display:none;flex-direction:column;height:100%">
+        <!-- Header da conversa -->
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:18px">👤</div>
+            <div>
+              <div id="lc-visitor-name" style="font-weight:700;font-size:13.5px;font-family:'Fraunces',serif;letter-spacing:-.01em"></div>
+              <div id="lc-visitor-info" style="font-size:11px;color:var(--fg4)"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="lc-status-select" onchange="lcChangeStatus()" style="font-size:12px;padding:5px 8px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
+              <option value="open">🟡 Aberta</option>
+              <option value="assigned">🔵 Em atendimento</option>
+              <option value="resolved">✅ Resolvida</option>
+              <option value="closed">⛔ Fechada</option>
+            </select>
+            <button class="btn ghost" onclick="lcRefreshMessages()" style="padding:5px 10px;font-size:11px">↻</button>
+          </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="lc-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+
+        <!-- Input de resposta -->
+        <div style="padding:12px 16px;border-top:1px solid var(--line);flex-shrink:0">
+          <div style="display:flex;gap:8px">
+            <textarea id="lc-reply-input" placeholder="Digite sua resposta..." rows="2"
+              style="flex:1;padding:10px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;font-size:13.5px;outline:none;font-family:'Instrument Sans',sans-serif;color:var(--fg);resize:none;transition:border-color .2s"
+              onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcSendReply()}"></textarea>
+            <button onclick="lcSendReply()" class="btn primary" style="align-self:flex-end;padding:10px 18px">
+              Enviar
+              <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            </button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn ghost" onclick="lcQuickReply('Olá! Como posso te ajudar?')" style="font-size:11px;padding:4px 10px">👋 Saudação</button>
+            <button class="btn ghost" onclick="lcQuickReply('Obrigado pelo contato! Em breve retornaremos.')" style="font-size:11px;padding:4px 10px">⏳ Aguardar</button>
+            <button class="btn ghost" onclick="lcQuickReply('O link para acessar seu ebook está no email de confirmação da compra.')" style="font-size:11px;padding:4px 10px">📧 Link ebook</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LIVE CHAT ══ -->
+<div class="panel" id="p-livechat">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Live Chat</h2>
+      <p>Mensagens dos visitantes do site em tempo real</p>
+    </div>
+    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
+      <select id="lc-status-filter" onchange="lcLoadSessions()" style="font-size:12px;padding:6px 10px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
+        <option value="open">Abertas</option>
+        <option value="assigned">Em atendimento</option>
+        <option value="resolved">Resolvidas</option>
+        <option value="all">Todas</option>
+      </select>
+      <button class="btn ghost" onclick="lcLoadSessions()" style="padding:6px 12px;font-size:12px">↻</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px);min-height:500px">
+
+    <!-- Lista de sessões -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
+        <input type="text" id="lc-search" placeholder="Buscar visitante..." oninput="lcFilterSessions()"
+          style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;color:var(--fg);font-size:12px;outline:none;font-family:'Instrument Sans',sans-serif">
+      </div>
+      <div id="lc-sessions-list" style="flex:1;overflow-y:auto;padding:6px">
+        <div style="text-align:center;padding:24px;color:var(--fg4);font-size:12px">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Área de chat -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <!-- Header vazio (antes de selecionar) -->
+      <div id="lc-chat-empty" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
+        <div style="font-size:40px;opacity:.2">💬</div>
+        <div style="font-size:13px">Selecione uma conversa para responder</div>
+      </div>
+
+      <!-- Chat ativo -->
+      <div id="lc-chat-active" style="display:none;flex-direction:column;height:100%">
+        <!-- Header do chat -->
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
+          <div id="lc-visitor-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);border:1px solid rgba(212,144,10,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+          <div style="flex:1;min-width:0">
+            <div id="lc-visitor-name-hdr" style="font-weight:700;font-size:13.5px;color:var(--fg);font-family:'Fraunces',serif"></div>
+            <div id="lc-visitor-meta" style="font-size:11px;color:var(--fg4)"></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm ghost" onclick="lcAssignToMe()" style="font-size:11px;padding:4px 10px">👋 Assumir</button>
+            <button class="btn-sm success" onclick="lcResolve()" style="font-size:11px;padding:4px 10px">✓ Resolver</button>
+          </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="lc-admin-messages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px"></div>
+
+        <!-- Input -->
+        <div style="padding:10px 14px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end;flex-shrink:0">
+          <textarea id="lc-admin-input" placeholder="Digite sua resposta..." rows="1"
+            style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;color:var(--fg);font-size:13px;outline:none;resize:none;font-family:'Instrument Sans',sans-serif;max-height:100px;overflow-y:auto;line-height:1.5"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();lcAdminSend()}"></textarea>
+          <button onclick="lcAdminSend()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;margin-bottom:1px">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ INBOX — ATENDIMENTO ══ -->
+<div class="panel" id="p-inbox">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Inbox — Atendimento</h2>
+      <p>Mensagens dos visitantes do site em tempo real</p>
+    </div>
+    <div class="page-header-right" style="display:flex;gap:8px">
+      <select id="inbox-filter" onchange="loadInbox()" style="font-size:12px;padding:6px 10px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
+        <option value="open">Abertas</option>
+        <option value="attending">Em atendimento</option>
+        <option value="resolved">Resolvidas</option>
+        <option value="">Todas</option>
+      </select>
+      <button class="btn ghost" onclick="loadInbox()" style="padding:6px 12px;font-size:12px">↻ Atualizar</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px)">
+
+    <!-- Lista de conversas -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:10px 12px;border-bottom:1px solid var(--line);flex-shrink:0">
+        <input type="text" id="inbox-search" placeholder="Buscar por nome..." oninput="filterInboxList()" style="width:100%;padding:7px 10px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;font-size:12px;color:var(--fg);outline:none;font-family:inherit">
+      </div>
+      <div id="inbox-list" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando conversas...</div>
+      </div>
+    </div>
+
+    <!-- Área de conversa -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <!-- Header da conversa -->
+      <div id="inbox-chat-header" style="padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
+        <div style="flex:1;text-align:center;color:var(--fg4);font-size:13px;padding:20px">
+          Selecione uma conversa
+        </div>
+      </div>
+      <!-- Mensagens -->
+      <div id="inbox-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)">
+        <div style="text-align:center;color:var(--fg4);font-size:13px;padding:30px;opacity:.5">Nenhuma conversa selecionada</div>
+      </div>
+      <!-- Input de resposta -->
+      <div id="inbox-reply-area" style="padding:12px 16px;border-top:1px solid var(--line);display:none">
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <textarea id="inbox-input" placeholder="Digite sua resposta..." rows="2" style="flex:1;padding:9px 12px;background:var(--bg2);border:1px solid var(--line2);border-radius:10px;color:var(--fg);font-size:13px;outline:none;font-family:inherit;resize:none;line-height:1.5" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendInboxReply()}"></textarea>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button onclick="sendInboxReply()" class="btn primary" style="padding:9px 16px;font-size:12.5px">Enviar</button>
+            <button onclick="resolveSession()" class="btn success" style="padding:6px 10px;font-size:11px" id="btn-resolve">✓ Resolver</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap" id="quick-replies">
+          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Olá! Pode me contar mais?</button>
+          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Vou verificar e retorno!</button>
+          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">O ebook já está disponível 🎉</button>
+          <button class="btn ghost" onclick="useQuickReply(this)" style="font-size:11px;padding:4px 10px">Tem garantia de 7 dias!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EQUIPE & PERFIL ══ -->
+<!-- ══ SUPORTE CHAT ══ -->
+<div class="panel" id="p-chat-suporte">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Suporte ao Vivo</h2>
+      <p>Responda visitantes do site em tempo real</p>
+    </div>
+    <div class="page-header-right">
+      <button class="btn ghost" onclick="loadChatSessions()" style="font-size:12px">↻ Atualizar</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 160px);min-height:500px">
+
+    <!-- Lista de conversas -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <!-- Filtros -->
+      <div style="padding:12px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;gap:6px">
+        <button class="btn ghost chat-filter-btn active" data-filter="open,active" onclick="setChatFilter(this,'open,active')" style="flex:1;font-size:11px;padding:5px">🟢 Abertas</button>
+        <button class="btn ghost chat-filter-btn" data-filter="closed" onclick="setChatFilter(this,'closed')" style="flex:1;font-size:11px;padding:5px">✓ Fechadas</button>
+        <button class="btn ghost chat-filter-btn" data-filter="all" onclick="setChatFilter(this,'all')" style="flex:1;font-size:11px;padding:5px">Todas</button>
+      </div>
+      <!-- Sessions list -->
+      <div id="chat-sessions-list" style="flex:1;overflow-y:auto;padding:6px">
+        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:12px">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Área de conversa -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="chat-convo-panel">
+      <!-- Empty state -->
+      <div id="chat-empty-state" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
+        <div style="font-size:40px;opacity:.3">💬</div>
+        <div style="font-size:13px">Selecione uma conversa</div>
+      </div>
+
+      <!-- Conversation view (hidden until selected) -->
+      <div id="chat-convo-view" style="display:none;flex-direction:column;height:100%">
+        <!-- Visitor info header -->
+        <div style="padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+          <div style="flex:1;min-width:0">
+            <div id="convo-visitor-name" style="font-weight:700;font-size:13px;color:var(--fg)">Visitante</div>
+            <div id="convo-visitor-email" style="font-size:11px;color:var(--fg4)"></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <span id="convo-status-badge" class="tag green">Ativo</span>
+            <button class="btn danger" onclick="closeSession()" style="font-size:11px;padding:5px 10px">Fechar</button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="admin-chat-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px"></div>
+
+        <!-- Agent reply input -->
+        <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-shrink:0">
+          <input type="text" id="agent-msg-input" placeholder="Digite sua resposta..."
+            style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif;transition:border-color .2s"
+            onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAgentMsg()}">
+          <button onclick="sendAgentMsg()" style="width:36px;height:36px;border-radius:50%;background:var(--fg);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='var(--fg2)'" onmouseout="this.style.background='var(--fg)'">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--bg1)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUPORTE AO CLIENTE ══ -->
+<div class="panel" id="p-suporte">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Suporte ao Cliente</h2>
+      <p>Atenda visitantes do site em tempo real</p>
+    </div>
+    <div class="page-header-right" style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:6px">
+        <button class="btn ghost" id="filter-open" onclick="filterChats('open')" style="font-size:11px;padding:5px 12px">🟡 Abertos</button>
+        <button class="btn ghost" id="filter-attending" onclick="filterChats('attending')" style="font-size:11px;padding:5px 12px">🔵 Em atendimento</button>
+        <button class="btn ghost" id="filter-resolved" onclick="filterChats('resolved')" style="font-size:11px;padding:5px 12px">✅ Resolvidos</button>
+        <button class="btn ghost" id="filter-all" onclick="filterChats('all')" style="font-size:11px;padding:5px 12px">Todos</button>
+      </div>
+      <button class="btn ghost" onclick="loadSupport()" style="font-size:11px;padding:5px 10px">↻</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:16px;height:calc(100vh - 180px)">
+
+    <!-- Lista de conversas -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0">
+        <input type="text" id="support-search" placeholder="Buscar visitante..." oninput="filterChatSearch(this.value)" style="width:100%;padding:7px 11px;background:var(--bg2);border:1px solid var(--line2);border-radius:8px;font-size:12px;color:var(--fg);outline:none;font-family:'Instrument Sans',sans-serif">
+      </div>
+      <div id="chats-list" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Área de atendimento -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="support-chat-area">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--fg4)">
+        <div style="font-size:40px;opacity:.2">💬</div>
+        <div style="font-size:14px">Selecione uma conversa</div>
+        <div style="font-size:12px">para começar a atender</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="panel" id="p-equipe">
   <div class="page-header">
     <div class="page-header-left">
@@ -2252,6 +2603,85 @@ code, .mono {
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn ghost" onclick="document.getElementById('modal-change-pw').style.display='none'">Cancelar</button>
       <button class="btn primary" onclick="changePassword()">Alterar Senha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INBOX DE SUPORTE ══ -->
+<div class="panel" id="p-inbox">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Inbox de Suporte</h2>
+      <p>Mensagens dos visitantes do site</p>
+    </div>
+    <div class="page-header-right">
+      <button class="btn ghost" onclick="loadInbox()" style="padding:6px 12px;font-size:12px">↻ Atualizar</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;height:calc(100vh - 160px)">
+
+    <!-- Lista de conversas -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0;display:flex;gap:8px">
+        <button class="inbox-filter-btn on" data-filter="all"    onclick="filterInbox('all',this)"      style="flex:1;padding:5px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--fg);color:var(--bg1);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-weight:600;transition:all .15s">Todas</button>
+        <button class="inbox-filter-btn"    data-filter="open"   onclick="filterInbox('open',this)"     style="flex:1;padding:5px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);color:var(--fg3);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-weight:500;transition:all .15s">Abertas</button>
+        <button class="inbox-filter-btn"    data-filter="active" onclick="filterInbox('active',this)"   style="flex:1;padding:5px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);color:var(--fg3);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-weight:500;transition:all .15s">Ativas</button>
+        <button class="inbox-filter-btn"    data-filter="resolved" onclick="filterInbox('resolved',this)" style="flex:1;padding:5px;font-size:11px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);color:var(--fg3);cursor:pointer;font-family:'Instrument Sans',sans-serif;font-weight:500;transition:all .15s">Resolvidas</button>
+      </div>
+      <div id="inbox-list" style="flex:1;overflow-y:auto">
+        <div style="text-align:center;padding:40px;color:var(--fg4);font-size:13px">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Área do chat -->
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden" id="inbox-chat-area">
+      <!-- Estado vazio -->
+      <div id="inbox-empty-state" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--fg4)">
+        <div style="font-size:40px;opacity:.3">💬</div>
+        <div style="font-size:14px;font-weight:600;color:var(--fg3)">Selecione uma conversa</div>
+        <div style="font-size:12px">Clique em uma conversa à esquerda para abrir</div>
+      </div>
+
+      <!-- Chat ativo -->
+      <div id="inbox-chat-active" style="display:none;flex-direction:column;height:100%">
+        <!-- Header da conversa -->
+        <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
+          <div id="inbox-visitor-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+          <div style="flex:1">
+            <div id="inbox-visitor-name" style="font-weight:700;font-size:14px;color:var(--fg);font-family:'Fraunces',serif"></div>
+            <div id="inbox-visitor-email" style="font-size:11px;color:var(--fg4)"></div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span id="inbox-status-badge" style="font-size:11px;padding:3px 10px;border-radius:100px;font-weight:600"></span>
+            <select id="inbox-assign-select" onchange="assignChat(this.value)" style="font-size:11px;padding:4px 8px;background:var(--bg2);border:1px solid var(--line2);border-radius:6px;color:var(--fg3);outline:none">
+              <option value="">Não atribuído</option>
+            </select>
+            <button class="btn success" onclick="resolveChat()" style="padding:5px 12px;font-size:11px">✓ Resolver</button>
+            <button class="btn danger"  onclick="closeChat()"   style="padding:5px 12px;font-size:11px">✕ Fechar</button>
+          </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="inbox-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)">
+          <div style="text-align:center;padding:20px;color:var(--fg4);font-size:13px">Carregando mensagens...</div>
+        </div>
+
+        <!-- Input de resposta -->
+        <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;background:var(--bg1)">
+          <div style="flex:1">
+            <textarea id="inbox-reply-input" placeholder="Digite sua resposta..." rows="2"
+              style="width:100%;padding:10px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:12px;color:var(--fg);font-size:13px;font-family:'Instrument Sans',sans-serif;outline:none;resize:none;line-height:1.5;transition:border-color .2s"
+              onkeydown="if(event.key==='Enter'&&event.ctrlKey){event.preventDefault();sendAgentReply()}"
+              onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor='var(--line2)'"></textarea>
+            <div style="font-size:10px;color:var(--fg4);margin-top:4px">Ctrl+Enter para enviar</div>
+          </div>
+          <button class="btn primary" onclick="sendAgentReply()" style="padding:10px 18px;flex-shrink:0">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+            Enviar
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2477,6 +2907,8 @@ async function boot(){
   loadFunil();
   loadMiniAnalytics();
   loadPPStatus();
+  // Poll global de chat badge
+  setInterval(()=>{ if(typeof lcLoadSessions==='function' && document.getElementById('p-livechat')){ const b=document.getElementById('lc-admin-badge'); if(b && b.style.display!=='none') lcLoadSessions(); else fetch(LC_URL+'?action=sessions&status=open').then(r=>r.json()).then(d=>{ const n=(d.sessions||[]).reduce((a,s)=>a+(s.unread_admin||0),0); const b=document.getElementById('lc-admin-badge'); if(b){b.textContent=n;b.style.display=n>0?'flex':'none';} }).catch(()=>{}); }}, 15000);
   // Load current user profile
   setTimeout(()=>{ if(typeof loadCurrentUser==='function') loadCurrentUser(); }, 300);
 }
@@ -2519,6 +2951,7 @@ const PTITLES={
   overview:'Dashboard',vendas:'Vendas',extrato:'Extrato Financeiro',comissoes:'Comissões & Afiliados',
   produtos:'Produtos',analytics:'Analytics',cupons:'Cupons',emails:'Emails Capturados',
   notifs:'Notificações de Venda',perfectpay:'Integração PerfectPay',
+  inbox:'Inbox — Atendimento',
   metas:'Metas & Objetivos',calendario:'Calendário de Conteúdo',links:'Links & QR Code',
   shortlinks:'Encurtador de Links',
   'personal-pages':'Páginas de Venda Pessoais',
@@ -2529,15 +2962,30 @@ const PTITLES={
   'e-depos':'Depoimentos','e-faq':'FAQ','e-conv':'Conversão & Urgência',
   'e-paraquem':'Para quem é','e-bonus':'Bônus','e-obrigado':'Página de Obrigado',
   'e-config':'Configurações',
+  'livechat':'Chat ao Vivo',
   'equipe':'Equipe & Perfil',
+  'inbox':'Inbox de Suporte',
+  'suporte':'Suporte ao Cliente',
+  'chat-suporte':'Suporte ao Vivo',
+  'livechat':'Live Chat',
 };
 let currentPanel='overview';
 function go(id,el){
   // Role access control
   const _allowed=window._allowedPanels;
   if(_allowed&&!_allowed.includes(id)){toast('⛔ Sem permissão para esta área');return;}
-  // Auto-load equipe panel
+  // Auto-load panels
   if(id==='equipe')setTimeout(()=>{if(typeof loadEquipe==='function')loadEquipe();},50);
+  if(id==='inbox')setTimeout(()=>{if(typeof loadInbox==='function')loadInbox();},50);
+  if(id==='suporte')setTimeout(()=>{if(typeof loadSupport==='function')loadSupport();},50);
+  if(id==='chat-suporte'){
+    setTimeout(()=>{if(typeof loadChatSessions==='function')loadChatSessions();},50);
+    if(_chatAdminPoll){clearInterval(_chatAdminPoll);_chatAdminPoll=null;}
+  }
+  if(id==='livechat'){
+    setTimeout(()=>{if(typeof lcLoadSessions==='function'){lcLoadSessions();if(_lcPollInterval)clearInterval(_lcPollInterval);}},50);
+  }
+  if(id==='livechat')setTimeout(()=>{if(typeof loadLiveChat==='function')loadLiveChat();},50);
 
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   const panel=document.getElementById('p-'+id);
@@ -4781,6 +5229,408 @@ async function markAllRead() {
   checkUnreadMessages();
 }
 
+
+// ═══════════════════════════════════════
+// SUPORTE CHAT — Admin Side
+// ═══════════════════════════════════════
+
+let _chatFilter      = 'open,active';
+let _activeSessId    = null;
+let _chatAdminPoll   = null;
+let _chatLastAdminId = null;
+
+async function loadChatSessions() {
+  const el = document.getElementById('chat-sessions-list');
+  if (!el) return;
+
+  let url = SB_URL + '/rest/v1/iaem30_chat_sessions?order=last_msg_at.desc&limit=50&select=*';
+  if (_chatFilter !== 'all') {
+    const statuses = _chatFilter.split(',');
+    url += '&status=in.(' + statuses.join(',') + ')';
+  }
+
+  const rows = await sbGet('iaem30_chat_sessions', url.replace(SB_URL + '/rest/v1/iaem30_chat_sessions', ''));
+  if (!rows) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar</div>'; return; }
+
+  // Count unread (open sessions)
+  const openCount = (rows || []).filter(s => s.status !== 'closed').length;
+  const badge = document.getElementById('chat-suporte-badge');
+  if (badge) { badge.style.display = openCount > 0 ? '' : 'none'; badge.textContent = openCount; }
+
+  if (!rows.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:12px">Nenhuma conversa</div>';
+    return;
+  }
+
+  el.innerHTML = rows.map(s => {
+    const time = new Date(s.last_msg_at).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const statusColors = {open:'var(--amber)',active:'var(--green)',closed:'var(--fg4)'};
+    const statusLabels = {open:'Aberta',active:'Ativa',closed:'Fechada'};
+    const active = _activeSessId === s.id;
+    return `<div onclick="openChatSession('${s.id}','${escHtml(s.visitor_name)}','${s.visitor_email||''}','${s.status}')"
+      style="padding:10px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background .1s;border:1px solid ${active ? 'rgba(212,144,10,.3)' : 'transparent'};background:${active ? 'var(--amberbg)' : 'transparent'}"
+      onmouseover="if('${s.id}'!=='${_activeSessId}')this.style.background='var(--bg2)'"
+      onmouseout="if('${s.id}'!=='${_activeSessId}')this.style.background='transparent'">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+        <span style="font-weight:600;font-size:12.5px;color:var(--fg);flex:1">${escHtml(s.visitor_name)}</span>
+        <span style="font-size:10px;font-weight:600;color:${statusColors[s.status]||'var(--fg4)'}">${statusLabels[s.status]||s.status}</span>
+      </div>
+      ${s.visitor_email ? `<div style="font-size:11px;color:var(--fg4);margin-bottom:3px">${escHtml(s.visitor_email)}</div>` : ''}
+      <div style="font-size:10px;color:var(--fg4)">${time}</div>
+    </div>`;
+  }).join('');
+}
+
+function setChatFilter(btn, filter) {
+  _chatFilter = filter;
+  document.querySelectorAll('.chat-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  loadChatSessions();
+}
+
+async function openChatSession(sessId, name, email, status) {
+  _activeSessId    = sessId;
+  _chatLastAdminId = null;
+
+  // Update UI
+  document.getElementById('chat-empty-state').style.display  = 'none';
+  document.getElementById('chat-convo-view').style.display    = 'flex';
+  document.getElementById('convo-visitor-name').textContent   = name;
+  document.getElementById('convo-visitor-email').textContent  = email;
+  document.getElementById('admin-chat-msgs').innerHTML        = '';
+
+  const statusBadge = document.getElementById('convo-status-badge');
+  if (statusBadge) {
+    statusBadge.textContent = status === 'closed' ? 'Fechada' : status === 'active' ? 'Ativa' : 'Aberta';
+    statusBadge.className = 'tag ' + (status === 'closed' ? 'default' : status === 'active' ? 'green' : 'yellow');
+  }
+
+  // Highlight in list
+  loadChatSessions();
+  await loadAdminChatMsgs(true);
+
+  // Polling
+  if (_chatAdminPoll) clearInterval(_chatAdminPoll);
+  _chatAdminPoll = setInterval(() => loadAdminChatMsgs(false), 3000);
+
+  // Mark as read by agent
+  fetch(SB_URL + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + sessId + '&sender=eq.visitor', {
+    method: 'PATCH', headers: { ...SB_H, Prefer: 'return=minimal' },
+    body: JSON.stringify({ read_by_agent: true })
+  });
+}
+
+async function loadAdminChatMsgs(full) {
+  if (!_activeSessId) return;
+  const el = document.getElementById('admin-chat-msgs');
+  if (!el) return;
+
+  let query = '?session_id=eq.' + _activeSessId + '&order=created_at.asc&limit=100';
+  if (!full && _chatLastAdminId) query += '&id=gt.' + _chatLastAdminId;
+
+  const rows = await sbGet('iaem30_chat_live_messages', query);
+  if (!rows || !rows.length) return;
+
+  const wasBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+  rows.forEach(msg => {
+    if (document.getElementById('amsg-' + msg.id)) return;
+    const div = document.createElement('div');
+    div.id = 'amsg-' + msg.id;
+    const isAgent   = msg.sender === 'agent';
+    const t = new Date(msg.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+    div.style.cssText = `display:flex;gap:8px;align-items:flex-end;${isAgent?'flex-direction:row-reverse;':''}max-width:85%;${isAgent?'align-self:flex-end':'align-self:flex-start'}`;
+    const avatarHtml = isAgent
+      ? (_currentUser?.avatar && _currentUser.avatar.startsWith('data:')
+          ? `<div style="width:26px;height:26px;border-radius:50%;background:url('${_currentUser.avatar}') center/cover;flex-shrink:0"></div>`
+          : `<div style="width:26px;height:26px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">🤖</div>`)
+      : `<div style="width:26px;height:26px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">👤</div>`;
+    const bubbleStyle = isAgent
+      ? 'background:var(--fg);color:var(--bg1);border-radius:14px 14px 4px 14px;'
+      : 'background:var(--bg3);color:var(--fg);border:1px solid var(--line);border-radius:14px 14px 14px 4px;';
+    div.innerHTML = avatarHtml + `<div><div style="padding:8px 12px;font-size:13px;line-height:1.5;word-break:break-word;${bubbleStyle}">${escHtml(msg.content)}</div><div style="font-size:10px;color:var(--fg4);margin-top:3px;${isAgent?'text-align:right':''}">${t}${msg.sender==='agent'&&msg.agent_name?' · '+escHtml(msg.agent_name):''}</div></div>`;
+    el.appendChild(div);
+  });
+
+  _chatLastAdminId = rows[rows.length - 1].id;
+  if (wasBottom) el.scrollTop = el.scrollHeight;
+}
+
+async function sendAgentMsg() {
+  if (!_activeSessId || !_currentUser) return;
+  const input = document.getElementById('agent-msg-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+
+  const msg = {
+    session_id:       _activeSessId,
+    sender:           'agent',
+    agent_id:         _currentUser.id,
+    agent_name:       _currentUser.name,
+    content:          text,
+    read_by_visitor:  false,
+    read_by_agent:    true,
+  };
+
+  const ok = await sbPost('iaem30_chat_live_messages', msg);
+  if (ok) {
+    await loadAdminChatMsgs(false);
+    // Update session last_msg
+    sbPatch('iaem30_chat_sessions', '?id=eq.' + _activeSessId, {
+      last_msg_at: new Date().toISOString(), status: 'active'
+    });
+    logActivity('Respondeu chat', 'suporte', _activeSessId, '💬');
+  }
+}
+
+async function closeSession() {
+  if (!_activeSessId) return;
+  if (!confirm('Fechar esta conversa?')) return;
+  await sbPatch('iaem30_chat_sessions', '?id=eq.' + _activeSessId, { status: 'closed' });
+  toast('✓ Conversa fechada');
+  const statusBadge = document.getElementById('convo-status-badge');
+  if (statusBadge) { statusBadge.textContent = 'Fechada'; statusBadge.className = 'tag default'; }
+  loadChatSessions();
+}
+
+// Poll badge a cada 15s quando o painel NÃO está aberto
+setInterval(async function() {
+  if (document.getElementById('p-chat-suporte')?.classList.contains('on')) return;
+  const rows = await sbGet('iaem30_chat_sessions', '?status=in.(open,active)&select=id');
+  const badge = document.getElementById('chat-suporte-badge');
+  if (badge && rows) { badge.style.display = rows.length > 0 ? '' : 'none'; badge.textContent = rows.length; }
+}, 15000);
+
+
+
+// ═══════════════════════════════════════
+// SUPORTE AO CLIENTE
+// ═══════════════════════════════════════
+
+let _supportChats = [];
+let _activeChatId = null;
+let _supportFilter = 'open';
+let _supportPoll = null;
+let _lastSupportMsgId = null;
+
+async function loadSupport() {
+  let q = '/iaem30_support_chats?order=last_message_at.desc&limit=60';
+  if (_supportFilter !== 'all') q += '&status=eq.' + _supportFilter;
+  const rows = await sbGet('iaem30_support_chats', q.replace('/iaem30_support_chats?','?'));
+  _supportChats = rows || [];
+  renderChatsList(_supportChats);
+  updateSupportBadge();
+}
+
+function updateSupportBadge() {
+  const unread = _supportChats.filter(c => c.unread_admin > 0).length;
+  const badge = document.getElementById('suporte-badge');
+  if (badge) {
+    badge.style.display = unread > 0 ? 'flex' : 'none';
+    badge.textContent = unread;
+  }
+}
+
+function renderChatsList(chats) {
+  const el = document.getElementById('chats-list');
+  if (!el) return;
+  if (!chats.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Nenhuma conversa</div>';
+    return;
+  }
+  const statusColor = { open:'var(--yellow)', attending:'var(--blue)', resolved:'var(--green)', closed:'var(--fg4)' };
+  const statusLabel = { open:'Aberto', attending:'Em atendimento', resolved:'Resolvido', closed:'Encerrado' };
+  el.innerHTML = chats.map(c => {
+    const time = c.last_message_at ? new Date(c.last_message_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    const isActive = c.id === _activeChatId;
+    return `<div onclick="openSupportChat('${c.id}')" style="padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;background:${isActive?'var(--amberbg)':'transparent'};transition:background .1s${c.unread_admin>0?';font-weight:500':''}"
+      onmouseover="if('${c.id}'!=='${_activeChatId}')this.style.background='var(--bg2)'" onmouseout="this.style.background='${isActive?'var(--amberbg)':'transparent'}'">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:8px;height:8px;border-radius:50%;background:${statusColor[c.status]||'var(--fg4)'};flex-shrink:0"></div>
+          <span style="font-size:13px;font-weight:600;color:var(--fg)">${escHtml(c.visitor_name||'Visitante')}</span>
+          ${c.unread_admin>0?`<span style="background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px">${c.unread_admin}</span>`:''}
+        </div>
+        <span style="font-size:10px;color:var(--fg4)">${time}</span>
+      </div>
+      <div style="font-size:12px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(c.last_message||'')}</div>
+      ${c.visitor_email?`<div style="font-size:11px;color:var(--fg4);margin-top:2px">${escHtml(c.visitor_email)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function filterChats(status) {
+  _supportFilter = status;
+  ['open','attending','resolved','all'].forEach(s => {
+    const btn = document.getElementById('filter-' + s);
+    if (btn) {
+      btn.style.background = s === status ? 'var(--amberbg)' : '';
+      btn.style.color = s === status ? 'var(--amber)' : '';
+      btn.style.borderColor = s === status ? 'rgba(212,144,10,.3)' : '';
+    }
+  });
+  loadSupport();
+}
+
+function filterChatSearch(query) {
+  if (!query) { renderChatsList(_supportChats); return; }
+  const q = query.toLowerCase();
+  renderChatsList(_supportChats.filter(c =>
+    (c.visitor_name||'').toLowerCase().includes(q) ||
+    (c.visitor_email||'').toLowerCase().includes(q) ||
+    (c.last_message||'').toLowerCase().includes(q)
+  ));
+}
+
+async function openSupportChat(chatId) {
+  _activeChatId = chatId;
+  _lastSupportMsgId = null;
+  renderChatsList(_supportChats); // re-render to highlight active
+
+  const chat = _supportChats.find(c => c.id === chatId);
+  if (!chat) return;
+
+  const area = document.getElementById('support-chat-area');
+  if (!area) return;
+
+  // Render chat UI
+  area.innerHTML = `
+    <!-- Header -->
+    <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--amberbg);border:1px solid rgba(212,144,10,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👤</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;color:var(--fg)">${escHtml(chat.visitor_name||'Visitante')}</div>
+        <div style="font-size:11px;color:var(--fg4)">${chat.visitor_email||'Sem email'} · ${new Date(chat.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${chat.status==='open'?`<button class="btn success" onclick="changeStatus('${chatId}','attending')" style="font-size:11px;padding:5px 10px">▶ Assumir</button>`:''}
+        ${chat.status==='attending'?`<button class="btn success" onclick="changeStatus('${chatId}','resolved')" style="font-size:11px;padding:5px 10px">✓ Resolver</button>`:''}
+        ${chat.status!=='closed'?`<button class="btn ghost" onclick="changeStatus('${chatId}','closed')" style="font-size:11px;padding:5px 10px">Encerrar</button>`:''}
+      </div>
+    </div>
+    <!-- Messages -->
+    <div id="support-msgs" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)"></div>
+    <!-- Input -->
+    <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0;background:var(--bg1)">
+      <input type="text" id="support-input" placeholder="Digite uma resposta..." style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif;transition:border-color .15s"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSupportMsg()}"
+        onfocus="this.style.borderColor='var(--amber)'" onblur="this.style.borderColor=''">
+      <button onclick="sendSupportMsg()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='var(--amber2)'" onmouseout="this.style.background='var(--amber)'">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  `;
+
+  // Load messages
+  await loadSupportMessages(true);
+
+  // Mark as read
+  await sbPatch('iaem30_support_chats', '?id=eq.' + chatId, { unread_admin: 0 });
+  const chatObj = _supportChats.find(c => c.id === chatId);
+  if (chatObj) chatObj.unread_admin = 0;
+  updateSupportBadge();
+
+  // Start polling
+  if (_supportPoll) clearInterval(_supportPoll);
+  _supportPoll = setInterval(() => {
+    if (_activeChatId === chatId) loadSupportMessages(false);
+    else clearInterval(_supportPoll);
+  }, 3000);
+}
+
+async function loadSupportMessages(initial) {
+  let q = '?chat_id=eq.' + _activeChatId + '&order=created_at.asc';
+  if (!initial && _lastSupportMsgId) q += '&id=gt.' + _lastSupportMsgId;
+  const msgs = await sbGet('iaem30_support_messages', q);
+  if (!msgs || !msgs.length) return;
+  const container = document.getElementById('support-msgs');
+  if (!container) return;
+  if (initial) container.innerHTML = '';
+
+  msgs.forEach(m => {
+    const isVisitor = m.sender === 'visitor';
+    const time = new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    const name = m.agent_name || m.sender_name || (isVisitor?'Visitante':'Agente');
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:8px;align-items:flex-end;' + (isVisitor ? '' : 'flex-direction:row-reverse');
+    div.innerHTML = `
+      <div style="width:28px;height:28px;border-radius:50%;background:${isVisitor?'var(--bg3)':'var(--amberbg)'};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${isVisitor?'👤':(m.sender==='bot'?'🤖':'👨‍💼')}</div>
+      <div style="max-width:72%">
+        <div style="font-size:10px;color:var(--fg4);margin-bottom:3px;${isVisitor?'':'text-align:right'}">${escHtml(name)}</div>
+        <div style="padding:8px 12px;border-radius:${isVisitor?'4px 14px 14px 14px':'14px 4px 14px 14px'};background:${isVisitor?'var(--bg1)':'var(--amber)'};color:${isVisitor?'var(--fg)':'var(--ink)'};font-size:13px;line-height:1.55;word-break:break-word;box-shadow:0 1px 3px rgba(0,0,0,.08)">${escHtml(m.content)}</div>
+        <div style="font-size:10px;color:var(--fg4);margin-top:3px;${isVisitor?'':'text-align:right'}">${time}</div>
+      </div>`;
+    container.appendChild(div);
+    _lastSupportMsgId = m.id;
+  });
+  container.scrollTop = container.scrollHeight;
+
+  // Mark visitor messages as read
+  await fetch(SB_URL + '/rest/v1/iaem30_support_messages?chat_id=eq.' + _activeChatId + '&sender=eq.visitor&read=eq.false', {
+    method: 'PATCH', headers: { ...SB_H, Prefer: 'return=minimal' },
+    body: JSON.stringify({ read: true })
+  });
+}
+
+async function sendSupportMsg() {
+  const inp = document.getElementById('support-input');
+  if (!inp || !_activeChatId || !_currentUser) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+
+  const agentName = _currentUser.name || _currentUser.username || 'Agente';
+  await sbPost('iaem30_support_messages', {
+    chat_id: _activeChatId,
+    sender: 'agent',
+    sender_name: agentName,
+    agent_name: agentName,
+    content: text,
+    read: false
+  });
+
+  // Update chat
+  await sbPatch('iaem30_support_chats', '?id=eq.' + _activeChatId, {
+    last_message: text,
+    last_message_at: new Date().toISOString(),
+    unread_visitor: 99,
+    status: 'attending',
+    assigned_name: agentName
+  });
+
+  await loadSupportMessages(false);
+  logActivity('Mensagem de suporte enviada', 'suporte', text.slice(0,60), '💬');
+}
+
+async function changeStatus(chatId, status) {
+  const labels = { attending:'assumiu', resolved:'resolveu', closed:'encerrou' };
+  await sbPatch('iaem30_support_chats', '?id=eq.' + chatId, {
+    status,
+    assigned_name: status === 'attending' ? (_currentUser?.name||'Agente') : undefined,
+    assigned_to:   status === 'attending' ? (_currentUser?.id||null) : undefined
+  });
+  toast('✓ Conversa ' + (labels[status]||status));
+  logActivity('Chat de suporte: ' + (labels[status]||status), 'suporte', '', '💬');
+  await loadSupport();
+  if (_activeChatId === chatId) await openSupportChat(chatId);
+}
+
+// Auto-poll support badge every 30s
+setInterval(async () => {
+  if (document.getElementById('suporte-badge')) {
+    const rows = await sbGet('iaem30_support_chats', '?status=eq.open&select=id,unread_admin');
+    if (rows) {
+      const total = rows.reduce((a,c) => a + (c.unread_admin||0), 0);
+      const badge = document.getElementById('suporte-badge');
+      if (badge) {
+        badge.style.display = total > 0 ? 'flex' : 'none';
+        badge.textContent = total > 9 ? '9+' : total;
+      }
+    }
+  }
+}, 30000);
+
+
 // ═══════════════════════════════════════
 // CONTROLE DE ACESSO POR ROLE
 // ═══════════════════════════════════════
@@ -4801,23 +5651,23 @@ const ROLE_ACCESS = {
   admin: {
     panels: ['overview','relatorio','vendas','extrato','comissoes','produtos',
              'analytics','emails','cupons','notifs','personal-pages','shortlinks',
-             'links','chat-faq','ai-leads','metas','calendario',
-             'perfectpay','telegram','pixel','equipe',
+             'links','chat-faq','ai-leads','inbox','metas','calendario',
+             'perfectpay','telegram','pixel','equipe','inbox','suporte','chat-suporte','livechat','livechat',
              'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
              'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado','e-config'],
     tabs: ['vendas','edit'],
   },
   editor: {
-    panels: ['overview','relatorio','analytics','emails','cupons','notifs',
+    panels: ['overview','relatorio','analytics','inbox','emails','cupons','notifs',
              'personal-pages','shortlinks','links','chat-faq','ai-leads',
-             'metas','calendario','equipe',
+             'metas','calendario','equipe','inbox','suporte','chat-suporte','livechat','livechat',
              'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
              'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado'],
     tabs: ['vendas','edit'],
     hideNav: ['vendas','extrato','comissoes','produtos','perfectpay','telegram','pixel','e-config'],
   },
   viewer: {
-    panels: ['overview','relatorio','analytics','equipe'],
+    panels: ['overview','relatorio','analytics','inbox','equipe'],
     tabs: ['vendas'],
     hideNav: ['vendas','extrato','comissoes','produtos','emails','cupons','notifs',
               'personal-pages','shortlinks','links','chat-faq','ai-leads',
@@ -5386,6 +6236,532 @@ async function deleteUser(userId, name) {
 }
 
 // go() override handled by ROLE_ACCESS system above
+
+// ═══════════════════════════════════════
+// LIVE CHAT — ADMIN
+// ═══════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// INBOX — ATENDIMENTO AO VISITANTE
+// ═══════════════════════════════════════════
+
+let _inboxSession = null;  // sessão aberta no momento
+let _inboxPoll = null;
+let _inboxSessions = [];   // cache da lista
+
+async function loadInbox() {
+  const filter = document.getElementById('inbox-filter')?.value || 'open';
+  let q = '?order=last_msg_at.desc&limit=50';
+  if (filter) q += '&status=eq.' + filter;
+
+  const rows = await sbGet('iaem30_chat_sessions', q);
+  _inboxSessions = rows || [];
+  renderInboxList(_inboxSessions);
+  updateInboxBadge();
+}
+
+function renderInboxList(sessions) {
+  const el = document.getElementById('inbox-list');
+  if (!el) return;
+  if (!sessions.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--fg4);font-size:13px">Nenhuma conversa</div>';
+    return;
+  }
+  el.innerHTML = sessions.map(s => {
+    const isActive = _inboxSession?.id === s.id;
+    const time = new Date(s.last_msg_at).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const statusColors = { open:'var(--amber)', attending:'var(--blue)', resolved:'var(--green)', spam:'var(--red)' };
+    const statusLabels = { open:'Aberta', attending:'Atendendo', resolved:'Resolvida', spam:'Spam' };
+    return `<div onclick="openInboxSession('${s.id}')" style="padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .1s;${isActive ? 'background:var(--amberbg);border-left:2px solid var(--amber);' : ''}" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='${isActive ? 'var(--amberbg)' : ''}'">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <span style="font-weight:600;font-size:13px;color:var(--fg)">${escInbox(s.visitor_name)}</span>
+        <span style="font-size:10px;color:var(--fg4);flex-shrink:0;margin-left:6px">${time}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:100px;background:${statusColors[s.status]}22;color:${statusColors[s.status]}">${statusLabels[s.status]||s.status}</span>
+        ${s.visitor_email ? '<span style="font-size:11px;color:var(--fg4)">'+escInbox(s.visitor_email)+'</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterInboxList() {
+  const q = (document.getElementById('inbox-search')?.value || '').toLowerCase();
+  const filtered = _inboxSessions.filter(s => s.visitor_name.toLowerCase().includes(q) || (s.visitor_email||'').toLowerCase().includes(q));
+  renderInboxList(filtered);
+}
+
+async function openInboxSession(sessionId) {
+  const session = _inboxSessions.find(s => s.id === sessionId);
+  if (!session) return;
+  _inboxSession = session;
+
+  // Update header
+  const hdr = document.getElementById('inbox-chat-header');
+  const statusColors = { open:'var(--amber)', attending:'var(--blue)', resolved:'var(--green)', spam:'var(--red)' };
+  const statusLabels = { open:'Aberta', attending:'Em atendimento', resolved:'Resolvida', spam:'Spam' };
+  hdr.innerHTML = `
+    <div style="width:38px;height:38px;border-radius:50%;background:var(--amberbg);border:1.5px solid rgba(232,160,32,.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${session.visitor_name[0].toUpperCase()}</div>
+    <div style="flex:1">
+      <div style="font-weight:700;font-size:14px;color:var(--fg);letter-spacing:-.02em">${escInbox(session.visitor_name)}</div>
+      <div style="font-size:11px;color:var(--fg4);display:flex;gap:8px;align-items:center">
+        <span style="padding:1px 7px;border-radius:100px;background:${statusColors[session.status]}22;color:${statusColors[session.status]};font-weight:600">${statusLabels[session.status]}</span>
+        ${session.visitor_email ? '<span>'+escInbox(session.visitor_email)+'</span>' : ''}
+        <span>${new Date(session.created_at).toLocaleDateString('pt-BR')}</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="btn ghost" onclick="markAsSpam('${session.id}')" style="font-size:11px;padding:4px 10px">🚫 Spam</button>
+      <button class="btn secondary" onclick="assignToMe('${session.id}')" style="font-size:11px;padding:4px 10px">Assumir</button>
+    </div>`;
+
+  // Show reply area
+  const replyArea = document.getElementById('inbox-reply-area');
+  if (replyArea) replyArea.style.display = session.status === 'resolved' ? 'none' : '';
+
+  // Resolve button
+  const btnResolve = document.getElementById('btn-resolve');
+  if (btnResolve) btnResolve.style.display = session.status === 'resolved' ? 'none' : '';
+
+  // Load messages
+  await loadInboxMessages(sessionId);
+
+  // Mark as attending if open
+  if (session.status === 'open') {
+    await sbPatch('iaem30_chat_sessions', 'id=eq.'+sessionId, { status: 'attending' });
+    session.status = 'attending';
+    renderInboxList(_inboxSessions);
+  }
+
+  // Mark agent messages as read
+  await sbPatch('iaem30_chat_messages', 'session_id=eq.'+sessionId+'&sender=eq.visitor&read_by_agent=eq.false', { read_by_agent: true });
+
+  // Start polling for this session
+  if (_inboxPoll) clearInterval(_inboxPoll);
+  _inboxPoll = setInterval(() => pollInboxSession(sessionId), 4000);
+}
+
+let _lastInboxMsgId = null;
+
+async function loadInboxMessages(sessionId) {
+  const msgs = await sbGet('iaem30_chat_messages', '?session_id=eq.'+sessionId+'&order=created_at.asc&limit=80');
+  const el = document.getElementById('inbox-messages');
+  if (!el) return;
+  if (!msgs || !msgs.length) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--fg4);font-size:13px">Nenhuma mensagem ainda</div>';
+    return;
+  }
+  el.innerHTML = msgs.map(m => renderInboxMsg(m)).join('');
+  el.scrollTop = el.scrollHeight;
+  _lastInboxMsgId = msgs[msgs.length-1].id;
+}
+
+function renderInboxMsg(m) {
+  const isVisitor = m.sender === 'visitor';
+  const isBot = m.sender === 'bot';
+  const time = new Date(m.created_at).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  const colors = { visitor:'var(--ink)', agent:'var(--blue)', bot:'var(--fg3)' };
+  const bgs = { visitor:'var(--ink)', agent:'var(--blue)', bot:'var(--bg3)' };
+  return `<div style="display:flex;gap:8px;align-items:flex-end;${!isVisitor ? 'flex-direction:row-reverse' : ''}">
+    <div style="width:28px;height:28px;border-radius:50%;background:${isVisitor ? 'var(--amberbg)' : isBot ? 'var(--bg3)' : 'var(--bluebg)'};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-bottom:2px;border:1px solid var(--line)">
+      ${isVisitor ? ((_inboxSession?.visitor_name||'V')[0].toUpperCase()) : isBot ? '🤖' : '👤'}
+    </div>
+    <div style="max-width:68%">
+      ${!isVisitor ? '<div style="font-size:10px;color:var(--fg4);margin-bottom:3px;text-align:right">'+(m.agent_name||'Equipe')+'</div>' : ''}
+      <div style="padding:9px 13px;border-radius:${isVisitor ? '14px 14px 14px 4px' : '14px 14px 4px 14px'};background:${isVisitor ? 'var(--bg2)' : isBot ? 'var(--bg3)' : 'var(--blue)'};color:${isVisitor ? 'var(--fg)' : isBot ? 'var(--fg3)' : '#fff'};font-size:13px;line-height:1.55;border:${isVisitor ? '1px solid var(--line)' : 'none'};word-break:break-word">${escInbox(m.content)}</div>
+      <div style="font-size:10px;color:var(--fg4);margin-top:3px;${!isVisitor ? 'text-align:right' : ''}">${time}</div>
+    </div>
+  </div>`;
+}
+
+async function pollInboxSession(sessionId) {
+  const msgs = await sbGet('iaem30_chat_messages', '?session_id=eq.'+sessionId+'&order=created_at.asc&limit=80');
+  if (!msgs || !msgs.length) return;
+  const last = msgs[msgs.length-1];
+  if (last.id !== _lastInboxMsgId) {
+    const el = document.getElementById('inbox-messages');
+    if (el) {
+      el.innerHTML = msgs.map(m => renderInboxMsg(m)).join('');
+      el.scrollTop = el.scrollHeight;
+      _lastInboxMsgId = last.id;
+    }
+    // Mark visitor messages as read
+    await sbPatch('iaem30_chat_messages', 'session_id=eq.'+sessionId+'&sender=eq.visitor&read_by_agent=eq.false', { read_by_agent: true });
+  }
+  // Also refresh unread badge
+  updateInboxBadge();
+}
+
+async function sendInboxReply() {
+  if (!_inboxSession || !_currentUser) return;
+  const input = document.getElementById('inbox-input');
+  const content = input.value.trim();
+  if (!content) return;
+  input.value = '';
+
+  await sbPost('iaem30_chat_messages', {
+    session_id: _inboxSession.id,
+    sender: 'agent',
+    agent_id: _currentUser.id,
+    agent_name: _currentUser.name,
+    content,
+    read_by_visitor: false,
+    read_by_agent: true
+  });
+  await sbPatch('iaem30_chat_sessions', 'id=eq.'+_inboxSession.id, { last_msg_at: new Date().toISOString() });
+  logActivity('Respondeu no chat', 'inbox', _inboxSession.visitor_name, '💬');
+  await loadInboxMessages(_inboxSession.id);
+}
+
+function useQuickReply(btn) {
+  const input = document.getElementById('inbox-input');
+  if (input) { input.value = btn.textContent; input.focus(); }
+}
+
+async function resolveSession() {
+  if (!_inboxSession) return;
+  await sbPatch('iaem30_chat_sessions', 'id=eq.'+_inboxSession.id, { status: 'resolved' });
+  _inboxSession.status = 'resolved';
+  toast('✓ Conversa marcada como resolvida');
+  logActivity('Conversa resolvida', 'inbox', _inboxSession.visitor_name, '✅');
+  document.getElementById('inbox-reply-area').style.display = 'none';
+  loadInbox();
+}
+
+async function assignToMe(sessionId) {
+  if (!_currentUser) return;
+  await sbPatch('iaem30_chat_sessions', 'id=eq.'+sessionId, { assigned_to: _currentUser.id, status: 'attending' });
+  toast('✓ Conversa assumida!');
+  loadInbox();
+}
+
+async function markAsSpam(sessionId) {
+  if (!confirm('Marcar como spam?')) return;
+  await sbPatch('iaem30_chat_sessions', 'id=eq.'+sessionId, { status: 'spam' });
+  _inboxSession = null;
+  document.getElementById('inbox-messages').innerHTML = '<div style="text-align:center;padding:30px;color:var(--fg4);font-size:13px">Conversa marcada como spam</div>';
+  document.getElementById('inbox-reply-area').style.display = 'none';
+  document.getElementById('inbox-chat-header').innerHTML = '<div style="flex:1;text-align:center;color:var(--fg4);font-size:13px">Selecione uma conversa</div>';
+  toast('Marcado como spam');
+  loadInbox();
+}
+
+async function updateInboxBadge() {
+  const rows = await sbGet('iaem30_chat_sessions', '?status=eq.open&select=id');
+  const count = rows?.length || 0;
+  const badge = document.getElementById('inbox-badge');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+
+function escInbox(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Auto-refresh inbox badge every 30s
+setInterval(updateInboxBadge, 30000);
+
+// Hook go() to load inbox
+const _goBeforeInbox = go;
+function go(id, el) {
+  _goBeforeInbox(id, el);
+  if (id === 'inbox') { loadInbox(); if (_inboxPoll) { clearInterval(_inboxPoll); _inboxPoll = null; } }
+}
+
+// ═══════════════════════════════════════
+// INBOX DE SUPORTE
+// ═══════════════════════════════════════
+
+let _inboxFilter    = 'all';
+let _currentChatId  = null;
+let _inboxPollTimer = null;
+let _inboxChats     = [];
+
+// Atualizar badge do sidebar
+async function updateInboxBadge() {
+  const rows = await sbGet('iaem30_support_chats',
+    '?status=in.(open,active)&select=id,unread_admin'
+  );
+  const total = (rows || []).reduce((a, r) => a + (r.unread_admin || 0), 0);
+  const badge = document.getElementById('inbox-badge');
+  if (badge) {
+    badge.textContent = total > 99 ? '99+' : total;
+    badge.style.display = total > 0 ? '' : 'none';
+  }
+}
+
+// Carregar lista de conversas
+async function loadInbox(filter) {
+  if (filter) _inboxFilter = filter;
+  const el = document.getElementById('inbox-list');
+  if (!el) return;
+
+  let qs = '?order=last_msg_at.desc&limit=50&select=*';
+  if (_inboxFilter !== 'all') qs += `&status=eq.${_inboxFilter}`;
+  else qs += '&status=in.(open,active,resolved)';
+
+  const rows = await sbGet('iaem30_support_chats', qs);
+  _inboxChats = rows || [];
+
+  if (!_inboxChats.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--fg4);font-size:13px">Nenhuma conversa ainda</div>';
+    return;
+  }
+
+  const statusColors = {
+    open:     'var(--amber)',
+    active:   'var(--blue)',
+    resolved: 'var(--green)',
+    closed:   'var(--fg4)',
+  };
+
+  el.innerHTML = _inboxChats.map(chat => {
+    const time = chat.last_msg_at
+      ? new Date(chat.last_msg_at).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+      : '—';
+    const unread = chat.unread_admin || 0;
+    const isActive = _currentChatId === chat.id;
+    return `<div class="inbox-chat-item" data-id="${chat.id}"
+      onclick="openInboxChat('${chat.id}')"
+      style="padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .1s;${isActive ? 'background:var(--amberbg)' : ''}"
+      onmouseover="if('${chat.id}'!==_currentChatId)this.style.background='var(--bg2)'"
+      onmouseout="if('${chat.id}'!==_currentChatId)this.style.background=''">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="font-weight:700;font-size:13px;color:var(--fg);display:flex;align-items:center;gap:6px">
+          ${escHtml(chat.visitor_name)}
+          ${unread > 0 ? `<span style="background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:100px">${unread}</span>` : ''}
+        </div>
+        <div style="font-size:10px;color:var(--fg4)">${time}</div>
+      </div>
+      <div style="font-size:12px;color:var(--fg3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px">
+        ${chat.last_message ? escHtml(chat.last_message) : 'Sem mensagens'}
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:10px;font-weight:600;color:${statusColors[chat.status] || 'var(--fg4)'}">${chat.status}</span>
+        ${chat.visitor_email ? `<span style="font-size:10px;color:var(--fg4)">· ${escHtml(chat.visitor_email)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  updateInboxBadge();
+}
+
+// Filtrar conversas
+function filterInbox(filter, btn) {
+  _inboxFilter = filter;
+  document.querySelectorAll('.inbox-filter-btn').forEach(b => {
+    const active = b === btn;
+    b.style.background = active ? 'var(--fg)' : 'var(--bg2)';
+    b.style.color = active ? 'var(--bg1)' : 'var(--fg3)';
+    b.style.fontWeight = active ? '600' : '500';
+  });
+  loadInbox(filter);
+}
+
+// Abrir uma conversa
+async function openInboxChat(chatId) {
+  _currentChatId = chatId;
+  const chat = _inboxChats.find(c => c.id === chatId);
+
+  // Update UI
+  document.querySelectorAll('.inbox-chat-item').forEach(el => {
+    el.style.background = el.dataset.id === chatId ? 'var(--amberbg)' : '';
+  });
+  document.getElementById('inbox-empty-state').style.display = 'none';
+  const activeEl = document.getElementById('inbox-chat-active');
+  activeEl.style.display = 'flex';
+
+  // Set visitor info
+  if (chat) {
+    document.getElementById('inbox-visitor-name').textContent  = chat.visitor_name || 'Visitante';
+    document.getElementById('inbox-visitor-email').textContent = chat.visitor_email || 'Email não informado';
+
+    const statusColors = { open:'var(--amber)', active:'var(--blue)', resolved:'var(--green)', closed:'var(--fg4)' };
+    const statusEl = document.getElementById('inbox-status-badge');
+    statusEl.textContent = chat.status;
+    statusEl.style.cssText = `font-size:11px;padding:3px 10px;border-radius:100px;font-weight:600;background:${statusColors[chat.status] || 'var(--bg3)'};color:${chat.status === 'open' ? 'var(--amber)' : chat.status === 'active' ? 'var(--blue)' : 'var(--fg3)'};border:1px solid currentColor`;
+  }
+
+  // Populate agent assign selector
+  await populateAssignSelect(chat?.assigned_to);
+
+  // Load messages
+  await loadInboxMessages(chatId);
+
+  // Mark as read
+  await sbPatch('iaem30_support_chats', `?id=eq.${chatId}`, { unread_admin: 0 });
+  // Re-render list item to remove badge
+  if (chat) {
+    chat.unread_admin = 0;
+    const item = document.querySelector(`.inbox-chat-item[data-id="${chatId}"]`);
+    if (item) {
+      const badge = item.querySelector('span[style*="var(--red)"]');
+      if (badge) badge.remove();
+    }
+  }
+  updateInboxBadge();
+
+  // Start polling for this conversation
+  stopInboxPoll();
+  _inboxPollTimer = setInterval(() => pollInboxChat(chatId), 5000);
+}
+
+// Carregar mensagens da conversa
+async function loadInboxMessages(chatId) {
+  const el = document.getElementById('inbox-messages');
+  if (!el) return;
+
+  const rows = await sbGet('iaem30_support_messages',
+    `?chat_id=eq.${chatId}&order=created_at.asc&limit=100`
+  );
+
+  if (!rows || !rows.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--fg4);font-size:13px">Nenhuma mensagem ainda</div>';
+    return;
+  }
+
+  el.innerHTML = rows.map(msg => renderInboxMsg(msg)).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderInboxMsg(msg) {
+  const isAgent   = msg.sender === 'agent';
+  const time = new Date(msg.created_at).toLocaleString('pt-BR', {
+    day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+  });
+  return `<div style="display:flex;gap:8px;align-items:flex-end;${isAgent ? 'flex-direction:row-reverse' : ''}">
+    <div style="width:28px;height:28px;border-radius:50%;background:${isAgent ? 'var(--amberbg)' : 'var(--bg3)'};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">
+      ${isAgent ? '🤖' : '👤'}
+    </div>
+    <div style="max-width:70%">
+      ${isAgent && msg.agent_name ? `<div style="font-size:10.5px;font-weight:600;color:var(--amber);margin-bottom:3px;text-align:right">${escHtml(msg.agent_name)}</div>` : ''}
+      <div style="padding:9px 13px;border-radius:${isAgent ? '14px 4px 14px 14px' : '4px 14px 14px 14px'};background:${isAgent ? 'var(--amber)' : 'var(--bg3)'};color:${isAgent ? 'var(--ink)' : 'var(--fg)'};font-size:13px;line-height:1.55;word-break:break-word">
+        ${escHtml(msg.content).replace(/\n/g,'<br>')}
+      </div>
+      <div style="font-size:10px;color:var(--fg4);margin-top:3px;${isAgent ? 'text-align:right' : ''}">${time}</div>
+    </div>
+  </div>`;
+}
+
+// Enviar resposta do agente
+async function sendAgentReply() {
+  if (!_currentChatId || !_currentUser) return;
+  const input = document.getElementById('inbox-reply-input');
+  const content = input.value.trim();
+  if (!content) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  const msg = await sbPost('iaem30_support_messages', {
+    chat_id:    _currentChatId,
+    sender:     'agent',
+    agent_id:   _currentUser.id,
+    agent_name: _currentUser.name || _currentUser.username,
+    content
+  });
+
+  if (msg) {
+    const el = document.getElementById('inbox-messages');
+    if (el) {
+      el.innerHTML += renderInboxMsg(msg);
+      el.scrollTop = el.scrollHeight;
+    }
+    await sbPatch('iaem30_support_chats', `?id=eq.${_currentChatId}`, {
+      last_message: content.slice(0, 100),
+      last_msg_at: new Date().toISOString(),
+      status: 'active',
+      unread_visitor: 99
+    });
+    logActivity('Respondeu no suporte', 'inbox', content.slice(0, 60), '💬');
+    loadInbox();
+  }
+}
+
+// Polling para novas mensagens da conversa aberta
+async function pollInboxChat(chatId) {
+  if (!chatId || chatId !== _currentChatId) return;
+  const el = document.getElementById('inbox-messages');
+  if (!el) return;
+  const rows = await sbGet('iaem30_support_messages',
+    `?chat_id=eq.${chatId}&sender=eq.visitor&order=created_at.asc&created_at=gt.` +
+    new Date(Date.now() - 30000).toISOString()
+  );
+  if (rows && rows.length) {
+    rows.forEach(msg => {
+      if (!document.querySelector(`[data-inbox-msg="${msg.id}"]`)) {
+        const div = document.createElement('div');
+        div.dataset.inboxMsg = msg.id;
+        div.innerHTML = renderInboxMsg(msg);
+        el.appendChild(div);
+        el.scrollTop = el.scrollHeight;
+      }
+    });
+    await sbPatch('iaem30_support_chats', `?id=eq.${chatId}`, { unread_admin: 0 });
+  }
+  // Also poll list for new conversations
+  updateInboxBadge();
+}
+
+function stopInboxPoll() {
+  if (_inboxPollTimer) { clearInterval(_inboxPollTimer); _inboxPollTimer = null; }
+}
+
+// Resolver / Fechar conversa
+async function resolveChat() {
+  if (!_currentChatId) return;
+  await sbPatch('iaem30_support_chats', `?id=eq.${_currentChatId}`, { status: 'resolved' });
+  toast('✓ Conversa marcada como resolvida');
+  logActivity('Conversa resolvida', 'inbox', '', '✅');
+  loadInbox();
+  updateStatusBadge('resolved');
+}
+
+async function closeChat() {
+  if (!_currentChatId) return;
+  if (!confirm('Fechar esta conversa?')) return;
+  await sbPatch('iaem30_support_chats', `?id=eq.${_currentChatId}`, { status: 'closed' });
+  toast('✓ Conversa fechada');
+  loadInbox();
+  document.getElementById('inbox-empty-state').style.display = 'flex';
+  document.getElementById('inbox-chat-active').style.display = 'none';
+  _currentChatId = null;
+  stopInboxPoll();
+}
+
+function updateStatusBadge(status) {
+  const colors = { open:'var(--amber)', active:'var(--blue)', resolved:'var(--green)', closed:'var(--fg4)' };
+  const el = document.getElementById('inbox-status-badge');
+  if (el) { el.textContent = status; el.style.color = colors[status] || 'var(--fg4)'; }
+}
+
+// Atribuir agente
+async function populateAssignSelect(assignedTo) {
+  const sel = document.getElementById('inbox-assign-select');
+  if (!sel) return;
+  const rows = await sbGet('iaem30_admin_users', '?active=eq.true&select=id,name&order=name.asc');
+  while (sel.options.length > 1) sel.remove(1);
+  (rows || []).forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.id; opt.textContent = u.name;
+    if (u.id === assignedTo) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+async function assignChat(agentId) {
+  if (!_currentChatId) return;
+  await sbPatch('iaem30_support_chats', `?id=eq.${_currentChatId}`, {
+    assigned_to: agentId || null
+  });
+  toast('✓ Conversa atribuída');
+}
+
+// inbox auto-load handled inside main go()
+
+// Verificar novas mensagens periodicamente (mesmo sem o inbox aberto)
+setInterval(updateInboxBadge, 15000);
 </script>
 
 <!-- Modal: Nova/Editar Meta -->
