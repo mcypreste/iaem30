@@ -2547,12 +2547,75 @@ function updateRealtimeStatus(connected) {
   else           { dot.classList.remove('live'); txt.textContent = 'Reconectando…'; }
 }
 
-// openInboxChat RT hook integrado na função original abaixo
+// ═══════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════
 
-// Patch do boot para iniciar dashboard RT
-const _origBoot = boot;
-async function boot() {
-  await _origBoot();
+async function doLogin(){
+  const u=document.getElementById('lu').value.trim(), p=document.getElementById('lp').value;
+  const btn=document.getElementById('btnl'), err=document.getElementById('lerr');
+  if(!u||!p){err.textContent='Preencha os campos.';err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
+  btn.disabled=true; btn.textContent='Verificando…';
+  try {
+    const hash = await sha256(p);
+    const rows = await sbGet('iaem30_admin_users',
+      '?username=eq.'+encodeURIComponent(u)+'&active=eq.true&select=id,username,name,email,role,avatar,job_title,password_hash'
+    );
+    if(rows && rows[0] && rows[0].password_hash === hash) {
+      const user = rows[0];
+      sessionStorage.removeItem('ok');
+      sessionStorage.setItem('ok','1');
+      sessionStorage.setItem('admin_username', user.username);
+      sessionStorage.setItem('admin_role', user.role);
+      sessionStorage.setItem('admin_user_json', JSON.stringify(user));
+      _currentUser = user;
+      window._currentRole = user.role;
+      window._allowedPanels = (user.role === 'owner') ? null : (ROLE_ACCESS[user.role]?.panels === '*' ? null : ROLE_ACCESS[user.role]?.panels || null);
+      sbPatch('iaem30_admin_users','?id=eq.'+user.id,{last_login:new Date().toISOString()});
+      applyRoleAccess(user.role);
+      document.getElementById('login').style.display='none';
+      document.getElementById('admin').style.display='flex';
+      await boot();
+      return;
+    }
+    const sh = await getHash();
+    if(u==='admin' && hash===sh){
+      sessionStorage.setItem('ok','1');
+      sessionStorage.setItem('admin_username','admin');
+      sessionStorage.setItem('admin_role','owner');
+      window._currentRole = 'owner';
+      window._allowedPanels = null;
+      applyRoleAccess('owner');
+      document.getElementById('login').style.display='none';
+      document.getElementById('admin').style.display='flex';
+      await boot();
+      return;
+    }
+    btn.disabled=false; btn.textContent='Entrar';
+    err.textContent='Usuário ou senha incorretos.'; err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+  } catch(e) {
+    btn.disabled=false; btn.textContent='Entrar';
+    err.textContent='Erro de conexão. Tente novamente.'; err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+  }
+}
+
+// ═══════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════
+
+async function boot(){
+  const dot=document.getElementById('sync-dot'), txt=document.getElementById('sync-txt');
+  const rows=await sbGet('iaem30_config','?id=eq.1&select=config,updated_at');
+  if(rows&&rows[0]){
+    const cfg=rows[0].config||{};
+    if(dot) dot.classList.add('live');
+    if(txt) txt.textContent='Sincronizado';
+    if(typeof applyEditorConfig==='function') applyEditorConfig(cfg);
+  }
+  if(typeof loadOverview==='function') setTimeout(loadOverview, 100);
+  if(typeof loadCurrentUser==='function') setTimeout(loadCurrentUser, 200);
   startRealtimeDashboard();
   updateRealtimeStatus(true);
 }
