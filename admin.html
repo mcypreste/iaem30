@@ -690,7 +690,7 @@ code, .mono {
       <button class="btnl" id="btnl" onclick="doLogin()">Entrar</button>
       <div class="lerr" id="lerr">Usuário ou senha incorretos.</div>
     </div>
-    <div class="lhint">Senha padrão: <code>admin123</code></div>
+    <div class="lhint">Entre com seu usuário e senha cadastrados</div>
   </div>
 </div>
 
@@ -2294,25 +2294,67 @@ async function sha256(s){const b=await crypto.subtle.digest('SHA-256',new TextEn
 async function getHash(){const rows=await sbGet('iaem30_config','?id=eq.1&select=config');const h=rows?.[0]?.config?.adminPasswordHash;if(h){localStorage.setItem('adm_h',h);return h;}return localStorage.getItem('adm_h')||DEFHASH;}
 
 async function doLogin(){
-  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
-  const btn=document.getElementById('btnl'),err=document.getElementById('lerr');
+  const u=document.getElementById('lu').value.trim(), p=document.getElementById('lp').value;
+  const btn=document.getElementById('btnl'), err=document.getElementById('lerr');
   if(!u||!p){err.textContent='Preencha os campos.';err.style.display='block';setTimeout(()=>err.style.display='none',3000);return;}
-  btn.disabled=true;btn.textContent='Verificando…';
-  const ih=await sha256(p),sh=await getHash();
-  if(u==='admin'&&ih===sh){
-    sessionStorage.setItem('ok','1');
-    sessionStorage.setItem('admin_username', lu);
-    document.getElementById('login').style.display='none';
-    document.getElementById('admin').style.display='flex';
-    await boot();
-  } else {
-    btn.disabled=false;btn.textContent='Entrar no Painel';
-    err.textContent='Usuário ou senha incorretos.';err.style.display='block';
+  btn.disabled=true; btn.textContent='Verificando…';
+
+  try {
+    const hash = await sha256(p);
+    // 1. Try new users table first
+    const rows = await sbGet('iaem30_admin_users',
+      '?username=eq.'+encodeURIComponent(u)+'&active=eq.true&select=id,username,name,email,role,avatar,password_hash'
+    );
+
+    if(rows && rows[0] && rows[0].password_hash === hash) {
+      const user = rows[0];
+      sessionStorage.setItem('ok','1');
+      sessionStorage.setItem('admin_username', user.username);
+      sessionStorage.setItem('admin_role', user.role);
+      sessionStorage.setItem('admin_user_json', JSON.stringify(user));
+      _currentUser = user;
+      // Update last_login
+      sbPatch('iaem30_admin_users', '?id=eq.'+user.id, { last_login: new Date().toISOString() });
+      applyRoleAccess(user.role);
+      document.getElementById('login').style.display='none';
+      document.getElementById('admin').style.display='flex';
+      await boot();
+      return;
+    }
+
+    // 2. Legacy fallback — admin/senha original
+    const sh = await getHash();
+    if(u==='admin' && hash===sh){
+      sessionStorage.setItem('ok','1');
+      sessionStorage.setItem('admin_username','admin');
+      sessionStorage.setItem('admin_role','owner');
+      applyRoleAccess('owner');
+      document.getElementById('login').style.display='none';
+      document.getElementById('admin').style.display='flex';
+      await boot();
+      return;
+    }
+
+    // Failed
+    btn.disabled=false; btn.textContent='Entrar no Painel';
+    err.textContent='Usuário ou senha incorretos.'; err.style.display='block';
+    setTimeout(()=>err.style.display='none',3000);
+  } catch(e) {
+    btn.disabled=false; btn.textContent='Entrar no Painel';
+    err.textContent='Erro de conexão. Tente novamente.'; err.style.display='block';
     setTimeout(()=>err.style.display='none',3000);
   }
 }
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-function doLogout(){sessionStorage.removeItem('ok');location.reload();}
+function doLogout(){
+  sessionStorage.removeItem('ok');
+  sessionStorage.removeItem('admin_role');
+  sessionStorage.removeItem('admin_username');
+  sessionStorage.removeItem('admin_user_json');
+  _currentUser = null;
+  window._allowedPanels = null;
+  location.reload();
+}
 async function changePw(){
   const o=document.getElementById('pw-o').value,n=document.getElementById('pw-n').value,c=document.getElementById('pw-c').value;
   if(!o||!n||!c){toast('Preencha todos os campos','err');return;}
@@ -4229,6 +4271,133 @@ function generateQRForLink(slug) {
 
 
 // ═══════════════════════════════════════
+// CONTROLE DE ACESSO POR ROLE
+// ═══════════════════════════════════════
+
+/*
+  Mapa de acesso por role:
+  owner  → tudo
+  admin  → tudo exceto equipe/config-usuarios
+  editor → dashboard, analytics, emails, cupons, chat-faq, ai-leads, metas, calendario,
+           shortlinks, links, personal-pages, notifs + todo o editor do site
+  viewer → apenas dashboard, relatorio, analytics
+*/
+const ROLE_ACCESS = {
+  owner: {
+    panels: '*',  // todos
+    tabs: ['vendas','edit'],
+    showSections: ['all'],
+  },
+  admin: {
+    panels: ['overview','relatorio','vendas','extrato','comissoes','produtos',
+             'analytics','emails','cupons','notifs','personal-pages','shortlinks',
+             'links','chat-faq','ai-leads','metas','calendario',
+             'perfectpay','telegram','pixel',
+             'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
+             'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado','e-config'],
+    tabs: ['vendas','edit'],
+    hideSections: ['equipe-section'],
+  },
+  editor: {
+    panels: ['overview','relatorio','analytics','emails','cupons','notifs',
+             'personal-pages','shortlinks','links','chat-faq','ai-leads',
+             'metas','calendario',
+             'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
+             'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado'],
+    tabs: ['vendas','edit'],
+    hideNav: ['vendas','extrato','comissoes','produtos','perfectpay','telegram','pixel','e-config','equipe'],
+  },
+  viewer: {
+    panels: ['overview','relatorio','analytics'],
+    tabs: ['vendas'],
+    hideNav: ['vendas','extrato','comissoes','produtos','emails','cupons','notifs',
+              'personal-pages','shortlinks','links','chat-faq','ai-leads','metas',
+              'calendario','perfectpay','telegram','pixel','equipe','e-config'],
+    hideTabs: ['edit'],
+  },
+};
+
+function applyRoleAccess(role) {
+  const access = ROLE_ACCESS[role] || ROLE_ACCESS['viewer'];
+  const currentRole = role;
+
+  // ── 1. Hide/show nav items ──
+  if (access.hideNav) {
+    access.hideNav.forEach(panelId => {
+      // Find all .ni buttons that go to this panel
+      document.querySelectorAll(`.ni[onclick*="go('${panelId}'"]`).forEach(btn => {
+        btn.style.display = 'none';
+      });
+    });
+  }
+
+  // ── 2. Hide tabs ──
+  if (access.hideTabs) {
+    access.hideTabs.forEach(tabId => {
+      const tabEl = document.getElementById('tab-'+tabId);
+      if (tabEl) tabEl.style.display = 'none';
+    });
+  }
+
+  // ── 3. Hide equipe section for non-owners ──
+  if (role !== 'owner') {
+    // Hide equipe nav button
+    document.querySelectorAll(".ni").forEach(btn => {
+      if (btn.textContent.includes('Equipe')) btn.style.display = 'none';
+    });
+  }
+
+  // ── 4. Add role badge to topbar ──
+  addRoleBadge(role);
+
+  // ── 5. Block go() for restricted panels ──
+  window._allowedPanels = access.panels === '*' ? null : access.panels;
+}
+
+function addRoleBadge(role) {
+  const roleLabels = {
+    owner:  { label:'👑 Owner',  color:'var(--amber)',  bg:'var(--amberbg)' },
+    admin:  { label:'🔧 Admin',  color:'var(--blue)',   bg:'var(--bluebg)'  },
+    editor: { label:'✏️ Editor', color:'var(--green)',  bg:'var(--greenbg)' },
+    viewer: { label:'👁️ Viewer', color:'var(--fg3)',    bg:'var(--bg3)'     },
+  };
+  const r = roleLabels[role] || roleLabels.viewer;
+  const tbRight = document.querySelector('.tb-right');
+  if (!tbRight) return;
+  // Remove existing badge
+  const existing = document.getElementById('role-badge');
+  if (existing) existing.remove();
+  const badge = document.createElement('div');
+  badge.id = 'role-badge';
+  badge.style.cssText = `display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:${r.bg};border:1px solid ${r.color}33;border-radius:100px;font-size:11px;font-weight:600;color:${r.color};flex-shrink:0`;
+  badge.textContent = r.label;
+  tbRight.prepend(badge);
+}
+
+// Override go() to enforce access control
+const _goOriginal = go;
+function go(panel, btn) {
+  const allowed = window._allowedPanels;
+  if (allowed && !allowed.includes(panel)) {
+    toast('⛔ Sem permissão para acessar esta área');
+    return;
+  }
+  _goOriginal(panel, btn);
+  if (panel === 'equipe') setTimeout(() => { if(typeof loadEquipe==='function') loadEquipe(); }, 50);
+}
+
+// Restore role on page reload
+(function restoreSession() {
+  const role = sessionStorage.getItem('admin_role');
+  const userJson = sessionStorage.getItem('admin_user_json');
+  if (role) {
+    if (userJson) try { _currentUser = JSON.parse(userJson); } catch(e) {}
+    // Apply after DOM is ready
+    setTimeout(() => applyRoleAccess(role), 100);
+  }
+})();
+
+// ═══════════════════════════════════════
 // EQUIPE & PERFIL
 // ═══════════════════════════════════════
 
@@ -4526,8 +4695,7 @@ async function deleteUser(userId, name) {
   else toast('❌ Erro ao remover usuário');
 }
 
-// ── Equipe panel auto-load handled via loadPanel hook below ──
-
+// go() override handled by ROLE_ACCESS system above
 </script>
 </body>
 </html>
