@@ -4977,7 +4977,7 @@ async function quickUpdateGoal(goalId, type, current, target, unit) {
 
 async function deleteGoal(goalId) {
   if (!confirm('Remover esta meta?')) return;
-  await fetch(SB_URL + '/rest/v1/iaem30_user_goals?id=eq.' + goalId, {
+  await fetch(SB + '/rest/v1/iaem30_user_goals?id=eq.' + goalId, {
     method: 'DELETE', headers: { ...SB_H, Prefer: 'return=minimal' }
   });
   toast('✓ Meta removida');
@@ -5243,13 +5243,13 @@ async function loadChatSessions() {
   const el = document.getElementById('chat-sessions-list');
   if (!el) return;
 
-  let url = SB_URL + '/rest/v1/iaem30_chat_sessions?order=last_msg_at.desc&limit=50&select=*';
+  let url = SB + '/rest/v1/iaem30_chat_sessions?order=last_msg_at.desc&limit=50&select=*';
   if (_chatFilter !== 'all') {
     const statuses = _chatFilter.split(',');
     url += '&status=in.(' + statuses.join(',') + ')';
   }
 
-  const rows = await sbGet('iaem30_chat_sessions', url.replace(SB_URL + '/rest/v1/iaem30_chat_sessions', ''));
+  const rows = await sbGet('iaem30_chat_sessions', url.replace(SB + '/rest/v1/iaem30_chat_sessions', ''));
   if (!rows) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar</div>'; return; }
 
   // Count unread (open sessions)
@@ -5314,7 +5314,7 @@ async function openChatSession(sessId, name, email, status) {
   _chatAdminPoll = setInterval(() => loadAdminChatMsgs(false), 3000);
 
   // Mark as read by agent
-  fetch(SB_URL + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + sessId + '&sender=eq.visitor', {
+  fetch(SB + '/rest/v1/iaem30_chat_live_messages?session_id=eq.' + sessId + '&sender=eq.visitor', {
     method: 'PATCH', headers: { ...SB_H, Prefer: 'return=minimal' },
     body: JSON.stringify({ read_by_agent: true })
   });
@@ -5566,7 +5566,7 @@ async function loadSupportMessages(initial) {
   container.scrollTop = container.scrollHeight;
 
   // Mark visitor messages as read
-  await fetch(SB_URL + '/rest/v1/iaem30_support_messages?chat_id=eq.' + _activeChatId + '&sender=eq.visitor&read=eq.false', {
+  await fetch(SB + '/rest/v1/iaem30_support_messages?chat_id=eq.' + _activeChatId + '&sender=eq.visitor&read=eq.false', {
     method: 'PATCH', headers: { ...SB_H, Prefer: 'return=minimal' },
     body: JSON.stringify({ read: true })
   });
@@ -6225,7 +6225,7 @@ async function toggleUserActive(userId, active) {
 
 async function deleteUser(userId, name) {
   if (!confirm(`Remover o usuário "${name}"? Esta ação não pode ser desfeita.`)) return;
-  const r = await fetch(`${SB_URL}/rest/v1/iaem30_admin_users?id=eq.${userId}`, {
+  const r = await fetch(`${SB}/rest/v1/iaem30_admin_users?id=eq.${userId}`, {
     method: 'DELETE', headers: { ...SB_H, Prefer: 'return=minimal' }
   });
   if (r.ok) {
@@ -6249,16 +6249,8 @@ let _inboxSession = null;  // sessão aberta no momento
 let _inboxPoll = null;
 let _inboxSessions = [];   // cache da lista
 
-async function loadInbox() {
-  const filter = document.getElementById('inbox-filter')?.value || 'open';
-  let q = '?order=last_msg_at.desc&limit=50';
-  if (filter) q += '&status=eq.' + filter;
+// loadInbox defined below
 
-  const rows = await sbGet('iaem30_chat_sessions', q);
-  _inboxSessions = rows || [];
-  renderInboxList(_inboxSessions);
-  updateInboxBadge();
-}
 
 function renderInboxList(sessions) {
   const el = document.getElementById('inbox-list');
@@ -6463,12 +6455,7 @@ function escInbox(str) {
 // Auto-refresh inbox badge every 30s
 setInterval(updateInboxBadge, 30000);
 
-// Hook go() to load inbox
-const _goBeforeInbox = go;
-function go(id, el) {
-  _goBeforeInbox(id, el);
-  if (id === 'inbox') { loadInbox(); if (_inboxPoll) { clearInterval(_inboxPoll); _inboxPoll = null; } }
-}
+// inbox loaded via main go() below
 
 // ═══════════════════════════════════════
 // INBOX DE SUPORTE
