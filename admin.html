@@ -2048,15 +2048,29 @@ code, .mono {
   <div class="page-header">
     <div class="page-header-left">
       <h2>Equipe &amp; Perfil</h2>
-      <p>Gerencie usuários com acesso ao painel admin</p>
+      <p>Gerencie usuários, metas e comunicação interna</p>
     </div>
-    <div class="page-header-right">
+    <div class="page-header-right" id="equipe-header-actions">
       <button class="btn primary" onclick="openAddUser()">
         <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
         Novo Usuário
       </button>
     </div>
   </div>
+
+  <!-- Sub-tabs -->
+  <div style="display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:20px">
+    <button class="equipe-tab on" id="etab-perfil" onclick="switchEquipeTab('perfil')" style="padding:10px 18px;background:none;border:none;border-bottom:2px solid var(--amber);color:var(--fg);font-size:13px;font-weight:600;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s">👤 Meu Perfil</button>
+    <button class="equipe-tab" id="etab-equipe" onclick="switchEquipeTab('equipe')" style="padding:10px 18px;background:none;border:none;border-bottom:2px solid transparent;color:var(--fg3);font-size:13px;font-weight:500;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s">👥 Equipe</button>
+    <button class="equipe-tab" id="etab-metas" onclick="switchEquipeTab('metas')" style="padding:10px 18px;background:none;border:none;border-bottom:2px solid transparent;color:var(--fg3);font-size:13px;font-weight:500;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s">🎯 Metas</button>
+    <button class="equipe-tab" id="etab-mensagens" onclick="switchEquipeTab('mensagens')" style="padding:10px 18px;background:none;border:none;border-bottom:2px solid transparent;color:var(--fg3);font-size:13px;font-weight:500;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;position:relative">
+      💬 Mensagens
+      <span id="msg-unread-badge" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--red)"></span>
+    </button>
+  </div>
+
+  <!-- TAB: PERFIL -->
+  <div id="equipe-section-perfil">
 
   <!-- Meu Perfil -->
   <div class="card" style="margin-bottom:16px">
@@ -2102,7 +2116,9 @@ code, .mono {
     </div>
   </div>
 
-  <!-- Lista de usuários -->
+  </div><!-- end equipe-section-equipe placeholder -->
+  <!-- Lista de usuários (inside equipe tab) -->
+  <div id="equipe-section-equipe-real" style="display:none">
   <div class="card">
     <div class="card-head">
       <h3>👥 Usuários com Acesso</h3>
@@ -2131,7 +2147,9 @@ code, .mono {
     </div>
   </div>
 
-  <!-- Log de Atividade -->
+  </div><!-- /equipe-section-equipe-real-end -->
+  <!-- Log de Atividade (also inside equipe tab) -->
+  <div id="equipe-section-log" style="display:none">
   <div class="card" style="margin-top:16px">
     <div class="card-head" style="justify-content:space-between">
       <h3>📋 Log de Atividade</h3>
@@ -2150,6 +2168,76 @@ code, .mono {
       <button class="btn ghost" onclick="loadMoreActivity()" id="btn-load-more-activity" style="font-size:11px;padding:4px 10px;display:none">Ver mais</button>
     </div>
   </div>
+
+  </div><!-- /equipe-section-perfil -->
+
+  <!-- TAB: EQUIPE -->
+  <div id="equipe-section-equipe" style="display:none">
+    <!-- Lista de usuários já existente abaixo -->
+  </div>
+
+  <!-- TAB: METAS -->
+  <div id="equipe-section-metas" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--fg3)" id="goals-subtitle">Suas metas do mês</div>
+      <button class="btn primary" onclick="openAddGoal()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+        Nova Meta
+      </button>
+    </div>
+
+    <!-- Progress summary -->
+    <div id="goals-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
+
+    <!-- Goals list -->
+    <div id="goals-list" style="display:flex;flex-direction:column;gap:12px">
+      <div style="text-align:center;padding:40px;color:var(--fg4)">Carregando metas...</div>
+    </div>
+  </div>
+
+  <!-- TAB: MENSAGENS -->
+  <div id="equipe-section-mensagens" style="display:none">
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;height:520px">
+
+      <!-- Sidebar de contatos -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Conversas</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn ghost" onclick="selectMsgContact('all')" id="msg-btn-all" style="flex:1;padding:5px;font-size:11px;justify-content:center">📢 Geral</button>
+          </div>
+        </div>
+        <div id="msg-contacts" style="flex:1;overflow-y:auto;padding:6px"></div>
+      </div>
+
+      <!-- Área de chat -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <!-- Header do chat -->
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-shrink:0" id="chat-header">
+          <div id="chat-contact-avatar" style="width:32px;height:32px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📢</div>
+          <div>
+            <div id="chat-contact-name" style="font-weight:600;font-size:13px;color:var(--fg)">Canal Geral</div>
+            <div id="chat-contact-role" style="font-size:11px;color:var(--fg4)">Mensagens para toda a equipe</div>
+          </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;color:var(--fg4);font-size:13px;padding:20px">Selecione uma conversa</div>
+        </div>
+
+        <!-- Input -->
+        <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0" id="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Digite uma mensagem..." style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}">
+          <button onclick="sendMessage()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s" onmouseover="this.style.background='var(--amber2)'" onmouseout="this.style.background='var(--amber)'">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /equipe-section-log -->
 
   <!-- Role legend -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px">
@@ -4303,6 +4391,415 @@ function generateQRForLink(slug) {
 
 
 // ═══════════════════════════════════════
+// EQUIPE TABS
+// ═══════════════════════════════════════
+
+function switchEquipeTab(tab) {
+  // Update tab buttons
+  document.querySelectorAll('.equipe-tab').forEach(btn => {
+    const active = btn.id === 'etab-' + tab;
+    btn.style.color = active ? 'var(--fg)' : 'var(--fg3)';
+    btn.style.fontWeight = active ? '600' : '500';
+    btn.style.borderBottom = active ? '2px solid var(--amber)' : '2px solid transparent';
+    btn.classList.toggle('on', active);
+  });
+
+  // Show/hide sections
+  const sections = {
+    perfil:    ['equipe-section-perfil'],
+    equipe:    ['equipe-section-equipe', 'equipe-section-equipe-real', 'equipe-section-log'],
+    metas:     ['equipe-section-metas'],
+    mensagens: ['equipe-section-mensagens'],
+  };
+
+  // Hide all
+  ['perfil','equipe','metas','mensagens'].forEach(t => {
+    (sections[t] || []).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  });
+
+  // Show active
+  (sections[tab] || []).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+
+  // Update header action button
+  const hdr = document.getElementById('equipe-header-actions');
+  if (hdr) {
+    if (tab === 'equipe') {
+      hdr.innerHTML = '<button class="btn primary" onclick="openAddUser()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>Novo Usuário</button>';
+    } else if (tab === 'metas') {
+      hdr.innerHTML = '<button class="btn primary" onclick="openAddGoal()"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>Nova Meta</button>';
+    } else {
+      hdr.innerHTML = '';
+    }
+  }
+
+  // Load data for the tab
+  if (tab === 'metas') loadGoals();
+  if (tab === 'mensagens') { loadContacts(); markAllRead(); }
+}
+
+// ═══════════════════════════════════════
+// METAS PESSOAIS
+// ═══════════════════════════════════════
+
+async function loadGoals() {
+  if (!_currentUser) return;
+  const el = document.getElementById('goals-list');
+  const summaryEl = document.getElementById('goals-summary');
+  if (!el) return;
+
+  const rows = await sbGet('iaem30_user_goals',
+    '?user_id=eq.' + _currentUser.id + '&order=created_at.desc'
+  );
+
+  if (!rows || !rows.length) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;color:var(--fg4)">
+      <div style="font-size:32px;margin-bottom:12px;opacity:.3">🎯</div>
+      <div style="font-size:14px;margin-bottom:8px">Nenhuma meta ainda</div>
+      <div style="font-size:12px">Clique em "Nova Meta" para começar</div>
+    </div>`;
+    if (summaryEl) summaryEl.innerHTML = '';
+    return;
+  }
+
+  // Summary cards
+  const total    = rows.length;
+  const done     = rows.filter(g => g.completed || (g.target > 0 && g.current >= g.target)).length;
+  const pct      = Math.round(done / total * 100);
+  const avgProg  = rows.reduce((a, g) => a + Math.min(100, g.target > 0 ? Math.round(g.current / g.target * 100) : (g.completed ? 100 : 0)), 0) / total;
+
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--amber)">${total}</div>
+        <div style="font-size:11px;color:var(--fg3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Total de Metas</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--green)">${done}</div>
+        <div style="font-size:11px;color:var(--fg3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Concluídas</div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--blue)">${Math.round(avgProg)}%</div>
+        <div style="font-size:11px;color:var(--fg3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Progresso Médio</div>
+      </div>`;
+  }
+
+  // Goal cards
+  el.innerHTML = rows.map(g => {
+    const prog = g.target > 0 ? Math.min(100, Math.round(g.current / g.target * 100)) : (g.completed ? 100 : 0);
+    const isDone = g.completed || prog >= 100;
+    const periodMap = { daily:'Diária', weekly:'Semanal', monthly:'Mensal', yearly:'Anual', custom:'Personalizada' };
+    const typeFormat = (v, type, unit) => {
+      if (!v && v !== 0) return '—';
+      if (type === 'currency') return 'R$' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2});
+      if (type === 'percent') return v + '%';
+      return v + (unit ? ' ' + unit : '');
+    };
+    return `<div class="card" style="padding:18px 20px${isDone ? ';border-color:rgba(5,150,105,.25);background:rgba(5,150,105,.03)' : ''}">
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${isDone ? 'var(--greenbg)' : 'var(--amberbg)'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${isDone ? '✅' : (g.icon || '🎯')}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-weight:700;font-size:14px;color:var(--fg);font-family:'Fraunces',serif">${escHtml(g.title)}</span>
+            <span style="font-size:10px;padding:2px 7px;border-radius:100px;background:var(--bg3);color:var(--fg4);border:1px solid var(--line)">${periodMap[g.period] || g.period}</span>
+          </div>
+          ${g.description ? `<div style="font-size:12.5px;color:var(--fg3);margin-bottom:8px">${escHtml(g.description)}</div>` : ''}
+          ${g.type !== 'checkbox' ? `
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:12px;color:var(--fg3)">Progresso</span>
+              <span style="font-size:12px;font-weight:600;color:${isDone ? 'var(--green)' : 'var(--fg)'}">${typeFormat(g.current, g.type, g.unit)} / ${typeFormat(g.target, g.type, g.unit)}</span>
+            </div>
+            <div style="height:6px;background:var(--bg3);border-radius:6px;overflow:hidden">
+              <div style="height:100%;width:${prog}%;background:${isDone ? 'var(--green)' : g.color || 'var(--amber)'};border-radius:6px;transition:width .4s"></div>
+            </div>
+            <div style="text-align:right;font-size:11px;color:${isDone ? 'var(--green)' : 'var(--fg4)'};margin-top:3px">${prog}%</div>
+          </div>` : `
+          <div style="margin-bottom:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--fg3)">
+              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="updateGoalProgress('${g.id}', this.checked ? 1 : 0, 1)" style="width:16px;height:16px;accent-color:var(--amber);cursor:pointer">
+              ${isDone ? '<span style="color:var(--green);font-weight:500">Concluída ✓</span>' : 'Marcar como concluída'}
+            </label>
+          </div>`}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${g.type !== 'checkbox' && !isDone ? `
+          <button class="btn ghost" onclick="quickUpdateGoal('${g.id}', '${g.type}', ${g.current || 0}, ${g.target || 0}, '${g.unit || ''}')" style="padding:5px 10px;font-size:11px">+ Atualizar</button>` : ''}
+          <button class="btn ghost" onclick="editGoal('${g.id}')" style="padding:5px 10px;font-size:11px">✏️</button>
+          <button class="btn danger" onclick="deleteGoal('${g.id}')" style="padding:5px 10px;font-size:11px">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updateGoalProgress(goalId, current, target) {
+  const completed = current >= target;
+  await sbPatch('iaem30_user_goals', '?id=eq.' + goalId, { current, completed, updated_at: new Date().toISOString() });
+  loadGoals();
+}
+
+async function quickUpdateGoal(goalId, type, current, target, unit) {
+  const label = type === 'currency' ? 'Novo valor (R$)' : type === 'percent' ? 'Novo valor (%)' : 'Novo valor' + (unit ? ' (' + unit + ')' : '');
+  const val = prompt(label + '\nAtual: ' + current + ' / Meta: ' + target, current);
+  if (val === null) return;
+  const num = parseFloat(val.replace(',', '.'));
+  if (isNaN(num)) { toast('⚠️ Valor inválido'); return; }
+  await updateGoalProgress(goalId, num, target);
+  logActivity('Meta atualizada', 'metas', 'Progresso: ' + num, '🎯');
+}
+
+async function deleteGoal(goalId) {
+  if (!confirm('Remover esta meta?')) return;
+  await fetch(SB_URL + '/rest/v1/iaem30_user_goals?id=eq.' + goalId, {
+    method: 'DELETE', headers: { ...SB_H, Prefer: 'return=minimal' }
+  });
+  toast('✓ Meta removida');
+  loadGoals();
+}
+
+// Modal de meta
+let _editGoalId = null;
+
+function openAddGoal() {
+  _editGoalId = null;
+  document.getElementById('goal-modal-title').textContent = 'Nova Meta';
+  document.getElementById('goal-title').value = '';
+  document.getElementById('goal-desc').value = '';
+  document.getElementById('goal-type').value = 'number';
+  document.getElementById('goal-target').value = '';
+  document.getElementById('goal-current').value = '0';
+  document.getElementById('goal-unit').value = '';
+  document.getElementById('goal-period').value = 'monthly';
+  document.getElementById('goal-icon').value = '🎯';
+  document.getElementById('goal-color').value = '#e8a020';
+  document.getElementById('modal-goal').style.display = 'flex';
+}
+
+async function editGoal(goalId) {
+  const rows = await sbGet('iaem30_user_goals', '?id=eq.' + goalId);
+  if (!rows || !rows[0]) return;
+  const g = rows[0];
+  _editGoalId = goalId;
+  document.getElementById('goal-modal-title').textContent = 'Editar Meta';
+  document.getElementById('goal-title').value = g.title || '';
+  document.getElementById('goal-desc').value = g.description || '';
+  document.getElementById('goal-type').value = g.type || 'number';
+  document.getElementById('goal-target').value = g.target || '';
+  document.getElementById('goal-current').value = g.current || 0;
+  document.getElementById('goal-unit').value = g.unit || '';
+  document.getElementById('goal-period').value = g.period || 'monthly';
+  document.getElementById('goal-icon').value = g.icon || '🎯';
+  document.getElementById('goal-color').value = g.color || '#e8a020';
+  document.getElementById('modal-goal').style.display = 'flex';
+}
+
+async function saveGoal() {
+  const title   = document.getElementById('goal-title').value.trim();
+  const desc    = document.getElementById('goal-desc').value.trim();
+  const type    = document.getElementById('goal-type').value;
+  const target  = parseFloat(document.getElementById('goal-target').value) || 0;
+  const current = parseFloat(document.getElementById('goal-current').value) || 0;
+  const unit    = document.getElementById('goal-unit').value.trim();
+  const period  = document.getElementById('goal-period').value;
+  const icon    = document.getElementById('goal-icon').value.trim() || '🎯';
+  const color   = document.getElementById('goal-color').value || '#e8a020';
+  if (!title) { toast('⚠️ Preencha o título da meta'); return; }
+
+  const data = { title, description: desc || null, type, target, current, unit: unit || null, period, icon, color, completed: current >= target, updated_at: new Date().toISOString() };
+
+  if (_editGoalId) {
+    await sbPatch('iaem30_user_goals', '?id=eq.' + _editGoalId, data);
+    toast('✓ Meta atualizada!');
+  } else {
+    await sbPost('iaem30_user_goals', { ...data, user_id: _currentUser.id });
+    toast('✓ Meta criada!');
+    logActivity('Nova meta criada', 'metas', title, icon);
+  }
+  document.getElementById('modal-goal').style.display = 'none';
+  loadGoals();
+}
+
+// ═══════════════════════════════════════
+// MENSAGENS INTERNAS
+// ═══════════════════════════════════════
+
+let _currentContact = 'all'; // 'all' = canal geral, ou UUID do usuário
+let _msgPollInterval = null;
+
+async function loadContacts() {
+  const el = document.getElementById('msg-contacts');
+  if (!el) return;
+  const rows = await sbGet('iaem30_admin_users', '?active=eq.true&select=id,username,name,avatar,job_title,role&order=name.asc');
+  if (!rows) return;
+
+  const others = rows.filter(u => u.id !== _currentUser?.id);
+  el.innerHTML = others.map(u => {
+    const avatarHtml = u.avatar && u.avatar.startsWith('data:')
+      ? `<div style="width:34px;height:34px;border-radius:50%;background:url('${u.avatar}') center/cover;flex-shrink:0"></div>`
+      : `<div style="width:34px;height:34px;border-radius:50%;background:var(--amberbg);border:1px solid rgba(212,144,10,.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${u.avatar || '👤'}</div>`;
+    return `<div class="msg-contact" id="msgc-${u.id}" onclick="selectMsgContact('${u.id}','${escHtml(u.name)}','${u.job_title ? escHtml(u.job_title) : ROLE_LABELS[u.role]||u.role}','${u.avatar||''}')"
+      style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .1s;margin-bottom:2px"
+      onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=this.dataset.active==='1'?'var(--amberbg)':''">
+      ${avatarHtml}
+      <div style="min-width:0">
+        <div style="font-size:12.5px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(u.name)}</div>
+        <div style="font-size:11px;color:var(--fg4)">@${u.username}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Select general by default
+  selectMsgContact('all');
+
+  // Start polling for new messages
+  if (_msgPollInterval) clearInterval(_msgPollInterval);
+  _msgPollInterval = setInterval(pollNewMessages, 8000);
+}
+
+async function selectMsgContact(userId, name, role, avatar) {
+  _currentContact = userId;
+
+  // Update active state
+  document.querySelectorAll('.msg-contact').forEach(el => {
+    el.style.background = '';
+    el.dataset.active = '0';
+  });
+  if (userId !== 'all') {
+    const el = document.getElementById('msgc-' + userId);
+    if (el) { el.style.background = 'var(--amberbg)'; el.dataset.active = '1'; }
+  }
+
+  // Update header
+  const hdrName = document.getElementById('chat-contact-name');
+  const hdrRole = document.getElementById('chat-contact-role');
+  const hdrAvatar = document.getElementById('chat-contact-avatar');
+  if (userId === 'all') {
+    if (hdrName) hdrName.textContent = 'Canal Geral';
+    if (hdrRole) hdrRole.textContent = 'Mensagens para toda a equipe';
+    if (hdrAvatar) hdrAvatar.innerHTML = '📢';
+    document.getElementById('msg-btn-all').style.background = 'var(--amberbg)';
+    document.getElementById('msg-btn-all').style.color = 'var(--amber)';
+  } else {
+    document.getElementById('msg-btn-all').style.background = '';
+    document.getElementById('msg-btn-all').style.color = '';
+    if (hdrName) hdrName.textContent = name || 'Usuário';
+    if (hdrRole) hdrRole.textContent = role || '';
+    if (hdrAvatar) {
+      if (avatar && avatar.startsWith('data:')) {
+        hdrAvatar.style.cssText = 'width:32px;height:32px;border-radius:50%;background:url(\'' + avatar + '\') center/cover;flex-shrink:0';
+        hdrAvatar.innerHTML = '';
+      } else {
+        hdrAvatar.style.cssText = 'width:32px;height:32px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0';
+        hdrAvatar.innerHTML = avatar || '👤';
+      }
+    }
+  }
+
+  await loadMessages();
+}
+
+async function loadMessages() {
+  const el = document.getElementById('chat-messages');
+  if (!el) return;
+
+  let query;
+  if (_currentContact === 'all') {
+    query = '?is_broadcast=eq.true&order=created_at.asc&limit=60';
+  } else {
+    // Messages between current user and contact (bidirectional)
+    const me = _currentUser.id;
+    const them = _currentContact;
+    query = `?or=(and(from_user.eq.${me},to_user.eq.${them}),and(from_user.eq.${them},to_user.eq.${me}))&is_broadcast=eq.false&order=created_at.asc&limit=60`;
+  }
+
+  const rows = await sbGet('iaem30_team_messages', query);
+
+  if (!rows || !rows.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--fg4);font-size:13px;padding:30px">Nenhuma mensagem ainda. Diga olá! 👋</div>';
+    return;
+  }
+
+  el.innerHTML = rows.map(msg => {
+    const isMe = msg.from_user === _currentUser?.id;
+    const time = new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+    const date = new Date(msg.created_at).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' });
+    const avatarHtml = msg.from_avatar && msg.from_avatar.startsWith('data:')
+      ? `<div style="width:28px;height:28px;border-radius:50%;background:url('${msg.from_avatar}') center/cover;flex-shrink:0;margin-top:2px"></div>`
+      : `<div style="width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px">${msg.from_avatar || '👤'}</div>`;
+    return `<div style="display:flex;gap:8px;align-items:flex-start;${isMe ? 'flex-direction:row-reverse' : ''}">
+      ${!isMe ? avatarHtml : ''}
+      <div style="max-width:70%;${isMe ? 'align-items:flex-end' : ''}">
+        ${!isMe ? `<div style="font-size:11px;font-weight:600;color:var(--amber);margin-bottom:3px">${escHtml(msg.from_name)}</div>` : ''}
+        <div style="padding:9px 13px;border-radius:${isMe ? '14px 4px 14px 14px' : '4px 14px 14px 14px'};background:${isMe ? 'var(--amber)' : 'var(--bg2)'};color:${isMe ? 'var(--ink)' : 'var(--fg)'};font-size:13px;line-height:1.5;word-break:break-word">${escHtml(msg.content)}</div>
+        <div style="font-size:10px;color:var(--fg4);margin-top:3px;${isMe ? 'text-align:right' : ''}">${date} ${time}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Scroll to bottom
+  el.scrollTop = el.scrollHeight;
+
+  // Mark messages as read
+  if (_currentUser) {
+    rows.filter(m => !m.is_broadcast && m.to_user === _currentUser.id).forEach(async m => {
+      if (!m.read_by || !m.read_by.includes(_currentUser.id)) {
+        await sbPatch('iaem30_team_messages', '?id=eq.' + m.id, {
+          read_by: [...(m.read_by || []), _currentUser.id]
+        });
+      }
+    });
+  }
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chat-input');
+  if (!input || !_currentUser) return;
+  const content = input.value.trim();
+  if (!content) return;
+  input.value = '';
+
+  const isBroadcast = _currentContact === 'all';
+  const msg = {
+    from_user:    _currentUser.id,
+    from_name:    _currentUser.name,
+    from_avatar:  _currentUser.avatar || null,
+    content,
+    is_broadcast: isBroadcast,
+    to_user:      isBroadcast ? null : _currentContact,
+    to_name:      isBroadcast ? null : document.getElementById('chat-contact-name')?.textContent || null,
+    read_by:      [_currentUser.id],
+  };
+
+  await sbPost('iaem30_team_messages', msg);
+  await loadMessages();
+}
+
+async function pollNewMessages() {
+  if (_currentContact) await loadMessages();
+  await checkUnreadMessages();
+}
+
+async function checkUnreadMessages() {
+  if (!_currentUser) return;
+  const rows = await sbGet('iaem30_team_messages',
+    '?to_user=eq.' + _currentUser.id + '&select=id,read_by&limit=50'
+  );
+  const unread = (rows || []).filter(m => !m.read_by || !m.read_by.includes(_currentUser.id));
+  const badge = document.getElementById('msg-unread-badge');
+  if (badge) badge.style.display = unread.length > 0 ? 'block' : 'none';
+}
+
+async function markAllRead() {
+  checkUnreadMessages();
+}
+
+// ═══════════════════════════════════════
 // CONTROLE DE ACESSO POR ROLE
 // ═══════════════════════════════════════
 
@@ -4694,12 +5191,11 @@ async function changePassword() {
 // ── LOAD USERS LIST ──
 async function loadEquipe() {
   loadCurrentUser();
+  switchEquipeTab('perfil'); // default tab
   const rows = await sbGet('iaem30_admin_users', '?select=*&order=created_at.asc');
   if (!rows) { document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar usuários</td></tr>'; return; }
 
-  document.getElementById('users-count').textContent = `${rows.length} usuário${rows.length !== 1 ? 's' : ''}`;
-  populateActivityUserFilter();
-  loadActivityLog();
+  loadUsersTable();
 
   if (!rows.length) {
     document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--fg4)">Nenhum usuário cadastrado</td></tr>';
@@ -4746,6 +5242,41 @@ async function loadEquipe() {
     </tr>`;
   }).join('');
 }
+
+async function loadUsersTable() {
+  const rows = await sbGet('iaem30_admin_users', '?select=*&order=created_at.asc');
+  if (!rows) {
+    document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar</td></tr>';
+    return;
+  }
+  document.getElementById('users-count').textContent = rows.length + ' usuário' + (rows.length !== 1 ? 's' : '');
+  const isSelf = u => _currentUser && u.id === _currentUser.id;
+  const isOwner = u => u.role === 'owner';
+  document.getElementById('users-list').innerHTML = rows.map(u => {
+    const role = ROLES[u.role] || { label: u.role, color: 'var(--fg3)' };
+    const lastLogin = u.last_login ? new Date(u.last_login).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+    const avatarHtml = u.avatar && u.avatar.startsWith('data:')
+      ? `<div style="width:32px;height:32px;border-radius:50%;background:url('${u.avatar}') center/cover;flex-shrink:0"></div>`
+      : `<div style="width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${u.avatar||'👤'}</div>`;
+    const canEdit = !isOwner(u)||isSelf(u), canToggle = !isSelf(u)&&!isOwner(u), canDelete = !isSelf(u)&&!isOwner(u);
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">${avatarHtml}<div>
+        <div style="font-weight:600;font-size:13px;color:var(--fg)">${u.name}${isSelf(u)?'<span style="font-size:10px;background:var(--amberbg);color:var(--amber);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:6px">Você</span>':''}</div>
+        <div style="font-size:11px;color:var(--fg4)">@${u.username}${u.job_title?' · <span style="color:var(--fg3)">'+u.job_title+'</span>':''}</div>
+      </div></div></td>
+      <td style="color:var(--fg3);font-size:12.5px">${u.email}</td>
+      <td><span style="font-size:12px;font-weight:600;color:${role.color}">${role.label}</span></td>
+      <td style="color:var(--fg4);font-size:12px">${lastLogin}</td>
+      <td><span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px;${u.active?'background:var(--greenbg);color:var(--green)':'background:var(--redbg);color:var(--red)'}">${u.active?'Ativo':'Inativo'}</span></td>
+      <td><div style="display:flex;gap:6px">
+        ${canEdit?`<button class="btn-sm ghost" onclick="openEditUser('${u.id}')" style="padding:4px 10px;font-size:11px">Editar</button>`:''}
+        ${canToggle?`<button class="btn-sm ${u.active?'danger':'success'}" onclick="toggleUserActive('${u.id}',${!u.active})" style="padding:4px 10px;font-size:11px">${u.active?'Desativar':'Ativar'}</button>`:''}
+        ${canDelete?`<button class="btn-sm danger" onclick="deleteUser('${u.id}','${u.name}')" style="padding:4px 10px;font-size:11px">Remover</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
 
 // ── ADD / EDIT USER MODAL ──
 function openAddUser() {
@@ -4868,5 +5399,45 @@ async function deleteUser(userId, name) {
 
 // go() override handled by ROLE_ACCESS system above
 </script>
+
+<!-- Modal: Nova/Editar Meta -->
+<div id="modal-goal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:var(--bg1);border:1px solid var(--line2);border-radius:14px;padding:28px;width:100%;max-width:480px;box-shadow:var(--shadow3);position:relative">
+    <button onclick="document.getElementById('modal-goal').style.display='none'" style="position:absolute;top:14px;right:14px;background:var(--bg2);border:1px solid var(--line);color:var(--fg3);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    <h3 style="font-family:'Fraunces',serif;font-size:16px;font-weight:700;margin-bottom:20px;letter-spacing:-.02em" id="goal-modal-title">Nova Meta</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div class="field" style="grid-column:1/-1"><label>Título *</label><input type="text" id="goal-title" placeholder="Ex: Vendas do mês"></div>
+      <div class="field" style="grid-column:1/-1"><label>Descrição</label><input type="text" id="goal-desc" placeholder="Detalhes opcionais"></div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="goal-type">
+          <option value="number">Número</option>
+          <option value="currency">Valor (R$)</option>
+          <option value="percent">Porcentagem (%)</option>
+          <option value="checkbox">Checkbox (sim/não)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Período</label>
+        <select id="goal-period">
+          <option value="daily">Diário</option>
+          <option value="weekly">Semanal</option>
+          <option value="monthly">Mensal</option>
+          <option value="yearly">Anual</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div class="field"><label>Meta (alvo)</label><input type="number" id="goal-target" placeholder="Ex: 10" min="0"></div>
+      <div class="field"><label>Progresso atual</label><input type="number" id="goal-current" placeholder="0" min="0" value="0"></div>
+      <div class="field"><label>Unidade</label><input type="text" id="goal-unit" placeholder="Ex: vendas, leads..."></div>
+      <div class="field"><label>Ícone (emoji)</label><input type="text" id="goal-icon" placeholder="🎯" maxlength="4" value="🎯"></div>
+      <div class="field"><label>Cor da barra</label><input type="color" id="goal-color" value="#e8a020" style="padding:4px;height:36px"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:4px">
+      <button class="btn ghost" onclick="document.getElementById('modal-goal').style.display='none'">Cancelar</button>
+      <button class="btn primary" onclick="saveGoal()">Salvar Meta</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
