@@ -7,65 +7,78 @@
 <meta name="description" content="Política de Privacidade do site IA em 30 Dias. Saiba como coletamos, usamos e protegemos seus dados.">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#08080e; --card:#0f0f18; --border:rgba(255,255,255,.07); --a:#7c5cfc; --a2:#a78bfa; --t:#eeeaf8; --m:#7e7a96; --m2:#4a4762; --g:#10b981; }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { background:var(--bg); color:var(--t); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.8; }
-  header { background:rgba(8,8,14,.9); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; backdrop-filter:blur(12px); }
-  .logo { display:flex; align-items:center; text-decoration:none; }
-  .logo img { height:32px; width:auto; }
-  .back { color:var(--a2); text-decoration:none; font-size:13px; display:flex; align-items:center; gap:6px; transition:color .2s; }
-  .back:hover { color:var(--t); }
-  .container { max-width:760px; margin:0 auto; padding:60px 24px 100px; }
-  .page-label { font-size:12px; font-weight:600; color:var(--a2); text-transform:uppercase; letter-spacing:.1em; margin-bottom:14px; }
-  h1 { font-family:'Syne',sans-serif; font-size:clamp(26px,4vw,40px); font-weight:800; margin-bottom:10px; }
-  .updated { font-size:13px; color:var(--m); margin-bottom:48px; padding-bottom:24px; border-bottom:1px solid var(--border); }
-  h2 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin:40px 0 14px; color:var(--t); }
-  p { color:var(--m); margin-bottom:14px; }
-  ul { color:var(--m); padding-left:20px; margin-bottom:14px; }
-  ul li { margin-bottom:7px; }
-  a { color:var(--a2); text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  .highlight-box { background:var(--card); border:1px solid rgba(124,92,252,.2); border-radius:12px; padding:20px 24px; margin:24px 0; }
-  .highlight-box p { color:var(--t); margin:0; font-size:14px; }
-  .contact-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; margin-top:40px; }
-  .contact-box h3 { font-family:'Syne',sans-serif; font-size:16px; margin-bottom:10px; }
-  footer { text-align:center; padding:32px 24px; color:var(--m2); font-size:13px; border-top:1px solid var(--border); }
+:root{--ink:#08070c;--ink1:#0d0c14;--ink2:#13121e;--ink3:#1c1a2c;--line:rgba(255,255,255,.055);--line2:rgba(255,255,255,.1);--line3:rgba(255,255,255,.18);--cream:#f5f0e8;--cream2:#d4cbbf;--warm:#8a8070;--warm2:#4a4438;--amber:#e8a020;--amber2:#f4bc55;--amberbg:rgba(232,160,32,.1);--amberglow:rgba(232,160,32,.18);--jade:#00c896;--jade2:rgba(0,200,150,.1);--jade3:rgba(0,200,150,.2);--rose:#ff4f6d;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--cream);font-family:'Instrument Sans',sans-serif;font-size:15px;line-height:1.8;-webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:'Fraunces',serif;letter-spacing:-.02em;line-height:1.15;}
+a{color:var(--amber2);text-decoration:none;}
+a:hover{text-decoration:underline;color:var(--amber);}
+::selection{background:var(--amberglow);}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--ink3);}
 
-@media(max-width: 768px) {
-  .container { padding: 40px 16px 80px; }
-  h1 { font-size: 26px; }
-  h2 { font-size: 16px; margin: 28px 0 10px; }
-  .highlight-box, .warning-box, .contact-box { padding: 16px; }
-  header { padding: 12px 16px; }
-  .logo img { height: 26px; }
-  .back { font-size: 12px; }
-  footer { padding: 24px 16px; font-size: 12px; }
-  ul { padding-left: 16px; }
-}
-@media(max-width: 480px) {
-  h1 { font-size: 22px; }
-  body { font-size: 14px; }
-  .page-label { font-size: 11px; }
-}
+.site-header{background:rgba(8,7,12,.92);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(20px) saturate(180%);}
+.logo{display:flex;align-items:center;text-decoration:none;}
+.logo img{height:30px;width:auto;}
+.back-link{color:var(--warm);font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;text-decoration:none;transition:color .2s;border:1px solid var(--line2);padding:6px 14px;border-radius:6px;gap:6px;}
+.back-link:hover{color:var(--cream);border-color:rgba(232,160,32,.4);text-decoration:none;}
+
+.page-container{max-width:720px;margin:0 auto;padding:64px 24px 100px;}
+.page-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--amber);margin-bottom:16px;}
+.page-eyebrow::before{content:'';width:16px;height:1px;background:var(--amber);}
+.page-title{font-size:clamp(28px,4vw,46px);font-weight:900;margin-bottom:10px;font-style:italic;}
+.page-meta{font-size:13px;color:var(--warm);padding-bottom:28px;margin-bottom:44px;border-bottom:1px solid var(--line);}
+
+.prose h2{font-family:'Fraunces',serif;font-size:19px;font-weight:700;margin:44px 0 14px;color:var(--cream);padding-left:16px;border-left:2px solid var(--amber);letter-spacing:-.02em;}
+.prose p{color:var(--warm);margin-bottom:14px;font-size:15px;line-height:1.82;}
+.prose ul{color:var(--warm);padding-left:0;margin-bottom:16px;list-style:none;display:flex;flex-direction:column;gap:9px;}
+.prose ul li{display:flex;gap:12px;font-size:15px;}
+.prose ul li::before{content:'';width:18px;height:18px;background:var(--jade2);border:1px solid var(--jade3);border-radius:50%;flex-shrink:0;margin-top:3px;background-image:url("data:image/svg+xml,%3Csvg width='8' height='8' fill='none' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 4l1.8 1.8L6.5 2.5' stroke='%2300c896' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;}
+.prose strong{color:var(--cream);font-weight:600;}
+
+.callout{border-radius:14px;padding:20px 24px;margin:24px 0;display:flex;gap:14px;align-items:flex-start;}
+.callout-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.callout-body p{margin:0;font-size:14px;line-height:1.72;color:var(--cream2);}
+.callout.info{background:var(--amberbg);border:1px solid rgba(232,160,32,.2);}
+.callout.success{background:var(--jade2);border:1px solid var(--jade3);}
+
+.contact-card{background:var(--ink1);border:1px solid rgba(232,160,32,.2);border-radius:16px;padding:28px;margin-top:48px;position:relative;overflow:hidden;}
+.contact-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent);}
+.contact-card h3{font-family:'Fraunces',serif;font-size:17px;font-weight:700;margin-bottom:10px;letter-spacing:-.02em;}
+.contact-card p{color:var(--warm);font-size:14px;margin-bottom:6px;}
+.contact-row{display:flex;align-items:center;gap:10px;font-size:14px;margin-top:12px;padding:10px 14px;background:var(--ink2);border-radius:8px;border:1px solid var(--line);}
+.contact-row strong{color:var(--cream);min-width:60px;}
+
+.site-footer{text-align:center;padding:28px 24px;color:var(--warm2);font-size:13px;border-top:1px solid var(--line);background:var(--ink1);}
+.site-footer a{color:var(--warm2);transition:color .2s;}
+.site-footer a:hover{color:var(--warm);text-decoration:none;}
+
+@media(max-width:600px){.page-container{padding:40px 16px 80px;}.page-title{font-size:26px;}.prose h2{font-size:16px;}.callout{padding:14px;}.contact-card{padding:20px;}.site-header{padding:12px 16px;}.logo img{height:26px;}}
 </style>
 </head>
 <body>
 
-<header>
+<header class="site-header">
   <a href="/" class="logo"><img src="logo.svg" alt="IA em 30 Dias"></a>
-  <a href="/" class="back">← Voltar ao site</a>
+  <a href="/" class="back-link">Voltar ao site</a>
 </header>
 
-<div class="container">
-  <div class="page-label">Legal</div>
-  <h1>Política de Privacidade</h1>
-  <div class="updated">Última atualização: março de 2026</div>
+<div class="page-container">
+  <div class="page-eyebrow">Legal</div>
+  <h1 class="page-title">Política de Privacidade</h1>
+  <div class="page-meta">Última atualização: março de 2026</div>
 
-  <div class="highlight-box">
-    <p>🔒 Sua privacidade é importante para nós. Esta política explica de forma clara e transparente como coletamos, usamos e protegemos seus dados, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).</p>
+  <div class="callout info">
+    <div class="callout-icon">🔒</div>
+    <div class="callout-body"><p>Sua privacidade é importante para nós. Esta política explica de forma clara e transparente como coletamos, usamos e protegemos seus dados, em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei nº 13.709/2018).</p></div>
   </div>
+
+  <div class="prose">
 
   <h2>1. Quem somos</h2>
   <p>O site <strong>IA em 30 Dias</strong> (iaem30.com.br) é responsável pelo tratamento dos dados pessoais coletados nesta plataforma. Dúvidas podem ser enviadas para o email de contato informado ao final desta página.</p>
@@ -94,7 +107,7 @@
     <li><strong>Cookies de análise</strong> — monitoramento de visitas e comportamento (dados anônimos)</li>
     <li><strong>Cookies de marketing</strong> — rastreamento de origem para medir eficácia de campanhas</li>
   </ul>
-  <p>Você pode recusar cookies não essenciais pelo banner exibido na primeira visita ou alterando as configurações do seu navegador. A recusa de cookies essenciais pode prejudicar o funcionamento do site.</p>
+  <p>Você pode recusar cookies não essenciais pelo banner exibido na primeira visita ou alterando as configurações do seu navegador.</p>
 
   <h2>5. Compartilhamento de dados</h2>
   <p>Seus dados <strong>nunca são vendidos</strong>. Compartilhamos apenas com:</p>
@@ -114,33 +127,36 @@
     <li>Revogar o consentimento a qualquer momento</li>
     <li>Portabilidade dos dados para outro fornecedor</li>
   </ul>
-  <p>Para exercer qualquer um desses direitos, entre em contato pelo email abaixo.</p>
 
   <h2>7. Segurança</h2>
-  <p>Adotamos medidas técnicas e organizacionais para proteger seus dados, incluindo criptografia em trânsito (HTTPS), controle de acesso e backups regulares. Nenhum sistema é 100% seguro, mas nos comprometemos a notificá-lo em caso de incidentes que afetem seus dados.</p>
+  <p>Adotamos medidas técnicas e organizacionais para proteger seus dados, incluindo criptografia em trânsito (HTTPS), controle de acesso e backups regulares.</p>
 
   <h2>8. Retenção de dados</h2>
   <p>Mantemos seus dados pelo tempo necessário para cumprir as finalidades descritas nesta política ou por exigência legal. Dados de compradores são mantidos por até 5 anos para fins fiscais e legais.</p>
 
   <h2>9. Menores de idade</h2>
-  <p>Este site não é direcionado a menores de 18 anos. Não coletamos intencionalmente dados de menores. Caso identifique que um menor nos forneceu dados, entre em contato para que possamos removê-los.</p>
+  <p>Este site não é direcionado a menores de 18 anos. Não coletamos intencionalmente dados de menores.</p>
 
   <h2>10. Alterações nesta política</h2>
-  <p>Esta política pode ser atualizada periodicamente. Alterações relevantes serão comunicadas no site. O uso continuado após as alterações implica aceitação da nova versão.</p>
+  <p>Esta política pode ser atualizada periodicamente. O uso continuado após as alterações implica aceitação da nova versão.</p>
 
-  <div class="contact-box">
+  </div>
+
+  <div class="contact-card">
     <h3>📬 Contato do Encarregado de Dados (DPO)</h3>
-    <p style="color:var(--m);font-size:14px;margin-top:6px">Para dúvidas, solicitações ou exercício dos seus direitos previstos na LGPD, entre em contato:</p>
-    <p style="margin-top:10px;font-size:14px"><strong>Email:</strong> <a href="mailto:contato@iaem30.com.br">contato@iaem30.com.br</a></p>
-    <p style="font-size:14px"><strong>Site:</strong> <a href="https://iaem30.com.br">iaem30.com.br</a></p>
+    <p>Para dúvidas, solicitações ou exercício dos seus direitos previstos na LGPD:</p>
+    <div class="contact-row"><strong>Email</strong> <a href="mailto:contato@iaem30.com.br">contato@iaem30.com.br</a></div>
+    <div class="contact-row"><strong>Site</strong> <a href="https://iaem30.com.br">iaem30.com.br</a></div>
   </div>
 </div>
 
-<footer>
-  © <span id="yr"></span> IA em 30 Dias &nbsp;·&nbsp;
-  <a href="/privacidade">Política de Privacidade</a> &nbsp;·&nbsp;
+<footer class="site-footer">
+  © <span id="yr"></span> IA em 30 Dias
+  <span style="margin:0 10px;opacity:.3">·</span>
+  <a href="/privacidade">Privacidade</a>
+  <span style="margin:0 10px;opacity:.3">·</span>
   <a href="/termos">Termos de Uso</a>
 </footer>
-<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
 </body>
 </html>
