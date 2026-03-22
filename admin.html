@@ -9,78 +9,96 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ══════════════════════════════════════
-   DESIGN SYSTEM — IA em 30 Admin
-   Aesthetic: Refined Dark — Editorial/Luxury
+   IA em 30 Dias — Admin Panel
+   Design: Refined Dark · Precision Tools
+   Fonts: Bricolage Grotesque + DM Sans + Geist Mono
 ══════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap');
+
 :root {
-  /* Core palette */
-  --bg:       #060608;
-  --surface:  #0c0c12;
-  --card:     #111118;
-  --card2:    #16161f;
-  --elevated: #1c1c28;
+  /* Backgrounds */
+  --bg:       #05050a;
+  --surface:  #09090f;
+  --card:     #0e0e18;
+  --card2:    #131320;
+  --elevated: #191928;
 
   /* Borders */
-  --border:   rgba(255,255,255,.06);
+  --border:   rgba(255,255,255,.055);
   --border2:  rgba(255,255,255,.1);
+  --border3:  rgba(255,255,255,.16);
 
-  /* Accent */
+  /* Accent — Violet */
   --a:    #7c5cfc;
   --a2:   #a78bfa;
-  --ag:   rgba(124,92,252,.15);
-  --agg:  rgba(124,92,252,.06);
+  --a3:   #c4b5fd;
+  --ag:   rgba(124,92,252,.18);
+  --agg:  rgba(124,92,252,.07);
 
   /* Text */
-  --t:    #f0ecff;
-  --t2:   #c4bfe0;
-  --m:    #6b6585;
-  --m2:   #3d3958;
+  --t:    #ede9ff;
+  --t2:   #bdb8d8;
+  --m:    #6a6482;
+  --m2:   #38354f;
 
   /* Semantic */
   --g:    #10b981;
-  --g2:   rgba(16,185,129,.12);
+  --g2:   rgba(16,185,129,.1);
+  --g3:   rgba(16,185,129,.2);
   --r:    #f43f5e;
-  --r2:   rgba(244,63,94,.12);
+  --r2:   rgba(244,63,94,.1);
   --gold: #f59e0b;
-  --go2:  rgba(245,158,11,.12);
+  --go2:  rgba(245,158,11,.1);
   --cyan: #06b6d4;
-  --cy2:  rgba(6,182,212,.12);
+  --cy2:  rgba(6,182,212,.1);
 
   /* Layout */
-  --W:   64px;
-  --WX:  252px;
-  --top: 60px;
+  --W:   60px;
+  --WX:  248px;
+  --top: 58px;
 
   /* Radius */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-xl: 20px;
+  --r1: 6px;
+  --r2: 10px;
+  --r3: 14px;
+  --r4: 18px;
 }
 
+/* ── RESET ── */
 * { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; }
 body {
-  background:var(--bg); color:var(--t);
+  background:var(--bg);
+  color:var(--t);
   font-family:'DM Sans', sans-serif;
-  font-size:13.5px; line-height:1.6;
+  font-size:13.5px;
+  line-height:1.6;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
 h1,h2,h3,h4,h5 {
   font-family:'Bricolage Grotesque', sans-serif;
-  letter-spacing:-.02em;
+  letter-spacing:-.025em;
+  line-height:1.2;
 }
 code, .mono {
   font-family:'Geist Mono', monospace;
-  font-size:.9em;
+  font-size:.88em;
+  background:rgba(255,255,255,.06);
+  padding:2px 6px;
+  border-radius:4px;
+  color:var(--a2);
 }
 
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width:3px; height:3px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--m2); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--m); }
 
-/* ══ LOGIN ══ */
+/* ════════════════════════════════
+   LOGIN
+════════════════════════════════ */
 #login {
   min-height:100vh;
   display:flex; align-items:center; justify-content:center;
@@ -90,94 +108,85 @@ code, .mono {
 #login::before {
   content:'';
   position:absolute;
-  width:600px; height:600px;
-  background:radial-gradient(circle, rgba(124,92,252,.12) 0%, transparent 70%);
-  top:-200px; left:50%; transform:translateX(-50%);
-  pointer-events:none;
-}
-#login::after {
-  content:'';
-  position:absolute;
-  width:300px; height:300px;
-  background:radial-gradient(circle, rgba(6,182,212,.06) 0%, transparent 70%);
-  bottom:0; right:10%;
+  width:800px; height:800px;
+  top:50%; left:50%; transform:translate(-50%,-55%);
+  background:radial-gradient(circle, rgba(124,92,252,.1) 0%, rgba(6,182,212,.04) 40%, transparent 70%);
   pointer-events:none;
 }
 .lbox {
-  width:420px;
+  width:400px;
   background:var(--card);
   border:1px solid var(--border2);
-  border-radius:24px;
-  padding:52px 48px;
+  border-radius:20px;
+  padding:44px 40px;
   position:relative; z-index:1;
-  box-shadow:
-    0 0 0 1px rgba(124,92,252,.08),
-    0 40px 80px rgba(0,0,0,.6),
-    0 0 80px rgba(124,92,252,.05);
+  box-shadow: 0 0 0 1px rgba(124,92,252,.06), 0 40px 80px rgba(0,0,0,.5);
   animation:loginIn .5s cubic-bezier(.16,1,.3,1);
 }
-@keyframes loginIn {
-  from { opacity:0; transform:translateY(20px) scale(.98); }
-  to   { opacity:1; transform:none; }
+@keyframes loginIn { from{opacity:0;transform:translateY(16px) scale(.98)} to{opacity:1;transform:none} }
+
+.login-icon {
+  width:48px; height:48px;
+  background:linear-gradient(135deg, var(--a), #06b6d4);
+  border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; margin:0 auto 20px;
+  box-shadow:0 8px 24px rgba(124,92,252,.3);
 }
 .llogo {
   font-family:'Bricolage Grotesque', sans-serif;
-  font-size:26px; font-weight:800;
+  font-size:22px; font-weight:800;
   text-align:center; margin-bottom:4px;
   letter-spacing:-.03em;
 }
 .llogo em { color:var(--a2); font-style:normal; }
-.lsub { text-align:center; color:var(--m); font-size:13px; margin-bottom:40px; }
+.lsub { text-align:center; color:var(--m); font-size:13px; margin-bottom:32px; }
+.ldivider { height:1px; background:var(--border); margin-bottom:24px; }
+
 .fg { margin-bottom:14px; }
 .fg label {
-  display:block; font-size:10.5px; font-weight:600;
+  display:block; font-size:10.5px; font-weight:700;
   color:var(--m); text-transform:uppercase; letter-spacing:.1em; margin-bottom:7px;
 }
 .fg input {
-  width:100%; padding:12px 16px;
+  width:100%; padding:11px 14px;
   background:var(--card2); border:1px solid var(--border2);
-  border-radius:var(--r-md); color:var(--t);
+  border-radius:var(--r2); color:var(--t);
   font-size:14px; font-family:'DM Sans',sans-serif;
   outline:none; transition:all .2s;
 }
 .fg input:focus {
   border-color:var(--a);
   background:var(--elevated);
-  box-shadow:0 0 0 3px rgba(124,92,252,.1);
+  box-shadow:0 0 0 3px var(--agg);
 }
 .btnl {
-  width:100%; padding:14px;
-  background:linear-gradient(135deg, var(--a), #6244e8);
-  color:#fff; border:none; border-radius:var(--r-md);
+  width:100%; padding:13px;
+  background:linear-gradient(135deg, var(--a), #5b35db);
+  color:#fff; border:none; border-radius:var(--r2);
   cursor:pointer;
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:15px; font-weight:700;
-  letter-spacing:-.01em;
+  font-size:15px; font-weight:700; letter-spacing:-.01em;
   transition:all .25s;
-  box-shadow:0 8px 24px rgba(124,92,252,.3);
-  position:relative; overflow:hidden;
+  box-shadow:0 6px 20px rgba(124,92,252,.3);
+  display:flex; align-items:center; justify-content:center; gap:8px;
 }
-.btnl::after {
-  content:'';
-  position:absolute; inset:0;
-  background:linear-gradient(135deg, rgba(255,255,255,.1), transparent);
-  opacity:0; transition:opacity .2s;
-}
-.btnl:hover { transform:translateY(-1px); box-shadow:0 12px 32px rgba(124,92,252,.4); }
-.btnl:hover::after { opacity:1; }
+.btnl:hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(124,92,252,.4); }
 .btnl:disabled { opacity:.5; cursor:wait; transform:none; }
 .lerr {
   background:var(--r2); border:1px solid rgba(244,63,94,.2);
-  color:var(--r); border-radius:var(--r-sm); padding:10px 14px;
+  color:var(--r); border-radius:var(--r2); padding:10px 14px;
   font-size:13px; margin-top:14px; display:none;
 }
 .lhint { text-align:center; color:var(--m2); font-size:11px; margin-top:16px; }
-.lhint code { background:var(--card2); padding:2px 6px; border-radius:4px; color:var(--m); }
+.lhint code { background:var(--card2); color:var(--m); }
 
-/* ══ LAYOUT ══ */
+/* ════════════════════════════════
+   LAYOUT SHELL
+════════════════════════════════ */
 #admin { display:none; min-height:100vh; }
 
-/* SIDEBAR */
+/* ── SIDEBAR ── */
 .sidebar {
   position:fixed; top:0; left:0; bottom:0;
   width:var(--WX);
@@ -190,92 +199,131 @@ code, .mono {
 }
 .sidebar.collapsed { width:var(--W); }
 
+/* Logo area */
 .sb-top {
   display:flex; align-items:center; justify-content:space-between;
-  padding:18px 16px;
+  padding:16px 14px;
   border-bottom:1px solid var(--border);
   min-height:var(--top); flex-shrink:0;
 }
-.sb-logo {
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-size:15px; font-weight:800;
-  white-space:nowrap; overflow:hidden;
-  letter-spacing:-.02em;
+.sb-brand { display:flex; align-items:center; gap:9px; overflow:hidden; }
+.sb-icon {
+  width:28px; height:28px; flex-shrink:0;
+  background:linear-gradient(135deg,var(--a),#06b6d4);
+  border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px;
+  box-shadow:0 2px 8px rgba(124,92,252,.35);
 }
-.sb-logo em { color:var(--a2); font-style:normal; }
+.sb-logo-text {
+  overflow:hidden; transition:all .25s;
+}
+.sb-logo-text strong {
+  display:block;
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:13px; font-weight:800;
+  letter-spacing:-.02em; white-space:nowrap;
+}
+.sb-logo-text span {
+  display:block;
+  font-size:10px; color:var(--m); white-space:nowrap;
+}
+.sidebar.collapsed .sb-logo-text { width:0; opacity:0; }
+
 .sb-toggle {
   background:none; border:none; color:var(--m);
-  cursor:pointer; font-size:16px; flex-shrink:0;
-  padding:5px; border-radius:6px;
-  transition:all .15s;
+  cursor:pointer; padding:5px; border-radius:6px;
+  flex-shrink:0; transition:all .15s;
+  display:flex; align-items:center; justify-content:center;
 }
 .sb-toggle:hover { color:var(--t); background:rgba(255,255,255,.06); }
-.sidebar.collapsed #sb-logo-img { opacity:0; width:0; max-width:0; overflow:hidden; }
+.sidebar.collapsed .sb-toggle svg { transform:rotate(180deg); }
+.sidebar.collapsed #sb-logo-img { width:0; opacity:0; max-width:0; overflow:hidden; }
 
-/* Tabs */
+/* Tab switcher */
 .sb-tabs {
-  display:flex;
+  display:flex; gap:3px;
+  padding:8px 10px;
   border-bottom:1px solid var(--border);
-  flex-shrink:0; padding:6px 8px; gap:4px;
+  flex-shrink:0;
 }
 .sbt {
-  flex:1; padding:8px 6px;
+  flex:1; padding:7px 6px;
   background:none; border:none; color:var(--m);
   font-family:'DM Sans',sans-serif;
   font-size:10.5px; font-weight:600;
   cursor:pointer; text-transform:uppercase; letter-spacing:.08em;
   transition:all .2s; white-space:nowrap;
-  border-radius:var(--r-sm);
+  border-radius:var(--r1);
   display:flex; align-items:center; justify-content:center; gap:5px;
 }
 .sbt:hover { color:var(--t2); background:rgba(255,255,255,.04); }
-.sbt.on {
-  color:var(--a2);
-  background:rgba(124,92,252,.12);
-}
+.sbt.on { color:var(--a2); background:var(--agg); }
 .sidebar.collapsed .sbt span { display:none; }
 
 /* Nav */
-.sb-nav { flex:1; padding:8px; overflow-y:auto; overflow-x:hidden; }
+.sb-nav { flex:1; padding:6px 8px; overflow-y:auto; overflow-x:hidden; }
+
 .nsec {
   font-size:9px; font-weight:700; text-transform:uppercase;
-  letter-spacing:.12em; color:var(--m2);
-  padding:14px 8px 5px; white-space:nowrap; overflow:hidden;
+  letter-spacing:.13em; color:var(--m2);
+  padding:14px 8px 4px;
+  white-space:nowrap; overflow:hidden;
 }
-.sidebar.collapsed .nsec { opacity:0; }
+.sidebar.collapsed .nsec { opacity:0; height:0; padding:0; }
+
 .ni {
   display:flex; align-items:center; gap:9px;
-  padding:8px 10px; border-radius:var(--r-sm);
+  padding:8px 9px; border-radius:var(--r1);
   cursor:pointer; color:var(--m); font-size:12.5px;
   transition:all .15s; margin-bottom:1px;
   border:none; background:none; width:100%;
   text-align:left; white-space:nowrap;
+  position:relative;
 }
 .ni:hover { background:rgba(255,255,255,.05); color:var(--t2); }
 .ni.on {
-  background:rgba(124,92,252,.14);
+  background:var(--ag);
   color:var(--a2); font-weight:500;
 }
-.ni.on .ico { filter:drop-shadow(0 0 6px rgba(167,139,250,.4)); }
-.ni .ico { font-size:14px; flex-shrink:0; width:18px; text-align:center; }
+.ni.on::before {
+  content:'';
+  position:absolute; left:0; top:20%; bottom:20%;
+  width:2.5px; background:var(--a);
+  border-radius:0 2px 2px 0;
+}
+.ni .ico {
+  font-size:14px; flex-shrink:0;
+  width:18px; text-align:center;
+  transition:filter .2s;
+}
+.ni.on .ico { filter:drop-shadow(0 0 4px rgba(167,139,250,.5)); }
 .ni .lbl { overflow:hidden; transition:all .25s; font-size:12.5px; }
 .sidebar.collapsed .ni .lbl { width:0; opacity:0; }
 .ni .badge {
-  margin-left:auto;
+  margin-left:auto; flex-shrink:0;
   background:var(--r); color:#fff;
   font-size:9px; font-weight:700;
-  padding:2px 6px; border-radius:10px; flex-shrink:0;
+  padding:2px 6px; border-radius:10px;
+  line-height:1.4;
 }
 .sidebar.collapsed .ni .badge { display:none; }
 
+/* Nav divider */
+.nav-divider {
+  height:1px; background:var(--border);
+  margin:8px 4px;
+}
+
+/* Footer */
 .sb-foot {
-  padding:10px 8px;
+  padding:8px;
   border-top:1px solid var(--border); flex-shrink:0;
 }
 .sb-foot .ni { color:var(--m); font-size:12px; }
-.sb-foot .ni.danger:hover { color:var(--r); background:rgba(244,63,94,.08); }
+.sb-foot .ni.danger:hover { color:var(--r); background:var(--r2); }
 
-/* MAIN */
+/* ── MAIN AREA ── */
 .main {
   margin-left:var(--WX);
   min-height:100vh; display:flex; flex-direction:column;
@@ -283,236 +331,269 @@ code, .mono {
 }
 .main.collapsed { margin-left:var(--W); }
 
-/* TOPBAR */
+/* ── TOPBAR ── */
 .topbar {
   position:sticky; top:0; z-index:50;
-  background:rgba(6,6,8,.9);
+  background:rgba(5,5,10,.92);
   backdrop-filter:blur(20px) saturate(180%);
   border-bottom:1px solid var(--border);
-  padding:0 24px; height:var(--top);
+  padding:0 22px; height:var(--top);
   display:flex; align-items:center; justify-content:space-between;
   flex-shrink:0;
 }
 .tb-left { display:flex; align-items:center; gap:10px; }
+.tb-breadcrumb {
+  display:flex; align-items:center; gap:6px;
+  font-size:12px; color:var(--m);
+}
+.tb-breadcrumb span { color:var(--m2); }
 .tb-title {
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:15px; font-weight:700; letter-spacing:-.02em;
+  font-size:14.5px; font-weight:700; letter-spacing:-.02em;
+  color:var(--t);
 }
-.tb-right { display:flex; align-items:center; gap:8px; }
-.tb-sync { display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--m); }
+.tb-right { display:flex; align-items:center; gap:6px; }
+
+/* Sync indicator */
+.tb-sync {
+  display:flex; align-items:center; gap:6px;
+  padding:5px 10px; border-radius:var(--r1);
+  font-size:11px; color:var(--m);
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+}
 .sync-dot {
   width:6px; height:6px; border-radius:50%;
-  background:var(--m2); transition:background .3s;
+  background:var(--m2); flex-shrink:0;
+  transition:all .3s;
 }
-.sync-dot.live { background:var(--g); box-shadow:0 0 6px var(--g); animation:none; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.sync-dot.live {
+  background:var(--g);
+  box-shadow:0 0 6px rgba(16,185,129,.5);
+}
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .btn-sm {
   display:inline-flex; align-items:center; gap:5px;
-  padding:6px 13px; border-radius:var(--r-sm);
+  padding:6px 12px; border-radius:var(--r1);
   font-size:12px; font-weight:600; cursor:pointer;
   border:none; transition:all .18s;
   font-family:'DM Sans',sans-serif; letter-spacing:-.01em;
 }
 .btn-sm.primary {
-  background:linear-gradient(135deg, var(--a), #6244e8);
-  color:#fff;
-  box-shadow:0 4px 12px rgba(124,92,252,.25);
+  background:linear-gradient(135deg, var(--a), #5b35db);
+  color:#fff; box-shadow:0 3px 10px rgba(124,92,252,.25);
 }
-.btn-sm.primary:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(124,92,252,.35); }
+.btn-sm.primary:hover { transform:translateY(-1px); box-shadow:0 5px 14px rgba(124,92,252,.35); }
 .btn-sm.ghost {
   background:rgba(255,255,255,.05); color:var(--t2);
   border:1px solid var(--border2);
 }
 .btn-sm.ghost:hover { background:rgba(255,255,255,.09); color:var(--t); }
+.btn-sm.success { background:var(--g2); color:var(--g); border:1px solid var(--g3); }
+.btn-sm.success:hover { background:var(--g3); }
 .btn-sm.danger { background:var(--r2); color:var(--r); border:1px solid rgba(244,63,94,.2); }
-.btn-sm.danger:hover { background:rgba(244,63,94,.2); }
-.btn-sm:disabled { opacity:.4; cursor:not-allowed; transform:none !important; }
+.btn-sm.danger:hover { background:rgba(244,63,94,.18); }
+.btn-sm:disabled { opacity:.35; cursor:not-allowed; transform:none !important; }
 
-/* PANELS */
+/* ── PANELS ── */
 .panels { flex:1; overflow:hidden; }
-.panel { display:none; padding:24px; animation:panelIn .25s ease; }
+.panel { display:none; padding:22px; animation:panelIn .22s ease; }
 .panel.on { display:block; }
-@keyframes panelIn {
-  from { opacity:0; transform:translateY(8px); }
-  to   { opacity:1; transform:none; }
-}
+@keyframes panelIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
-/* CARDS */
+/* ── CARDS ── */
 .card {
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:var(--r-lg);
+  border-radius:var(--r3);
   overflow:hidden;
   transition:border-color .2s;
 }
-.card:hover { border-color:rgba(255,255,255,.09); }
+.card:hover { border-color:rgba(255,255,255,.08); }
 .card-head {
   display:flex; align-items:center; justify-content:space-between;
-  padding:16px 20px;
+  padding:14px 18px;
   border-bottom:1px solid var(--border);
-  gap:12px; flex-wrap:wrap;
+  gap:12px; flex-wrap:wrap; min-height:48px;
 }
 .card-head h3 {
   font-family:'Bricolage Grotesque',sans-serif;
-  font-size:14px; font-weight:700; letter-spacing:-.02em;
+  font-size:13.5px; font-weight:700; letter-spacing:-.02em;
+  display:flex; align-items:center; gap:8px;
 }
-.card-body { padding:18px 20px; }
+.card-head h3 .card-ico {
+  width:26px; height:26px;
+  background:var(--agg); border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; flex-shrink:0;
+}
+.card-body { padding:16px 18px; }
 
-/* GRIDS */
-.pg  { display:flex; flex-direction:column; gap:18px; }
-.pg2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-.pg3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; }
+/* ── GRID LAYOUTS ── */
+.pg  { display:flex; flex-direction:column; gap:16px; }
+.pg2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.pg3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
 .fr  { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .fr3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
 
-/* KPI CARDS */
-.kpis { display:flex; flex-direction:column; gap:18px; }
-.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:18px; }
+/* ── KPI CARDS ── */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
 .kpi {
   background:var(--card);
   border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  padding:20px;
+  border-radius:var(--r3);
+  padding:18px 20px;
   position:relative; overflow:hidden;
   transition:all .2s;
 }
 .kpi:hover { border-color:rgba(255,255,255,.1); transform:translateY(-1px); }
-.kpi::before {
-  content:'';
-  position:absolute; inset:0;
-  opacity:0; transition:opacity .2s;
+.kpi-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.kpi-ico {
+  width:34px; height:34px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px;
 }
-.kpi.purple::before { background:linear-gradient(135deg, rgba(124,92,252,.05), transparent); }
-.kpi.green::before  { background:linear-gradient(135deg, rgba(16,185,129,.05), transparent); }
-.kpi.gold::before   { background:linear-gradient(135deg, rgba(245,158,11,.05), transparent); }
-.kpi.cyan::before   { background:linear-gradient(135deg, rgba(6,182,212,.05), transparent); }
-.kpi:hover::before  { opacity:1; }
-.kpi-icon { font-size:22px; margin-bottom:12px; }
-.kpi-label { font-size:11px; font-weight:600; color:var(--m); text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
-.kpi-val { font-family:'Bricolage Grotesque',sans-serif; font-size:28px; font-weight:800; letter-spacing:-.03em; line-height:1; }
+.kpi.purple .kpi-ico { background:rgba(124,92,252,.12); }
+.kpi.green  .kpi-ico { background:rgba(16,185,129,.1); }
+.kpi.gold   .kpi-ico { background:rgba(245,158,11,.1); }
+.kpi.cyan   .kpi-ico { background:rgba(6,182,212,.1); }
+.kpi-icon { font-size:20px; }
+.kpi-label { font-size:11px; font-weight:600; color:var(--m); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+.kpi-val {
+  font-family:'Bricolage Grotesque',sans-serif;
+  font-size:26px; font-weight:800; letter-spacing:-.03em; line-height:1;
+}
 .kpi.purple .kpi-val { color:var(--a2); }
 .kpi.green  .kpi-val { color:var(--g); }
 .kpi.gold   .kpi-val { color:var(--gold); }
 .kpi.cyan   .kpi-val { color:var(--cyan); }
 .kpi-sub { font-size:11px; color:var(--m); margin-top:4px; }
+.kpi-trend {
+  font-size:10.5px; font-weight:600;
+  padding:2px 7px; border-radius:100px;
+}
+.kpi-trend.up { background:var(--g2); color:var(--g); }
+.kpi-trend.down { background:var(--r2); color:var(--r); }
+/* Accent line on top */
+.kpi::before {
+  content:''; position:absolute;
+  top:0; left:0; right:0; height:2px;
+}
+.kpi.purple::before { background:linear-gradient(90deg, var(--a), var(--a2)); }
+.kpi.green::before  { background:linear-gradient(90deg, var(--g), #34d399); }
+.kpi.gold::before   { background:linear-gradient(90deg, var(--gold), #fcd34d); }
+.kpi.cyan::before   { background:linear-gradient(90deg, var(--cyan), #67e8f9); }
 
-/* ACCENT BAR */
-.kpi.purple { border-top:2px solid var(--a); }
-.kpi.green  { border-top:2px solid var(--g); }
-.kpi.gold   { border-top:2px solid var(--gold); }
-.kpi.cyan   { border-top:2px solid var(--cyan); }
-
-/* TABLE */
+/* ── TABLE ── */
 .tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
 .tbl th {
-  padding:10px 14px; text-align:left;
-  font-size:10px; font-weight:700; color:var(--m);
-  text-transform:uppercase; letter-spacing:.1em;
+  padding:9px 14px;
+  text-align:left; font-size:10px; font-weight:700;
+  color:var(--m); text-transform:uppercase; letter-spacing:.1em;
   border-bottom:1px solid var(--border);
-  white-space:nowrap;
+  white-space:nowrap; background:var(--card);
+  position:sticky; top:0;
 }
 .tbl td {
-  padding:12px 14px;
+  padding:11px 14px;
   border-bottom:1px solid rgba(255,255,255,.03);
   vertical-align:middle;
 }
 .tbl tr:last-child td { border-bottom:none; }
 .tbl tr:hover td { background:rgba(255,255,255,.02); }
+.tbl tbody tr { transition:background .1s; }
 
-/* FORM */
+/* ── FORM FIELDS ── */
 .field { display:flex; flex-direction:column; gap:6px; }
 .field label {
   font-size:10.5px; font-weight:700; color:var(--m);
   text-transform:uppercase; letter-spacing:.09em;
 }
 .field input, .field select, .field textarea {
-  width:100%; padding:10px 14px;
+  width:100%; padding:9px 13px;
   background:var(--card2); border:1px solid var(--border2);
-  border-radius:var(--r-sm); color:var(--t);
+  border-radius:var(--r2); color:var(--t);
   font-size:13px; font-family:'DM Sans',sans-serif;
   outline:none; transition:all .2s;
 }
 .field input:focus, .field select:focus, .field textarea:focus {
   border-color:var(--a);
   background:var(--elevated);
-  box-shadow:0 0 0 3px rgba(124,92,252,.1);
+  box-shadow:0 0 0 3px var(--agg);
 }
-.field textarea { resize:vertical; min-height:90px; }
+.field textarea { resize:vertical; min-height:90px; line-height:1.6; }
 .field select { cursor:pointer; }
 .hint { font-size:11px; color:var(--m2); }
 
-/* TAGS */
+/* ── TAGS / BADGES ── */
 .tag {
-  display:inline-flex; align-items:center;
+  display:inline-flex; align-items:center; gap:4px;
   padding:3px 9px; border-radius:100px;
-  font-size:10.5px; font-weight:700;
+  font-size:10.5px; font-weight:700; letter-spacing:.03em;
   background:rgba(255,255,255,.06);
   color:var(--m); border:1px solid var(--border);
-  letter-spacing:.03em;
 }
-.tag.green { background:var(--g2); color:var(--g); border-color:rgba(16,185,129,.2); }
-.tag.red   { background:var(--r2); color:var(--r); border-color:rgba(244,63,94,.2); }
-.tag.gold  { background:var(--go2); color:var(--gold); border-color:rgba(245,158,11,.2); }
-.tag.cyan  { background:var(--cy2); color:var(--cyan); border-color:rgba(6,182,212,.2); }
-.tag.purple{ background:var(--agg); color:var(--a2); border-color:rgba(124,92,252,.2); }
+.tag.green  { background:var(--g2);  color:var(--g);    border-color:var(--g3); }
+.tag.red    { background:var(--r2);  color:var(--r);    border-color:rgba(244,63,94,.2); }
+.tag.gold   { background:var(--go2); color:var(--gold); border-color:rgba(245,158,11,.2); }
+.tag.cyan   { background:var(--cy2); color:var(--cyan); border-color:rgba(6,182,212,.2); }
+.tag.purple { background:var(--agg); color:var(--a2);   border-color:rgba(124,92,252,.2); }
 
-/* CHART */
-.chart-wrap { height:260px; position:relative; }
+/* ── CHART ── */
+.chart-wrap { height:240px; position:relative; }
 
-/* EMPTY STATE */
-.empty { text-align:center; padding:48px 24px; color:var(--m); }
-.eico { font-size:40px; margin-bottom:12px; opacity:.4; }
+/* ── EMPTY STATE ── */
+.empty { text-align:center; padding:44px 24px; color:var(--m); }
+.eico { font-size:36px; margin-bottom:10px; opacity:.35; }
 .empty p { font-size:13px; }
 
-/* TOAST */
+/* ── TOAST ── */
 #toast {
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  position:fixed; bottom:22px; left:50%;
+  transform:translateX(-50%) translateY(80px);
   background:var(--elevated); border:1px solid var(--border2);
-  border-radius:100px; padding:10px 20px;
+  border-radius:100px; padding:9px 20px;
   font-size:13px; color:var(--t2);
   display:flex; align-items:center; gap:8px;
-  z-index:9999; transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  z-index:9999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
   white-space:nowrap;
 }
 #toast.show { transform:translateX(-50%) translateY(0); }
 
-/* MOBILE OVERLAY */
-#sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px); z-index:99; }
+/* ── MOBILE ── */
+#sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); z-index:99; }
 #sb-overlay.show { display:block; }
 
-/* RESPONSIVE */
-@media(max-width:1200px) { .kpi-grid { grid-template-columns:repeat(2,1fr); } .pg3 { grid-template-columns:1fr 1fr; } }
-@media(max-width:900px)  { .pg2,.pg3,.fr,.fr3 { grid-template-columns:1fr; } }
+/* ── RESPONSIVE ── */
+@media(max-width:1200px) { .kpi-grid{grid-template-columns:repeat(2,1fr)} .pg3{grid-template-columns:1fr 1fr} }
+@media(max-width:900px)  { .pg2,.pg3,.fr,.fr3{grid-template-columns:1fr} }
 @media(max-width:768px) {
   :root { --W:0px; --WX:0px; }
   .sidebar {
     top:auto; bottom:0; left:0; right:0;
-    width:100% !important; height:auto; max-height:75vh;
+    width:100% !important; height:auto; max-height:80vh;
     flex-direction:column; border-right:none;
     border-top:1px solid var(--border);
-    border-radius:20px 20px 0 0;
+    border-radius:18px 18px 0 0;
     transform:translateY(100%);
     transition:transform .3s cubic-bezier(.4,0,.2,1);
     z-index:200;
   }
   .sidebar.mobile-open { transform:translateY(0); }
   .main { margin-left:0 !important; }
-  .topbar { padding:0 16px; }
+  .topbar { padding:0 14px; }
   .panel { padding:14px; }
   .kpi-grid { grid-template-columns:1fr 1fr; gap:10px; }
   .kpi { padding:14px; }
   .kpi-val { font-size:22px; }
-  .lbox { width:100%; margin:16px; padding:32px 24px; }
-  #login { padding:0 16px; align-items:flex-start; padding-top:60px; }
   #mobile-menu-btn { display:flex !important; }
+  .lbox { width:100%; margin:16px; padding:28px 22px; }
+  #login { padding:0 16px; align-items:flex-start; padding-top:60px; }
 }
-@media(max-width:480px) {
-  .kpi-grid { grid-template-columns:1fr 1fr; }
-  .fr { grid-template-columns:1fr; }
-}
+@media(max-width:480px) { .kpi-grid{grid-template-columns:1fr 1fr} .fr{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -520,17 +601,15 @@ code, .mono {
 <!-- ══════════ LOGIN ══════════ -->
 <div id="login">
   <div class="lbox">
-    <div style="display:flex;justify-content:center;margin-bottom:20px">
-      <div style="width:52px;height:52px;background:linear-gradient(135deg,var(--a),#06b6d4);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px rgba(124,92,252,.3)">⚡</div>
-    </div>
+    <div class="login-icon">⚡</div>
     <div class="llogo">IA em <em>30 Dias</em></div>
     <div class="lsub">Painel de Administração</div>
-    <div style="height:1px;background:var(--border);margin:24px 0"></div>
+    <div class="ldivider"></div>
     <div class="fg"><label>Usuário</label><input id="lu" type="text" placeholder="admin" autocomplete="username"></div>
     <div class="fg"><label>Senha</label><input id="lp" type="password" placeholder="••••••••" autocomplete="current-password"></div>
     <button class="btnl" id="btnl" onclick="doLogin()">
-      <span>Entrar no Painel</span>
-      <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+      Entrar no Painel
     </button>
     <div class="lerr" id="lerr">Usuário ou senha incorretos.</div>
     <div class="lhint">Senha padrão: <code>admin123</code></div>
@@ -544,53 +623,63 @@ code, .mono {
   <!-- SIDEBAR -->
   <div class="sidebar" id="sb">
     <div class="sb-top">
-      <div style="display:flex;align-items:center;gap:10px;overflow:hidden">
-        <div style="width:30px;height:30px;background:linear-gradient(135deg,var(--a),#06b6d4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⚡</div>
-        <div id="sb-logo-img" style="overflow:hidden;transition:all .25s">
-          <div style="font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;letter-spacing:-.02em;white-space:nowrap">IA em 30 Dias</div>
-          <div style="font-size:10px;color:var(--m);white-space:nowrap">Admin</div>
+      <div class="sb-brand">
+        <div class="sb-icon">⚡</div>
+        <div class="sb-logo-text" id="sb-logo-img">
+          <strong>IA em 30 Dias</strong>
+          <span>Admin Panel</span>
         </div>
       </div>
       <button class="sb-toggle" onclick="toggleSb()" title="Recolher">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15 18l-6-6 6-6"/></svg>
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M15 18l-6-6 6-6"/></svg>
       </button>
     </div>
 
     <!-- TAB SWITCHER -->
     <div class="sb-tabs">
-      <button class="sbt on" id="tab-vendas" onclick="switchTab('vendas')">📊 <span>Vendas</span></button>
-      <button class="sbt" id="tab-edit" onclick="switchTab('edit')">✏️ <span>Editar</span></button>
+      <button class="sbt on" id="tab-vendas" onclick="switchTab('vendas')">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+        <span>Painel</span>
+      </button>
+      <button class="sbt" id="tab-edit" onclick="switchTab('edit')">
+        <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>Editor</span>
+      </button>
     </div>
 
     <!-- VENDAS NAV -->
     <nav class="sb-nav" id="nav-vendas">
       <div class="nsec">Visão Geral</div>
-      <button class="ni on" onclick="go('overview',this)"><span class="ico">🏠</span><span class="lbl">Dashboard</span></button>
+      <button class="ni on" onclick="go('overview',this)"><span class="ico">⬡</span><span class="lbl">Dashboard</span></button>
+      <button class="ni" onclick="go('relatorio',this)"><span class="ico">◈</span><span class="lbl">Relatório Diário</span></button>
+
       <div class="nsec">Financeiro</div>
-      <button class="ni" onclick="go('vendas',this)"><span class="ico">💳</span><span class="lbl">Vendas</span></button>
-      <button class="ni" onclick="go('extrato',this)"><span class="ico">🏦</span><span class="lbl">Extrato</span></button>
-      <button class="ni" onclick="go('comissoes',this)"><span class="ico">🤝</span><span class="lbl">Comissões</span></button>
-      <button class="ni" onclick="go('produtos',this)"><span class="ico">📦</span><span class="lbl">Produtos</span></button>
+      <button class="ni" onclick="go('vendas',this)"><span class="ico">◎</span><span class="lbl">Vendas</span></button>
+      <button class="ni" onclick="go('extrato',this)"><span class="ico">≡</span><span class="lbl">Extrato</span></button>
+      <button class="ni" onclick="go('comissoes',this)"><span class="ico">⇄</span><span class="lbl">Comissões</span></button>
+      <button class="ni" onclick="go('produtos',this)"><span class="ico">◫</span><span class="lbl">Produtos</span></button>
+
       <div class="nsec">Marketing</div>
-      <button class="ni" onclick="go('analytics',this)"><span class="ico">📈</span><span class="lbl">Analytics</span></button>
-      <button class="ni" onclick="go('cupons',this)"><span class="ico">🎟️</span><span class="lbl">Cupons</span></button>
-      <button class="ni" onclick="go('emails',this)"><span class="ico">📧</span><span class="lbl">Emails</span></button>
-      <button class="ni" onclick="go('notifs',this)"><span class="ico">🔔</span><span class="lbl">Notif. Vendas</span></button>
-      <div class="nsec">Chat & IA</div>
-      <button class="ni" onclick="go('chat-faq',this)"><span class="ico">💬</span><span class="lbl">Respostas do Chat</span></button>
-      <button class="ni" onclick="go('ai-leads',this)"><span class="ico">🎯</span><span class="lbl">Leads Gerador Nicho</span></button>
-      <div class="nsec">Ferramentas</div>
-      <button class="ni" onclick="go('metas',this)"><span class="ico">🎯</span><span class="lbl">Metas</span></button>
-      <button class="ni" onclick="go('calendario',this)"><span class="ico">🗓️</span><span class="lbl">Calendário</span></button>
-      <button class="ni" onclick="go('links',this)"><span class="ico">🔗</span><span class="lbl">Links & QR Code</span></button>
-      <button class="ni" onclick="go('shortlinks',this)"><span class="ico">✂️</span><span class="lbl">Encurtar Links</span></button>
-      <button class="ni" onclick="go('personal-pages',this)"><span class="ico">🎯</span><span class="lbl">Páginas Pessoais</span></button>
-      <div class="nsec">Relatórios</div>
-      <button class="ni" onclick="go('relatorio',this)"><span class="ico">📋</span><span class="lbl">Relatório Diário</span></button>
+      <button class="ni" onclick="go('analytics',this)"><span class="ico">↗</span><span class="lbl">Analytics</span></button>
+      <button class="ni" onclick="go('emails',this)"><span class="ico">✉</span><span class="lbl">Emails & Leads</span></button>
+      <button class="ni" onclick="go('cupons',this)"><span class="ico">◈</span><span class="lbl">Cupons</span></button>
+      <button class="ni" onclick="go('notifs',this)"><span class="ico">◉</span><span class="lbl">Notif. de Vendas</span></button>
+
+      <div class="nsec">Conversão</div>
+      <button class="ni" onclick="go('personal-pages',this)"><span class="ico">◑</span><span class="lbl">Páginas Pessoais</span></button>
+      <button class="ni" onclick="go('shortlinks',this)"><span class="ico">⌥</span><span class="lbl">Links Curtos</span></button>
+      <button class="ni" onclick="go('links',this)"><span class="ico">⊞</span><span class="lbl">Links & QR Code</span></button>
+
+      <div class="nsec">IA & Conteúdo</div>
+      <button class="ni" onclick="go('chat-faq',this)"><span class="ico">◈</span><span class="lbl">Chat FAQ</span></button>
+      <button class="ni" onclick="go('ai-leads',this)"><span class="ico">◎</span><span class="lbl">Leads de Nicho</span></button>
+      <button class="ni" onclick="go('metas',this)"><span class="ico">◉</span><span class="lbl">Metas</span></button>
+      <button class="ni" onclick="go('calendario',this)"><span class="ico">▦</span><span class="lbl">Calendário</span></button>
+
       <div class="nsec">Integrações</div>
-      <button class="ni" onclick="go('perfectpay',this)"><span class="ico">⚙️</span><span class="lbl">PerfectPay API</span></button>
-      <button class="ni" onclick="go('telegram',this)"><span class="ico">📱</span><span class="lbl">Notif. Telegram</span></button>
-      <button class="ni" onclick="go('pixel',this)"><span class="ico">🎯</span><span class="lbl">Meta Pixel / UTM</span></button>
+      <button class="ni" onclick="go('perfectpay',this)"><span class="ico">⬡</span><span class="lbl">PerfectPay</span></button>
+      <button class="ni" onclick="go('telegram',this)"><span class="ico">◈</span><span class="lbl">Telegram</span></button>
+      <button class="ni" onclick="go('pixel',this)"><span class="ico">◎</span><span class="lbl">Meta Pixel / UTM</span></button>
     </nav>
 
     <!-- EDITAR NAV -->
@@ -613,10 +702,9 @@ code, .mono {
     </nav>
 
     <div class="sb-foot">
-      <div class="divider"></div>
-      <button class="ni" onclick="go('e-config',this)"><span class="ico">🔧</span><span class="lbl">Configurações</span></button>
-      <a href="index.html" target="_blank" class="ni" style="text-decoration:none"><span class="ico">↗</span><span class="lbl">Ver Site</span></a>
-      <button class="ni danger" onclick="doLogout()"><span class="ico">←</span><span class="lbl">Sair</span></button>
+      <div class="nav-divider"></div>
+      <button class="ni" onclick="go('e-config',this)"><span class="ico">⚙</span><span class="lbl">Configurações</span></button>
+      <button class="ni danger" onclick="doLogout()"><span class="ico">⏻</span><span class="lbl">Sair</span></button>
     </div>
   </div>
 
@@ -624,32 +712,87 @@ code, .mono {
   <div class="main" id="main">
     <div class="topbar">
       <div class="tb-left">
-        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;color:var(--t);cursor:pointer;padding:6px;margin-right:6px;border-radius:8px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">
-          <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h18"/></svg>
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" style="display:none;background:none;border:none;color:var(--t);cursor:pointer;padding:6px;margin-right:4px;border-radius:6px;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.06)'" onmouseout="this.style.background='none'">
+          <svg width="17" height="17" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 6h18M3 12h18M3 18h18"/></svg>
         </button>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:6px;height:6px;border-radius:50%;background:var(--border2)" id="sync-dot"></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="tb-breadcrumb">
+            <span>Admin</span>
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" style="opacity:.4"><path stroke="currentColor" stroke-width="2" d="M9 18l6-6-6-6"/></svg>
+          </div>
           <div class="tb-title" id="ptitle">Dashboard</div>
         </div>
       </div>
       <div class="tb-right">
-        <div class="tb-sync" id="sync-txt" style="font-size:11px;color:var(--m2)">Verificando...</div>
+        <div class="tb-sync">
+          <div class="sync-dot" id="sync-dot"></div>
+          <span id="sync-txt" style="font-size:11px">Conectando...</span>
+        </div>
+        <a href="index.html" target="_blank" class="btn-sm ghost" style="text-decoration:none">
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+          Ver Site
+        </a>
         <button class="btn-sm ghost" onclick="confirmReset()" id="btn-reset" style="display:none">↺ Resetar</button>
         <button class="btn-sm primary" onclick="saveAll()" id="btn-save" style="display:none">
-          <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline stroke="currentColor" stroke-width="2" stroke-linecap="round" points="17,21 17,13 7,13 7,21"/><polyline stroke="currentColor" stroke-width="2" stroke-linecap="round" points="7,3 7,8 15,8"/></svg>
-          Salvar
+          <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline stroke="currentColor" stroke-width="2" stroke-linecap="round" points="17,21 17,13 7,13 7,21"/><polyline stroke="currentColor" stroke-width="2" stroke-linecap="round" points="7,3 7,8 15,8"/></svg>
+          Salvar Alterações
         </button>
       </div>
     </div>
 
     <!-- ══ OVERVIEW (DASHBOARD) ══ -->
     <div class="panel on" id="p-overview">
+      <!-- Page header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap">
+        <div>
+          <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px">Dashboard</h2>
+          <p style="font-size:13px;color:var(--m)">Visão geral do desempenho do produto</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm ghost" onclick="loadOverview()">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M23 4v6h-6M1 20v-6h6M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15"/></svg>
+            Atualizar
+          </button>
+        </div>
+      </div>
       <!-- KPIs -->
       <div class="kpi-grid">
-        <div class="kpi purple"><div class="kpi-icon">💳</div><div class="kpi-label">Receita hoje</div><div class="kpi-val" id="k-hoje">R$0</div><div class="kpi-sub" id="k-hoje-c">0 vendas</div></div>
-        <div class="kpi green"><div class="kpi-icon">📅</div><div class="kpi-label">Esta semana</div><div class="kpi-val" id="k-sem">R$0</div><div class="kpi-sub" id="k-sem-c">0 vendas</div></div>
-        <div class="kpi gold"><div class="kpi-icon">📆</div><div class="kpi-label">Este mês</div><div class="kpi-val" id="k-mes">R$0</div><div class="kpi-sub" id="k-mes-c">0 vendas</div></div>
-        <div class="kpi cyan"><div class="kpi-icon">🏆</div><div class="kpi-label">Total geral</div><div class="kpi-val" id="k-tot">R$0</div><div class="kpi-sub" id="k-tot-c">0 vendas</div></div>
+        <div class="kpi purple">
+          <div class="kpi-top">
+            <div class="kpi-ico"><div class="kpi-icon">💳</div></div>
+            <span class="kpi-trend up" id="k-hoje-trend">Hoje</span>
+          </div>
+          <div class="kpi-label">Receita Hoje</div>
+          <div class="kpi-val" id="k-hoje">R$0</div>
+          <div class="kpi-sub" id="k-hoje-c">0 vendas</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-top">
+            <div class="kpi-ico"><div class="kpi-icon">📈</div></div>
+            <span class="kpi-trend up" id="k-sem-trend">7 dias</span>
+          </div>
+          <div class="kpi-label">Esta Semana</div>
+          <div class="kpi-val" id="k-sem">R$0</div>
+          <div class="kpi-sub" id="k-sem-c">0 vendas</div>
+        </div>
+        <div class="kpi gold">
+          <div class="kpi-top">
+            <div class="kpi-ico"><div class="kpi-icon">📆</div></div>
+            <span class="kpi-trend up" id="k-mes-trend">Mês</span>
+          </div>
+          <div class="kpi-label">Este Mês</div>
+          <div class="kpi-val" id="k-mes">R$0</div>
+          <div class="kpi-sub" id="k-mes-c">0 vendas</div>
+        </div>
+        <div class="kpi cyan">
+          <div class="kpi-top">
+            <div class="kpi-ico"><div class="kpi-icon">🏆</div></div>
+            <span class="kpi-trend up" id="k-tot-trend">Total</span>
+          </div>
+          <div class="kpi-label">Receita Total</div>
+          <div class="kpi-val" id="k-tot">R$0</div>
+          <div class="kpi-sub" id="k-tot-c">0 vendas</div>
+        </div>
       </div>
       <!-- Charts + Quick Info -->
       <div class="pg2" style="margin-bottom:18px">
