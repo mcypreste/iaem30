@@ -2345,6 +2345,388 @@ const SL_FN='https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/short-link/';
 const AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloeWx3eGp4amFqdGRoc25scmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQyNjYsImV4cCI6MjA4OTA4MDI2Nn0.CVVtGeSrg47hSm_WKX-EaQhzaUilrLXhKZnKdJkzepY';
 const H={apikey:AK,Authorization:'Bearer '+AK,'Content-Type':'application/json'};
 
+// ═══════════════════════════════════════════════════════════
+// SUPABASE REALTIME — WebSocket para tempo real
+// Substitui setInterval polling nas features críticas
+// ═══════════════════════════════════════════════════════════
+
+const SB_WS_URL = SB.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + AK + '&vsn=1.0.0';
+
+// Canal registry — evitar conexões duplicadas
+const _rtChannels = {};
+
+// ── Criar/reutilizar um canal Realtime ──
+function rtChannel(name) {
+  if (_rtChannels[name]) return _rtChannels[name];
+  const ws = new WebSocket(SB_WS_URL);
+  let joined = false;
+  let msgQueue = [];
+
+  const ch = {
+    _ws: ws,
+    _subs: {},
+    _ready: false,
+    _ref: 1,
+
+    // Enviar mensagem para o servidor
+    _send(msg) {
+      const payload = JSON.stringify({ ...msg, ref: String(this._ref++) });
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(payload);
+      } else {
+        msgQueue.push(payload);
+      }
+    },
+
+    // Entrar no canal/topic
+    join(topic) {
+      this._topic = topic;
+      ws.onopen = () => {
+        this._ready = true;
+        // Heartbeat
+        this._hb = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ topic: 'phoenix', event: 'heartbeat', payload: {}, ref: String(this._ref++) }));
+          }
+        }, 25000);
+        // Flush queue
+        msgQueue.forEach(m => ws.send(m));
+        msgQueue = [];
+        // Join the topic
+        this._send({ topic, event: 'phx_join', payload: { config: { broadcast: { self: false }, presence: { key: '' } } } });
+      };
+
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data);
+          if (msg.event === 'phx_reply' && msg.payload?.status === 'ok' && !joined) {
+            joined = true;
+          }
+          // Dispatch to subscribers
+          const handlers = this._subs[msg.event] || [];
+          handlers.forEach(fn => {
+            try { fn(msg.payload); } catch(err) { console.warn('[RT] handler error:', err); }
+          });
+        } catch(e) {}
+      };
+
+      ws.onerror = (e) => console.warn('[RT] WS error on', topic);
+      ws.onclose = (e) => {
+        clearInterval(this._hb);
+        // Auto-reconnect after 3s if not intentionally closed
+        if (!this._closed) {
+          setTimeout(() => {
+            console.log('[RT] Reconnecting', topic);
+            delete _rtChannels[name];
+            // Re-subscribe
+            Object.entries(this._subs).forEach(([event, fns]) => {
+              const newCh = rtListen(this._table, this._filter, () => {});
+            });
+          }, 3000);
+        }
+      };
+      return this;
+    },
+
+    // Subscrever a um evento
+    on(event, fn) {
+      if (!this._subs[event]) this._subs[event] = [];
+      this._subs[event].push(fn);
+      return this;
+    },
+
+    // Fechar canal
+    close() {
+      this._closed = true;
+      clearInterval(this._hb);
+      if (ws.readyState === WebSocket.OPEN) {
+        this._send({ topic: this._topic, event: 'phx_leave', payload: {} });
+        setTimeout(() => ws.close(), 200);
+      }
+      delete _rtChannels[name];
+    }
+  };
+
+  _rtChannels[name] = ch;
+  return ch;
+}
+
+// ── Helper: escutar uma tabela via Realtime ──
+// events: 'INSERT' | 'UPDATE' | 'DELETE' | '*'
+function rtListen(table, filter, callback, events) {
+  events = events || ['INSERT', 'UPDATE', 'DELETE'];
+  const schema = 'public';
+  const topic = filter
+    ? `realtime:${schema}:${table}:${filter}`
+    : `realtime:${schema}:${table}`;
+
+  const ch = rtChannel(topic);
+  if (!ch._topic) ch.join(topic);
+  ch._table = table;
+  ch._filter = filter;
+
+  ch.on('postgres_changes', (payload) => {
+    if (!payload?.data) return;
+    const ev = payload.data.type;
+    if (events === '*' || events.includes(ev)) {
+      callback(ev, payload.data.record, payload.data.old_record);
+    }
+  });
+
+  return ch;
+}
+
+// ── Helper: fechar canal por tabela ──
+function rtClose(table, filter) {
+  const topic = filter ? `realtime:public:${table}:${filter}` : `realtime:public:${table}`;
+  if (_rtChannels[topic]) {
+    _rtChannels[topic].close();
+  }
+}
+
+// ══════════════════════════════════════════
+// 1. INBOX DE SUPORTE — WebSocket
+//    Substitui: pollInboxChat (5s), updateInboxBadge (30s + 15s)
+// ══════════════════════════════════════════
+
+let _rtInboxMessages = null;
+let _rtInboxChats    = null;
+
+function startRealtimeInbox(chatId) {
+  // Fechar listeners anteriores
+  stopRealtimeInbox();
+
+  // a) Ouvir novas mensagens do chat atual
+  if (chatId) {
+    _rtInboxMessages = rtListen(
+      'iaem30_support_messages',
+      `chat_id=eq.${chatId}`,
+      async (event, record) => {
+        if (event !== 'INSERT') return;
+        if (record.sender === 'visitor') {
+          // Nova mensagem do visitante — adicionar ao DOM
+          const el = document.getElementById('inbox-messages');
+          if (el) {
+            const div = document.createElement('div');
+            div.dataset.inboxMsg = record.id;
+            div.innerHTML = renderInboxMsg(record);
+            el.appendChild(div);
+            el.scrollTop = el.scrollHeight;
+          }
+          // Marcar como lido imediatamente
+          await sbPatch('iaem30_support_chats', `?id=eq.${chatId}`, { unread_admin: 0 });
+        }
+      },
+      ['INSERT']
+    );
+  }
+
+  // b) Ouvir mudanças em QUALQUER conversa (badge)
+  _rtInboxChats = rtListen(
+    'iaem30_support_chats',
+    null,
+    (event, record) => {
+      // Atualizar badge sem polling
+      const badge = document.getElementById('inbox-badge');
+      if (!badge) return;
+      // Recontar não lidas
+      updateInboxBadge();
+      // Se for a conversa aberta, atualizar status
+      if (record.id === _currentChatId && event === 'UPDATE') {
+        const statusEl = document.getElementById('inbox-status-badge');
+        if (statusEl && record.status) updateStatusBadge(record.status);
+      }
+      // Atualizar item na lista
+      const item = document.querySelector(`.inbox-chat-item[data-id="${record.id}"]`);
+      if (item && record.last_message) {
+        const preview = item.querySelector('[data-preview]');
+        if (preview) preview.textContent = record.last_message;
+      }
+    },
+    ['INSERT', 'UPDATE']
+  );
+}
+
+function stopRealtimeInbox() {
+  if (_rtInboxMessages) { _rtInboxMessages.close(); _rtInboxMessages = null; }
+  if (_rtInboxChats)    { _rtInboxChats.close();    _rtInboxChats    = null; }
+}
+
+// ══════════════════════════════════════════
+// 2. CHAT INTERNO DA EQUIPE — WebSocket
+//    Substitui: pollNewMessages (8s), checkUnreadMessages
+// ══════════════════════════════════════════
+
+let _rtTeamAll     = null;  // Canal Geral
+let _rtTeamDirect  = null;  // Conversa direta
+
+function startRealtimeTeamChat(contact) {
+  stopRealtimeTeamChat();
+
+  const handler = (event, record) => {
+    if (event !== 'INSERT') return;
+    // Não mostrar mensagem própria (já adicionada no envio)
+    if (record.from_user === _currentUser?.id) return;
+    // Adicionar ao DOM se for a conversa ativa
+    const isCurrentConv = contact === 'all'
+      ? record.is_broadcast
+      : (record.from_user === contact || record.to_user === contact);
+
+    if (isCurrentConv) {
+      addMsgToDOM(record, true);
+      // Marcar badge de não lidas
+      if (!document.getElementById('chat-box')?.classList.contains('open')) {
+        document.getElementById('chat-unread-dot')?.classList.add('show');
+      }
+    }
+
+    // Badge da aba de mensagens (dentro de equipe)
+    const tabBadge = document.getElementById('msg-unread-badge');
+    if (tabBadge && !isCurrentConv) tabBadge.style.display = 'block';
+  };
+
+  if (contact === 'all') {
+    _rtTeamAll = rtListen('iaem30_team_messages', 'is_broadcast=eq.true', handler, ['INSERT']);
+  } else {
+    _rtTeamDirect = rtListen('iaem30_team_messages', null, handler, ['INSERT']);
+  }
+}
+
+function stopRealtimeTeamChat() {
+  if (_rtTeamAll)    { _rtTeamAll.close();    _rtTeamAll    = null; }
+  if (_rtTeamDirect) { _rtTeamDirect.close(); _rtTeamDirect = null; }
+}
+
+// ══════════════════════════════════════════
+// 3. DASHBOARD — Vendas ao vivo (WebSocket)
+//    Substitui: badge de vendas novas e atualização do KPI
+// ══════════════════════════════════════════
+
+let _rtSales     = null;
+let _rtVisitors  = null;
+let _rtActivity  = null;
+
+function startRealtimeDashboard() {
+  // a) Nova venda → toast + atualizar KPI
+  _rtSales = rtListen('iaem30_sales', null, (event, record) => {
+    if (event !== 'INSERT') return;
+    toast('🎉 Nova venda! R$' + (record.amount || '—'));
+    // Atualizar o painel de overview se estiver aberto
+    if (typeof loadOverview === 'function') loadOverview();
+    // Notificação visual no título
+    document.title = '💰 Nova venda! — Admin';
+    setTimeout(() => { document.title = 'Admin — IA em 30 Dias'; }, 5000);
+  }, ['INSERT']);
+
+  // b) Novo visitante → atualizar contador ao vivo
+  _rtVisitors = rtListen('iaem30_visitors', null, (event, record) => {
+    if (event !== 'INSERT') return;
+    // Atualizar mini-stat de visitantes se visível
+    const liveEl = document.getElementById('kpi-visitors-live');
+    if (liveEl) {
+      const current = parseInt(liveEl.textContent || '0');
+      liveEl.textContent = current + 1;
+      // Flash verde
+      liveEl.style.color = 'var(--jade)';
+      setTimeout(() => { liveEl.style.color = ''; }, 1500);
+    }
+  }, ['INSERT']);
+
+  // c) Nova atividade da equipe → atualizar log em tempo real
+  _rtActivity = rtListen('iaem30_activity_log', null, (event, record) => {
+    if (event !== 'INSERT') return;
+    // Se o painel equipe+log estiver aberto, adicionar linha ao topo
+    const logEl = document.getElementById('activity-log-list');
+    if (!logEl || logEl.children.length === 0) return;
+    const time = new Date(record.created_at).toLocaleString('pt-BR', {
+      day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit'
+    });
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);animation:panelIn .3s ease;background:var(--amberbg2)';
+    div.innerHTML = `
+      <div style="width:30px;height:30px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${record.icon || '📋'}</div>
+      <div style="flex:1">
+        <div style="font-size:12.5px;font-weight:600;color:var(--fg)">${escHtml(record.action)}</div>
+        <div style="font-size:11px;color:var(--fg4);margin-top:3px">
+          <span style="color:var(--amber)">@${escHtml(record.username)}</span> · ${time}
+        </div>
+      </div>`;
+    // Inserir no topo com fade
+    logEl.insertBefore(div, logEl.firstChild);
+    setTimeout(() => { div.style.background = ''; }, 2000);
+  }, ['INSERT']);
+}
+
+function stopRealtimeDashboard() {
+  if (_rtSales)    { _rtSales.close();    _rtSales    = null; }
+  if (_rtVisitors) { _rtVisitors.close(); _rtVisitors = null; }
+  if (_rtActivity) { _rtActivity.close(); _rtActivity = null; }
+}
+
+// ══════════════════════════════════════════
+// 4. STATUS DE CONEXÃO REALTIME na topbar
+// ══════════════════════════════════════════
+
+function updateRealtimeStatus(connected) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-txt');
+  if (!dot || !txt) return;
+  if (connected) {
+    dot.classList.add('live');
+    txt.textContent = 'Realtime ✓';
+  } else {
+    dot.classList.remove('live');
+    txt.textContent = 'Reconectando…';
+  }
+}
+
+// ══════════════════════════════════════════
+// 5. PATCH nas funções existentes para usar RT
+// ══════════════════════════════════════════
+
+// Substituir startPolling do chat de equipe
+const _origStartPolling = typeof startPolling !== 'undefined' ? startPolling : null;
+function startPolling() {
+  // Usar RT em vez de setInterval
+  if (_currentContact !== undefined) {
+    startRealtimeTeamChat(_currentContact);
+  }
+}
+function stopPolling() {
+  stopRealtimeTeamChat();
+}
+
+// Patch do openInboxChat para usar RT
+const _origOpenInboxChat = openInboxChat;
+async function openInboxChat(chatId) {
+  await _origOpenInboxChat(chatId);
+  // Parar polling antigo
+  stopInboxPoll();
+  // Iniciar WebSocket
+  startRealtimeInbox(chatId);
+}
+
+// Patch do closeChat / resolveChat
+const _origCloseChat = closeChat;
+async function closeChat() {
+  stopRealtimeInbox();
+  await _origCloseChat();
+}
+
+// ══════════════════════════════════════════
+// 6. INICIAR REALTIME no boot
+// ══════════════════════════════════════════
+
+// Adicionar ao boot — chamado após login
+const _origBoot = boot;
+async function boot() {
+  await _origBoot();
+  // Iniciar listeners de dashboard imediatamente
+  startRealtimeDashboard();
+  updateRealtimeStatus(true);
+}
+
+
 async function sbGet(t,q=''){try{const r=await fetch(SB+'/rest/v1/'+t+q,{headers:H});return r.ok?r.json():null;}catch{return null;}}
 async function sbPost(t,d){try{const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(d)});return r.ok;}catch{return false;}}
 async function sbPatch(t,q,d){try{const r=await fetch(SB+'/rest/v1/'+t+q,{method:'PATCH',headers:{...H,Prefer:'return=minimal'},body:JSON.stringify(d)});return r.ok;}catch{return false;}}
@@ -4641,8 +5023,8 @@ async function loadContacts() {
   selectMsgContact('all');
 
   // Start polling for new messages
-  if (_msgPollInterval) clearInterval(_msgPollInterval);
-  _msgPollInterval = setInterval(pollNewMessages, 8000);
+  // Polling substituído por WebSocket Realtime
+  // startPolling() usa rtListen automaticamente
 }
 
 async function selectMsgContact(userId, name, role, avatar) {
@@ -5650,7 +6032,7 @@ async function markAsSpam(sessionId) {
 
 
 // Auto-refresh inbox badge every 30s
-setInterval(updateInboxBadge, 30000);
+// updateInboxBadge via Realtime (WebSocket)
 
 // inbox loaded via main go() below
 
@@ -5789,7 +6171,7 @@ async function openInboxChat(chatId) {
 
   // Start polling for this conversation
   stopInboxPoll();
-  _inboxPollTimer = setInterval(() => pollInboxChat(chatId), 5000);
+  // pollInboxChat substituído por startRealtimeInbox(chatId)
 }
 
 // Carregar mensagens da conversa
@@ -5945,7 +6327,7 @@ async function assignChat(agentId) {
 // inbox auto-load handled inside main go()
 
 // Verificar novas mensagens periodicamente (mesmo sem o inbox aberto)
-setInterval(updateInboxBadge, 15000);
+// updateInboxBadge via Realtime (WebSocket)
 </script>
 
 <!-- Modal: Nova/Editar Meta -->

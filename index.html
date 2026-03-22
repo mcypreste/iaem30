@@ -3914,11 +3914,77 @@ window.sendVisitorMessage = async function() {
 };
 
 // ── Polling for new messages ──
+// ── WebSocket Realtime — substitui polling de 4s ──
+let _rtVisitorChannel = null;
+
 function startPolling() {
   stopPolling();
-  POLL_TIMER = setInterval(pollMessages, 4000);
+  if (!CHAT_ID) return;
+
+  // Usar Supabase Realtime via WebSocket
+  const wsUrl = SB.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + ANON + '&vsn=1.0.0';
+  _rtVisitorChannel = new WebSocket(wsUrl);
+
+  const topic = 'realtime:public:iaem30_support_messages:chat_id=eq.' + CHAT_ID;
+  let ref = 1;
+  let hbTimer = null;
+
+  _rtVisitorChannel.onopen = () => {
+    // Heartbeat
+    hbTimer = setInterval(() => {
+      if (_rtVisitorChannel && _rtVisitorChannel.readyState === WebSocket.OPEN) {
+        _rtVisitorChannel.send(JSON.stringify({ topic:'phoenix', event:'heartbeat', payload:{}, ref:String(ref++) }));
+      }
+    }, 25000);
+    // Join channel
+    _rtVisitorChannel.send(JSON.stringify({
+      topic, event: 'phx_join',
+      payload: { config: { broadcast: { self: false }, presence: { key: '' } } },
+      ref: String(ref++)
+    }));
+  };
+
+  _rtVisitorChannel.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.event === 'postgres_changes') {
+        const data = msg.payload?.data;
+        if (data?.type === 'INSERT' && data.record?.sender === 'agent') {
+          // Nova resposta do agente — mostrar imediatamente
+          const record = data.record;
+          const existing = document.querySelector('[data-msg-id="' + record.id + '"]');
+          if (!existing) {
+            addMsgToDOM(record, true);
+            LAST_MSG_ID = record.id;
+            if (!CHAT_OPEN) {
+              document.getElementById('chat-unread-dot').classList.add('show');
+            }
+          }
+        }
+      }
+    } catch(err) {}
+  };
+
+  _rtVisitorChannel.onerror = () => {
+    // Fallback para polling se WebSocket falhar
+    POLL_TIMER = setInterval(pollMessages, 6000);
+  };
+
+  _rtVisitorChannel.onclose = () => {
+    clearInterval(hbTimer);
+    if (CHAT_OPEN && !_rtVisitorChannel?._closed) {
+      // Reconectar após 2s
+      setTimeout(startPolling, 2000);
+    }
+  };
 }
+
 function stopPolling() {
+  if (_rtVisitorChannel) {
+    _rtVisitorChannel._closed = true;
+    _rtVisitorChannel.close();
+    _rtVisitorChannel = null;
+  }
   if (POLL_TIMER) { clearInterval(POLL_TIMER); POLL_TIMER = null; }
 }
 
