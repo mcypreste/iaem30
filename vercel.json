@@ -9,11 +9,20 @@
     {
       "source": "/p/:slug",
       "destination": "/api/p?slug=:slug"
-    },
+    }
+  ],
+  "redirects": [
     {
       "source": "/",
       "has": [{ "type": "host", "value": "admin.iaem30.com.br" }],
-      "destination": "/admin"
+      "destination": "https://iaem30.com.br/admin",
+      "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "admin.iaem30.com.br" }],
+      "destination": "https://iaem30.com.br/admin",
+      "permanent": false
     }
   ]
 }
