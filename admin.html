@@ -2069,10 +2069,9 @@ code, .mono {
     </button>
   </div>
 
-  <!-- TAB: PERFIL -->
+  <!-- ── TAB: PERFIL ── -->
   <div id="equipe-section-perfil">
-
-  <!-- Meu Perfil -->
+    <!-- Meu Perfil -->
   <div class="card" style="margin-bottom:16px">
     <div class="card-head"><h3>👤 Meu Perfil</h3></div>
     <div class="card-body">
@@ -2115,10 +2114,11 @@ code, .mono {
       </div>
     </div>
   </div>
+  </div>
 
-  </div><!-- end equipe-section-equipe placeholder -->
-  <!-- Lista de usuários (inside equipe tab) -->
-  <div id="equipe-section-equipe-real" style="display:none">
+  <!-- ── TAB: EQUIPE (users list + activity log) ── -->
+  <div id="equipe-section-equipe" style="display:none">
+    <div id="equipe-section-equipe-real" style="display:none">
   <div class="card">
     <div class="card-head">
       <h3>👥 Usuários com Acesso</h3>
@@ -2148,7 +2148,7 @@ code, .mono {
   </div>
 
   </div><!-- /equipe-section-equipe-real-end -->
-  <!-- Log de Atividade (also inside equipe tab) -->
+    <div style="margin-top:16px"><!-- Log de Atividade (also inside equipe tab) -->
   <div id="equipe-section-log" style="display:none">
   <div class="card" style="margin-top:16px">
     <div class="card-head" style="justify-content:space-between">
@@ -2235,9 +2235,71 @@ code, .mono {
         </div>
       </div>
     </div>
+  </div></div>
   </div>
 
-  </div><!-- /equipe-section-log -->
+  <!-- ── TAB: METAS ── -->
+  <div id="equipe-section-metas" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:13px;color:var(--fg3)" id="goals-subtitle">Suas metas do mês</div>
+      <button class="btn primary" onclick="openAddGoal()">
+        <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+        Nova Meta
+      </button>
+    </div>
+
+    <!-- Progress summary -->
+    <div id="goals-summary" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px"></div>
+
+    <!-- Goals list -->
+    <div id="goals-list" style="display:flex;flex-direction:column;gap:12px">
+      <div style="text-align:center;padding:40px;color:var(--fg4)">Carregando metas...</div>
+    </div>
+  </div>
+  </div>
+
+  <!-- ── TAB: MENSAGENS ── -->
+  <div id="equipe-section-mensagens" style="display:none">
+    <div style="display:grid;grid-template-columns:260px 1fr;gap:16px;height:520px">
+
+      <!-- Sidebar de contatos -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:12px 14px;border-bottom:1px solid var(--line);flex-shrink:0">
+          <div style="font-size:12px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Conversas</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn ghost" onclick="selectMsgContact('all')" id="msg-btn-all" style="flex:1;padding:5px;font-size:11px;justify-content:center">📢 Geral</button>
+          </div>
+        </div>
+        <div id="msg-contacts" style="flex:1;overflow-y:auto;padding:6px"></div>
+      </div>
+
+      <!-- Área de chat -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <!-- Header do chat -->
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-shrink:0" id="chat-header">
+          <div id="chat-contact-avatar" style="width:32px;height:32px;border-radius:50%;background:var(--amberbg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📢</div>
+          <div>
+            <div id="chat-contact-name" style="font-weight:600;font-size:13px;color:var(--fg)">Canal Geral</div>
+            <div id="chat-contact-role" style="font-size:11px;color:var(--fg4)">Mensagens para toda a equipe</div>
+          </div>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="chat-messages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;color:var(--fg4);font-size:13px;padding:20px">Selecione uma conversa</div>
+        </div>
+
+        <!-- Input -->
+        <div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-shrink:0" id="chat-input-area">
+          <input type="text" id="chat-input" placeholder="Digite uma mensagem..." style="flex:1;padding:9px 13px;background:var(--bg2);border:1px solid var(--line2);border-radius:20px;color:var(--fg);font-size:13px;outline:none;font-family:'Instrument Sans',sans-serif" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}">
+          <button onclick="sendMessage()" style="width:36px;height:36px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s" onmouseover="this.style.background='var(--amber2)'" onmouseout="this.style.background='var(--amber)'">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="var(--ink)" stroke-width="2.5" stroke-linecap="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 
   <!-- Role legend -->
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px">
@@ -4395,6 +4457,13 @@ function generateQRForLink(slug) {
 // ═══════════════════════════════════════
 
 function switchEquipeTab(tab) {
+  // Hide "Equipe" users tab for editor/viewer (they can only see their own profile, metas, messages)
+  const role = window._currentRole || sessionStorage.getItem('admin_role') || 'viewer';
+  const canManageUsers = role === 'owner' || role === 'admin';
+  const equipeTabBtn = document.getElementById('etab-equipe');
+  if (equipeTabBtn) equipeTabBtn.style.display = canManageUsers ? '' : 'none';
+  const hdrActions = document.getElementById('equipe-header-actions');
+
   // Update tab buttons
   document.querySelectorAll('.equipe-tab').forEach(btn => {
     const active = btn.id === 'etab-' + tab;
@@ -4405,26 +4474,16 @@ function switchEquipeTab(tab) {
   });
 
   // Show/hide sections
-  const sections = {
-    perfil:    ['equipe-section-perfil'],
-    equipe:    ['equipe-section-equipe', 'equipe-section-equipe-real', 'equipe-section-log'],
-    metas:     ['equipe-section-metas'],
-    mensagens: ['equipe-section-mensagens'],
-  };
-
-  // Hide all
-  ['perfil','equipe','metas','mensagens'].forEach(t => {
-    (sections[t] || []).forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = 'none';
-    });
-  });
-
-  // Show active
-  (sections[tab] || []).forEach(id => {
+  // Hide all section divs
+  ['equipe-section-perfil','equipe-section-equipe','equipe-section-metas','equipe-section-mensagens'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.style.display = '';
+    if (el) el.style.display = 'none';
   });
+
+  // Show the active section
+  const activeId = 'equipe-section-' + tab;
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) activeEl.style.display = '';
 
   // Update header action button
   const hdr = document.getElementById('equipe-header-actions');
@@ -4813,35 +4872,33 @@ async function markAllRead() {
 */
 const ROLE_ACCESS = {
   owner: {
-    panels: '*',  // todos
+    panels: '*',
     tabs: ['vendas','edit'],
-    showSections: ['all'],
   },
   admin: {
     panels: ['overview','relatorio','vendas','extrato','comissoes','produtos',
              'analytics','emails','cupons','notifs','personal-pages','shortlinks',
              'links','chat-faq','ai-leads','metas','calendario',
-             'perfectpay','telegram','pixel',
+             'perfectpay','telegram','pixel','equipe',
              'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
              'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado','e-config'],
     tabs: ['vendas','edit'],
-    hideSections: ['equipe-section'],
   },
   editor: {
     panels: ['overview','relatorio','analytics','emails','cupons','notifs',
              'personal-pages','shortlinks','links','chat-faq','ai-leads',
-             'metas','calendario',
+             'metas','calendario','equipe',
              'e-geral','e-hero','e-preco','e-ben','e-semanas','e-monetize',
              'e-depos','e-faq','e-conv','e-paraquem','e-bonus','e-obrigado'],
     tabs: ['vendas','edit'],
-    hideNav: ['vendas','extrato','comissoes','produtos','perfectpay','telegram','pixel','e-config','equipe'],
+    hideNav: ['vendas','extrato','comissoes','produtos','perfectpay','telegram','pixel','e-config'],
   },
   viewer: {
-    panels: ['overview','relatorio','analytics'],
+    panels: ['overview','relatorio','analytics','equipe'],
     tabs: ['vendas'],
     hideNav: ['vendas','extrato','comissoes','produtos','emails','cupons','notifs',
-              'personal-pages','shortlinks','links','chat-faq','ai-leads','metas',
-              'calendario','perfectpay','telegram','pixel','equipe','e-config'],
+              'personal-pages','shortlinks','links','chat-faq','ai-leads',
+              'calendario','perfectpay','telegram','pixel','e-config'],
     hideTabs: ['edit'],
   },
 };
@@ -4870,13 +4927,9 @@ function applyRoleAccess(role) {
     });
   }
 
-  // ── 3. Hide equipe section for non-owners ──
-  if (role !== 'owner') {
-    document.querySelectorAll('.ni').forEach(btn => {
-      const oc = btn.getAttribute('onclick') || '';
-      if(oc.includes("go('equipe'")) btn.style.display = 'none';
-    });
-  }
+  // ── 3. Restrict equipe sub-tabs by role ──
+  // Store role for use in switchEquipeTab
+  window._currentRole = role;
 
   // ── 4. Add role badge to topbar ──
   addRoleBadge(role);
@@ -5191,7 +5244,8 @@ async function changePassword() {
 // ── LOAD USERS LIST ──
 async function loadEquipe() {
   loadCurrentUser();
-  switchEquipeTab('perfil'); // default tab
+  const role = window._currentRole || sessionStorage.getItem('admin_role') || 'viewer';
+  switchEquipeTab('perfil'); // always start on perfil
   const rows = await sbGet('iaem30_admin_users', '?select=*&order=created_at.asc');
   if (!rows) { document.getElementById('users-list').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--fg4)">Erro ao carregar usuários</td></tr>'; return; }
 
