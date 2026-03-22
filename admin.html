@@ -9,837 +9,568 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-/* ════════════════════════════════════════
-   DESIGN SYSTEM — Enterprise Admin
-   IA em 30 Dias · 2026
-   Aesthetic: Linear · Vercel-inspired
-════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   IA em 30 Dias — Admin Panel
+   Theme: Clean Light · Precision
+   Fonts: Fraunces (display) + Instrument Sans
+════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=Instrument+Sans:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Core */
-  --bg:        #000000;
-  --bg1:       #0a0a0a;
-  --bg2:       #111111;
-  --bg3:       #1a1a1a;
-  --bg4:       #222222;
+  /* Backgrounds */
+  --bg:        #f8f7f4;
+  --bg1:       #ffffff;
+  --bg2:       #f2f0ec;
+  --bg3:       #eae8e2;
+  --bg4:       #dddbd5;
 
   /* Borders */
-  --line:      rgba(255,255,255,.08);
-  --line2:     rgba(255,255,255,.13);
-  --line3:     rgba(255,255,255,.2);
+  --line:      rgba(0,0,0,.08);
+  --line2:     rgba(0,0,0,.13);
+  --line3:     rgba(0,0,0,.2);
 
   /* Text */
-  --fg:        #ededed;
-  --fg2:       #a1a1a1;
-  --fg3:       #666666;
-  --fg4:       #444444;
+  --fg:        #1a1814;
+  --fg2:       #3d3a32;
+  --fg3:       #6b6558;
+  --fg4:       #9b9488;
 
-  /* Accent — Blue (enterprise) */
-  --blue:      #0070f3;
-  --blue2:     #338ef7;
-  --blue3:     #66b2fb;
-  --bluebg:    rgba(0,112,243,.12);
-  --bluebg2:   rgba(0,112,243,.06);
+  /* Accent — Amber (consistent with site) */
+  --amber:     #d4900a;
+  --amber2:    #e8a020;
+  --amber3:    #f4bc55;
+  --amberbg:   rgba(212,144,10,.1);
+  --amberbg2:  rgba(212,144,10,.05);
 
   /* Semantic */
-  --green:     #50e3c2;
-  --greenbg:   rgba(80,227,194,.1);
-  --red:       #ff4444;
-  --redbg:     rgba(255,68,68,.1);
-  --yellow:    #f7b731;
-  --yellowbg:  rgba(247,183,49,.1);
-  --purple:    #7928ca;
-  --purplebg:  rgba(121,40,202,.1);
+  --green:     #059669;
+  --greenbg:   rgba(5,150,105,.08);
+  --green2:    rgba(5,150,105,.15);
+  --red:       #dc2626;
+  --redbg:     rgba(220,38,38,.08);
+  --red2:      rgba(220,38,38,.15);
+  --blue:      #2563eb;
+  --bluebg:    rgba(37,99,235,.08);
+  --yellow:    #d97706;
+  --yellowbg:  rgba(217,119,6,.08);
+  --purple:    #7c3aed;
+  --purplebg:  rgba(124,58,237,.08);
 
   /* Layout */
-  --sidebar-w:     220px;
-  --sidebar-c:     52px;
-  --topbar-h:      52px;
-  --content-pad:   24px;
+  --sidebar-w:   224px;
+  --sidebar-c:   56px;
+  --topbar-h:    52px;
+  --content-pad: 24px;
 
   /* Radius */
-  --radius:    6px;
-  --radius2:   10px;
-  --radius3:   14px;
+  --radius:   6px;
+  --radius2:  10px;
+  --radius3:  14px;
 
   /* Shadows */
-  --shadow:    0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.24);
-  --shadow2:   0 4px 16px rgba(0,0,0,.5);
-  --shadow3:   0 8px 32px rgba(0,0,0,.6);
+  --shadow:   0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow2:  0 4px 16px rgba(0,0,0,.1);
+  --shadow3:  0 8px 32px rgba(0,0,0,.12);
 }
 
 /* ── RESET ── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { height:100%; }
 body {
-  background:var(--bg);
-  color:var(--fg);
-  font-family:'Geist', -apple-system, sans-serif;
-  font-size:13px;
-  line-height:1.5;
-  height:100%;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Instrument Sans', -apple-system, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
 }
 input, button, select, textarea {
-  font-family:'Geist', sans-serif;
-  font-size:13px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px;
 }
-a { color:inherit; text-decoration:none; }
+a { color: inherit; text-decoration: none; }
 h1,h2,h3,h4,h5 {
-  font-family:'Geist', sans-serif;
-  letter-spacing:-.02em;
+  font-family: 'Fraunces', serif;
+  letter-spacing: -.025em;
+}
+code, .mono {
+  font-family: 'Geist Mono', monospace;
+  font-size: .88em;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--amber);
 }
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width:4px; height:4px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--bg4); border-radius:4px; }
-::-webkit-scrollbar-thumb:hover { background:var(--fg4); }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg4); }
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════
    LOGIN PAGE
-══════════════════════════════════════ */
+════════════════════════════════ */
 #login {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--bg);
-  position:relative;
-  overflow:hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
 }
 #login::before {
-  content:'';
-  position:absolute;
-  inset:0;
+  content: '';
+  position: absolute; inset: 0;
   background:
-    radial-gradient(circle at 30% 40%, rgba(0,112,243,.06) 0%, transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(121,40,202,.04) 0%, transparent 50%);
-  pointer-events:none;
+    radial-gradient(circle at 30% 40%, rgba(212,144,10,.06) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(124,58,237,.03) 0%, transparent 50%);
+  pointer-events: none;
 }
-
-/* Grid background */
 #login::after {
-  content:'';
-  position:absolute;
-  inset:0;
+  content: '';
+  position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
-  background-size:40px 40px;
-  pointer-events:none;
+    linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
 }
 
 .lbox {
-  width:380px;
-  position:relative;
-  z-index:1;
-  animation:fadeInUp .4s ease;
+  width: 380px;
+  position: relative; z-index: 1;
+  animation: fadeInUp .4s ease;
 }
 @keyframes fadeInUp {
   from { opacity:0; transform:translateY(12px); }
   to   { opacity:1; transform:none; }
 }
 
-.lbox-header {
-  margin-bottom:32px;
-  text-align:center;
-}
+.lbox-header { margin-bottom: 28px; text-align: center; }
 .lbox-logo {
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:24px;
+  display: inline-flex; align-items: center; gap: 10px; margin-bottom: 22px;
 }
 .lbox-logo-icon {
-  width:36px; height:36px;
-  background:linear-gradient(135deg, var(--blue), #7928ca);
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--amber), var(--amber3));
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(212,144,10,.3);
 }
 .lbox-logo-name {
-  font-size:15px;
-  font-weight:600;
-  letter-spacing:-.02em;
-  color:var(--fg);
+  font-family: 'Fraunces', serif;
+  font-size: 16px; font-weight: 700;
+  letter-spacing: -.03em; color: var(--fg);
 }
 .lbox-title {
-  font-size:22px;
-  font-weight:700;
-  letter-spacing:-.03em;
-  color:var(--fg);
-  margin-bottom:6px;
+  font-family: 'Fraunces', serif;
+  font-size: 22px; font-weight: 900;
+  letter-spacing: -.04em; color: var(--fg); margin-bottom: 6px;
 }
-.lbox-sub {
-  font-size:13px;
-  color:var(--fg3);
-}
+.lbox-sub { font-size: 13px; color: var(--fg3); }
 
 .lbox-form {
-  background:var(--bg1);
-  border:1px solid var(--line);
-  border-radius:var(--radius3);
-  padding:24px;
+  background: var(--bg1);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius3);
+  padding: 24px;
+  box-shadow: var(--shadow2);
 }
 
-.fg {
-  margin-bottom:16px;
-}
+.fg { margin-bottom: 16px; }
 .fg label {
-  display:block;
-  font-size:12px;
-  font-weight:500;
-  color:var(--fg2);
-  margin-bottom:6px;
-  letter-spacing:-.01em;
+  display: block; font-size: 12px; font-weight: 600;
+  color: var(--fg3); margin-bottom: 6px; letter-spacing: -.01em;
 }
 .fg input {
-  width:100%;
-  padding:9px 12px;
-  background:var(--bg2);
-  border:1px solid var(--line2);
-  border-radius:var(--radius);
-  color:var(--fg);
-  font-size:13px;
-  outline:none;
-  transition:border-color .15s, box-shadow .15s;
+  width: 100%; padding: 9px 12px;
+  background: var(--bg2); border: 1px solid var(--line2);
+  border-radius: var(--radius); color: var(--fg);
+  font-size: 13px; outline: none; transition: all .15s;
 }
 .fg input:focus {
-  border-color:var(--blue2);
-  box-shadow:0 0 0 3px rgba(0,112,243,.15);
+  border-color: var(--amber2);
+  background: var(--bg1);
+  box-shadow: 0 0 0 3px var(--amberbg);
 }
-.fg input::placeholder { color:var(--fg4); }
+.fg input::placeholder { color: var(--fg4); }
 
 .btnl {
-  width:100%;
-  padding:10px;
-  background:var(--fg);
-  color:var(--bg);
-  border:none;
-  border-radius:var(--radius);
-  font-size:13px;
-  font-weight:600;
-  letter-spacing:-.01em;
-  cursor:pointer;
-  transition:all .15s;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  margin-top:4px;
+  width: 100%; padding: 10px;
+  background: var(--fg);
+  color: var(--bg1); border: none;
+  border-radius: var(--radius);
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px; font-weight: 600; letter-spacing: -.01em;
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 4px;
 }
-.btnl:hover { background:#d4d4d4; }
-.btnl:active { background:#c0c0c0; transform:scale(.99); }
-.btnl:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+.btnl:hover { background: var(--fg2); }
+.btnl:disabled { opacity: .4; cursor: not-allowed; }
 
 .lerr {
-  margin-top:12px;
-  padding:10px 12px;
-  background:var(--redbg);
-  border:1px solid rgba(255,68,68,.25);
-  border-radius:var(--radius);
-  color:var(--red);
-  font-size:12px;
-  display:none;
+  margin-top: 12px; padding: 10px 12px;
+  background: var(--redbg); border: 1px solid var(--red2);
+  border-radius: var(--radius); color: var(--red);
+  font-size: 12px; display: none;
 }
-.lhint {
-  text-align:center;
-  color:var(--fg4);
-  font-size:11px;
-  margin-top:16px;
-}
-.lhint code {
-  background:var(--bg2);
-  border:1px solid var(--line);
-  padding:2px 6px;
-  border-radius:4px;
-  color:var(--fg3);
-  font-family:'Geist Mono', monospace;
-}
+.lhint { text-align: center; color: var(--fg4); font-size: 11px; margin-top: 16px; }
+.lhint code { background: var(--bg2); color: var(--fg3); }
 
-/* ══════════════════════════════════════
+/* ════════════════════════════════
    ADMIN SHELL
-══════════════════════════════════════ */
-#admin { display:none; height:100vh; overflow:hidden; }
+════════════════════════════════ */
+#admin { display: none; height: 100vh; overflow: hidden; }
 
 /* ── SIDEBAR ── */
 .sidebar {
-  position:fixed;
-  top:0; left:0; bottom:0;
-  width:var(--sidebar-w);
-  background:var(--bg);
-  border-right:1px solid var(--line);
-  display:flex;
-  flex-direction:column;
-  z-index:100;
-  transition:width .2s cubic-bezier(.4,0,.2,1);
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg1);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  z-index: 100;
+  transition: width .2s cubic-bezier(.4,0,.2,1);
+  box-shadow: 1px 0 0 var(--line);
 }
-.sidebar.collapsed { width:var(--sidebar-c); }
+.sidebar.collapsed { width: var(--sidebar-c); }
 
-/* Sidebar header */
 .sb-header {
-  height:var(--topbar-h);
-  display:flex;
-  align-items:center;
-  padding:0 14px;
-  border-bottom:1px solid var(--line);
-  flex-shrink:0;
-  gap:10px;
-  overflow:hidden;
+  height: var(--topbar-h);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0; gap: 10px; overflow: hidden;
 }
 .sb-logo-mark {
-  width:26px; height:26px; flex-shrink:0;
-  background:linear-gradient(135deg, var(--blue), #7928ca);
-  border-radius:6px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:13px;
-  box-shadow:0 0 12px rgba(0,112,243,.3);
+  width: 26px; height: 26px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--amber), var(--amber3));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(212,144,10,.25);
 }
-.sb-logo-info {
-  overflow:hidden;
-  transition:opacity .2s, width .2s;
-  flex:1;
-  min-width:0;
-}
+.sb-logo-info { overflow: hidden; transition: opacity .2s, width .2s; flex: 1; min-width: 0; }
 .sb-logo-info strong {
-  display:block;
-  font-size:13px;
-  font-weight:600;
-  letter-spacing:-.02em;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  display: block; font-family: 'Fraunces', serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: -.02em; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; color: var(--fg);
 }
-.sb-logo-info span {
-  display:block;
-  font-size:10px;
-  color:var(--fg4);
-  white-space:nowrap;
-}
-.sidebar.collapsed .sb-logo-info { opacity:0; width:0; }
+.sb-logo-info span { display: block; font-size: 10px; color: var(--fg4); white-space: nowrap; }
+.sidebar.collapsed .sb-logo-info { opacity: 0; width: 0; }
 
 .sb-collapse-btn {
-  margin-left:auto;
-  flex-shrink:0;
-  width:24px; height:24px;
-  background:none; border:none;
-  color:var(--fg4); cursor:pointer;
-  border-radius:4px;
-  display:flex; align-items:center; justify-content:center;
-  transition:all .15s;
+  margin-left: auto; flex-shrink: 0;
+  width: 24px; height: 24px;
+  background: none; border: none; color: var(--fg4); cursor: pointer;
+  border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
 }
-.sb-collapse-btn:hover { background:var(--bg2); color:var(--fg2); }
-.sidebar.collapsed .sb-collapse-btn svg { transform:rotate(180deg); }
+.sb-collapse-btn:hover { background: var(--bg3); color: var(--fg2); }
+.sidebar.collapsed .sb-collapse-btn svg { transform: rotate(180deg); }
 
-/* Sidebar search */
 .sb-search {
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  flex-shrink:0;
-  position:relative;
+  padding: 10px 12px; border-bottom: 1px solid var(--line);
+  flex-shrink: 0; position: relative;
 }
 .sb-search input {
-  width:100%;
-  padding:6px 10px 6px 28px;
-  background:var(--bg2);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  color:var(--fg2);
-  font-size:12px;
-  outline:none;
-  transition:border-color .15s;
+  width: 100%; padding: 6px 10px 6px 28px;
+  background: var(--bg2); border: 1px solid var(--line);
+  border-radius: var(--radius); color: var(--fg2);
+  font-size: 12px; outline: none; transition: all .15s;
 }
-.sb-search input:focus { border-color:var(--line2); }
-.sb-search input::placeholder { color:var(--fg4); }
-.sb-search-icon {
-  position:absolute;
-  left:20px; top:50%;
-  transform:translateY(-50%);
-  color:var(--fg4);
-  pointer-events:none;
-}
-.sidebar.collapsed .sb-search { display:none; }
+.sb-search input:focus { border-color: var(--amber2); background: var(--bg1); }
+.sb-search input::placeholder { color: var(--fg4); }
+.sb-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--fg4); pointer-events: none; }
+.sidebar.collapsed .sb-search { display: none; }
 
-/* Sidebar nav */
-.sb-body {
-  flex:1;
-  overflow-y:auto;
-  overflow-x:hidden;
-  padding:8px 8px;
-}
+.sb-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px; }
 
-.sb-section {
-  margin-bottom:4px;
-}
+.sb-section { margin-bottom: 4px; }
 .sb-section-label {
-  font-size:10px;
-  font-weight:500;
-  color:var(--fg4);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  padding:8px 6px 4px;
-  white-space:nowrap;
-  overflow:hidden;
-  transition:opacity .2s;
+  font-size: 10px; font-weight: 600; color: var(--fg4);
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 8px 6px 4px; white-space: nowrap; overflow: hidden;
+  transition: opacity .2s;
 }
-.sidebar.collapsed .sb-section-label { opacity:0; height:0; padding:0; margin:0; }
+.sidebar.collapsed .sb-section-label { opacity: 0; height: 0; padding: 0; margin: 0; }
 
-.sb-divider {
-  height:1px;
-  background:var(--line);
-  margin:8px 0;
-}
+.sb-divider { height: 1px; background: var(--line); margin: 8px 0; }
 
 .ni {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 8px;
-  border-radius:var(--radius);
-  color:var(--fg3);
-  font-size:12.5px;
-  font-weight:400;
-  cursor:pointer;
-  border:none;
-  background:none;
-  width:100%;
-  text-align:left;
-  white-space:nowrap;
-  overflow:hidden;
-  transition:all .1s;
-  position:relative;
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px; border-radius: var(--radius);
+  color: var(--fg3); font-size: 12.5px; font-weight: 400;
+  cursor: pointer; border: none; background: none;
+  width: 100%; text-align: left; white-space: nowrap;
+  overflow: hidden; transition: all .1s; position: relative;
 }
-.ni:hover {
-  background:var(--bg2);
-  color:var(--fg);
-}
+.ni:hover { background: var(--bg2); color: var(--fg); }
 .ni.on {
-  background:var(--bg2);
-  color:var(--fg);
-  font-weight:500;
+  background: var(--amberbg);
+  color: var(--amber); font-weight: 600;
+}
+.ni.on::before {
+  content: ''; position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 2.5px; background: var(--amber); border-radius: 0 2px 2px 0;
 }
 .ni .ico {
-  width:18px; height:18px;
-  flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px;
-  color:var(--fg3);
-  transition:color .1s;
+  width: 18px; height: 18px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--fg3); transition: color .1s;
 }
-.ni:hover .ico, .ni.on .ico { color:var(--fg); }
-.ni .lbl {
-  flex:1;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  transition:opacity .2s, width .2s;
-}
-.sidebar.collapsed .ni .lbl { opacity:0; width:0; }
+.ni:hover .ico, .ni.on .ico { color: var(--amber); }
+.ni .lbl { flex: 1; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s, width .2s; }
+.sidebar.collapsed .ni .lbl { opacity: 0; width: 0; }
 .ni .badge {
-  margin-left:auto;
-  flex-shrink:0;
-  font-size:10px;
-  font-weight:600;
-  padding:1px 6px;
-  border-radius:100px;
-  background:var(--redbg);
-  color:var(--red);
-  border:1px solid rgba(255,68,68,.2);
-  transition:opacity .2s;
+  margin-left: auto; flex-shrink: 0; font-size: 10px; font-weight: 600;
+  padding: 1px 6px; border-radius: 100px;
+  background: var(--redbg); color: var(--red); border: 1px solid var(--red2);
+  transition: opacity .2s;
 }
-.sidebar.collapsed .ni .badge { opacity:0; width:0; }
-.ni .ni-arrow {
-  margin-left:auto;
-  flex-shrink:0;
-  color:var(--fg4);
-  opacity:0;
-  transition:opacity .1s;
+.sidebar.collapsed .ni .badge { opacity: 0; }
+.ni .ni-arrow { margin-left: auto; flex-shrink: 0; color: var(--fg4); opacity: 0; transition: opacity .1s; }
+.ni:hover .ni-arrow { opacity: 1; }
+.sidebar.collapsed .ni .ni-arrow { display: none; }
+.sidebar.collapsed .ni { justify-content: center; padding: 8px; }
+
+/* Nav compat */
+.nsec { font-size: 10px; font-weight: 600; color: var(--fg4); text-transform: uppercase; letter-spacing: .08em; padding: 10px 6px 4px; white-space: nowrap; overflow: hidden; }
+.sidebar.collapsed .nsec { opacity: 0; height: 0; padding: 0; }
+
+/* Tab switcher */
+.sbt {
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
 }
-.ni:hover .ni-arrow { opacity:1; }
-.sidebar.collapsed .ni .ni-arrow { display:none; }
+.sbt.on { color: var(--fg) !important; border-bottom-color: var(--fg) !important; font-weight: 500 !important; }
 
 /* Sidebar footer */
-.sb-footer {
-  padding:8px;
-  border-top:1px solid var(--line);
-  flex-shrink:0;
-}
-
-/* Tooltips for collapsed state */
-.sidebar.collapsed .ni {
-  justify-content:center;
-  padding:8px;
-}
+.sb-footer { padding: 8px; border-top: 1px solid var(--line); flex-shrink: 0; }
+.sb-footer .ni { color: var(--fg3); }
+.sb-footer .ni.danger:hover { color: var(--red); background: var(--redbg); }
 
 /* ── TOPBAR ── */
 .topbar {
-  position:fixed;
-  top:0;
-  left:var(--sidebar-w);
-  right:0;
-  height:var(--topbar-h);
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--line);
-  display:flex;
-  align-items:center;
-  padding:0 20px;
-  z-index:50;
-  transition:left .2s cubic-bezier(.4,0,.2,1);
+  position: fixed; top: 0; right: 0;
+  left: var(--sidebar-w);
+  height: var(--topbar-h);
+  background: rgba(248,247,244,.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center;
+  padding: 0 20px; z-index: 50;
+  transition: left .2s cubic-bezier(.4,0,.2,1);
 }
-.topbar.collapsed { left:var(--sidebar-c); }
+.topbar.collapsed { left: var(--sidebar-c); }
 
-.tb-left {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex:1;
-  min-width:0;
-}
-.tb-breadcrumb {
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-size:12px;
-  color:var(--fg4);
-}
-.tb-breadcrumb svg { flex-shrink:0; }
+.tb-left { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.tb-breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg4); }
 .tb-page-title {
-  font-size:13px;
-  font-weight:500;
-  color:var(--fg);
-  letter-spacing:-.01em;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  font-family: 'Fraunces', serif;
+  font-size: 14px; font-weight: 700; color: var(--fg);
+  letter-spacing: -.02em; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
 }
 
-.tb-right {
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-shrink:0;
-}
+.tb-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-/* Status chip */
 .status-chip {
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  padding:4px 10px;
-  background:var(--bg2);
-  border:1px solid var(--line);
-  border-radius:100px;
-  font-size:11px;
-  color:var(--fg3);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; background: var(--bg2);
+  border: 1px solid var(--line); border-radius: 100px;
+  font-size: 11px; color: var(--fg3);
 }
 .status-chip .dot {
-  width:5px; height:5px;
-  border-radius:50%;
-  background:var(--fg4);
-  flex-shrink:0;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--fg4); flex-shrink: 0;
 }
 .status-chip .dot.live {
-  background:var(--green);
-  box-shadow:0 0 6px rgba(80,227,194,.5);
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(5,150,105,.4);
 }
 
-/* ── MAIN CONTENT ── */
+/* ── MAIN ── */
 .main {
-  margin-left:var(--sidebar-w);
-  margin-top:var(--topbar-h);
-  min-height:calc(100vh - var(--topbar-h));
-  transition:margin-left .2s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;
-  height:calc(100vh - var(--topbar-h));
+  margin-left: var(--sidebar-w);
+  margin-top: var(--topbar-h);
+  min-height: calc(100vh - var(--topbar-h));
+  transition: margin-left .2s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto;
+  height: calc(100vh - var(--topbar-h));
+  background: var(--bg);
 }
-.main.collapsed { margin-left:var(--sidebar-c); }
+.main.collapsed { margin-left: var(--sidebar-c); }
 
-.panels { min-height:100%; }
-.panel { display:none; padding:var(--content-pad); }
-.panel.on { display:block; animation:panelIn .18s ease; }
+.panels { min-height: 100%; }
+.panel { display: none; padding: var(--content-pad); }
+.panel.on { display: block; animation: panelIn .18s ease; }
 @keyframes panelIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
 
 /* ── PAGE HEADER ── */
 .page-header {
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  margin-bottom:20px;
-  gap:16px;
-  flex-wrap:wrap;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
 }
 .page-header-left h2 {
-  font-size:18px;
-  font-weight:600;
-  letter-spacing:-.03em;
-  color:var(--fg);
-  margin-bottom:2px;
+  font-family: 'Fraunces', serif;
+  font-size: 19px; font-weight: 700;
+  letter-spacing: -.03em; color: var(--fg); margin-bottom: 2px;
 }
-.page-header-left p {
-  font-size:12px;
-  color:var(--fg3);
-}
-.page-header-right {
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-shrink:0;
-}
+.page-header-left p { font-size: 12px; color: var(--fg3); }
+.page-header-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 
 /* ── BUTTONS ── */
 .btn {
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:7px 14px;
-  border-radius:var(--radius);
-  font-size:12.5px;
-  font-weight:500;
-  cursor:pointer;
-  border:none;
-  transition:all .1s;
-  letter-spacing:-.01em;
-  white-space:nowrap;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius);
+  font-size: 12.5px; font-weight: 500; cursor: pointer;
+  border: none; transition: all .1s;
+  letter-spacing: -.01em; white-space: nowrap;
+  font-family: 'Instrument Sans', sans-serif;
 }
-.btn svg { flex-shrink:0; }
-.btn.primary {
-  background:var(--fg);
-  color:var(--bg);
-}
-.btn.primary:hover { background:#d4d4d4; }
-.btn.secondary {
-  background:var(--bg2);
-  color:var(--fg2);
-  border:1px solid var(--line2);
-}
-.btn.secondary:hover { background:var(--bg3); color:var(--fg); border-color:var(--line3); }
-.btn.ghost {
-  background:transparent;
-  color:var(--fg3);
-  border:1px solid var(--line);
-}
-.btn.ghost:hover { background:var(--bg2); color:var(--fg2); }
-.btn.danger {
-  background:var(--redbg);
-  color:var(--red);
-  border:1px solid rgba(255,68,68,.2);
-}
-.btn.danger:hover { background:rgba(255,68,68,.18); }
-.btn.success {
-  background:var(--greenbg);
-  color:var(--green);
-  border:1px solid rgba(80,227,194,.2);
-}
-.btn:disabled { opacity:.35; cursor:not-allowed; }
+.btn svg { flex-shrink: 0; }
+.btn.primary { background: var(--fg); color: var(--bg1); }
+.btn.primary:hover { background: var(--fg2); }
+.btn.secondary { background: var(--bg2); color: var(--fg2); border: 1px solid var(--line2); }
+.btn.secondary:hover { background: var(--bg3); color: var(--fg); border-color: var(--line3); }
+.btn.ghost { background: transparent; color: var(--fg3); border: 1px solid var(--line); }
+.btn.ghost:hover { background: var(--bg2); color: var(--fg2); }
+.btn.danger { background: var(--redbg); color: var(--red); border: 1px solid var(--red2); }
+.btn.danger:hover { background: rgba(220,38,38,.12); }
+.btn.success { background: var(--greenbg); color: var(--green); border: 1px solid var(--green2); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
 /* Legacy compat */
-.btn-sm { @extend .btn; }
-.btn-sm.primary { background:var(--fg); color:var(--bg); border:none; padding:6px 12px; font-size:12px; border-radius:var(--radius); display:inline-flex; align-items:center; gap:5px; cursor:pointer; }
-.btn-sm.ghost { background:var(--bg2); color:var(--fg3); border:1px solid var(--line2); padding:6px 12px; font-size:12px; border-radius:var(--radius); display:inline-flex; align-items:center; gap:5px; cursor:pointer; }
-.btn-sm.danger { background:var(--redbg); color:var(--red); border:1px solid rgba(255,68,68,.2); padding:6px 12px; font-size:12px; border-radius:var(--radius); display:inline-flex; align-items:center; gap:5px; cursor:pointer; }
+.btn-sm { display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:'Instrument Sans',sans-serif;border:none;transition:all .1s; }
+.btn-sm.primary { background:var(--fg);color:var(--bg1); }
+.btn-sm.primary:hover { background:var(--fg2); }
+.btn-sm.ghost { background:var(--bg2);color:var(--fg3);border:1px solid var(--line2); }
+.btn-sm.ghost:hover { background:var(--bg3);color:var(--fg); }
+.btn-sm.danger { background:var(--redbg);color:var(--red);border:1px solid var(--red2); }
+.btn-sm.success { background:var(--greenbg);color:var(--green);border:1px solid var(--green2); }
 
 /* ── CARDS ── */
 .card {
-  background:var(--bg1);
-  border:1px solid var(--line);
-  border-radius:var(--radius2);
-  overflow:hidden;
+  background: var(--bg1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius3);
+  overflow: hidden;
+  box-shadow: var(--shadow);
 }
-.card-header {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  gap:12px;
-  flex-wrap:wrap;
-  min-height:46px;
+.card:hover { border-color: var(--line2); }
+.card-header, .card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
+  gap: 12px; flex-wrap: wrap; min-height: 46px;
 }
-.card-header h3 {
-  font-size:13px;
-  font-weight:600;
-  letter-spacing:-.02em;
-  color:var(--fg);
-  display:flex;
-  align-items:center;
-  gap:8px;
+.card-header h3, .card-head h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 13.5px; font-weight: 700;
+  letter-spacing: -.02em; color: var(--fg);
+  display: flex; align-items: center; gap: 8px;
 }
-.card-header .card-actions {
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-.card-body { padding:16px; }
-/* Legacy compat */
-.card-head { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line); gap:12px; flex-wrap:wrap; min-height:46px; }
-.card-head h3 { font-size:13px; font-weight:600; letter-spacing:-.02em; color:var(--fg); display:flex; align-items:center; gap:8px; }
+.card-header .card-actions { display: flex; gap: 6px; align-items: center; }
+.card-body { padding: 16px; }
 
-/* ── STAT CARDS ── */
-.stat-grid {
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  gap:12px;
-  margin-bottom:20px;
+/* ── STAT CARDS / KPI ── */
+.stat-grid, .kpi-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 12px; margin-bottom: 20px;
 }
-.stat-card {
-  background:var(--bg1);
-  border:1px solid var(--line);
-  border-radius:var(--radius2);
-  padding:16px;
-  position:relative;
-  overflow:hidden;
-  cursor:default;
-  transition:border-color .15s;
+.stat-card, .kpi {
+  background: var(--bg1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius2);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  transition: all .15s;
+  position: relative; overflow: hidden;
 }
-.stat-card:hover { border-color:var(--line2); }
-.stat-card-top {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:10px;
-}
-.stat-card-label {
-  font-size:11px;
-  font-weight:500;
-  color:var(--fg3);
-  text-transform:uppercase;
-  letter-spacing:.06em;
-}
-.stat-card-icon {
-  width:28px; height:28px;
-  border-radius:6px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px;
-}
-.stat-card-icon.blue   { background:var(--bluebg);   }
-.stat-card-icon.green  { background:var(--greenbg);  }
-.stat-card-icon.yellow { background:var(--yellowbg); }
-.stat-card-icon.purple { background:var(--purplebg); }
-.stat-card-value {
-  font-size:24px;
-  font-weight:600;
-  letter-spacing:-.04em;
-  color:var(--fg);
-  line-height:1;
-  margin-bottom:4px;
-  font-family:'Geist', sans-serif;
-}
-.stat-card-sub {
-  font-size:11px;
-  color:var(--fg4);
-}
-.stat-card-badge {
-  display:inline-flex;
-  align-items:center;
-  gap:3px;
-  font-size:10px;
-  font-weight:500;
-  padding:2px 6px;
-  border-radius:100px;
-}
-.stat-card-badge.up   { background:var(--greenbg); color:var(--green); }
-.stat-card-badge.down { background:var(--redbg); color:var(--red); }
-.stat-card-badge.neutral { background:var(--bg3); color:var(--fg3); }
-
-/* Legacy KPI compat */
-.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
-.kpi { background:var(--bg1); border:1px solid var(--line); border-radius:var(--radius2); padding:16px; transition:border-color .15s; }
-.kpi:hover { border-color:var(--line2); }
-.kpi-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.kpi-ico { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; }
-.kpi-icon { font-size:14px; }
-.kpi.purple .kpi-ico { background:var(--purplebg); }
-.kpi.green .kpi-ico  { background:var(--greenbg); }
-.kpi.gold .kpi-ico   { background:var(--yellowbg); }
-.kpi.cyan .kpi-ico   { background:var(--bluebg); }
-.kpi-label { font-size:11px; font-weight:500; color:var(--fg3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
-.kpi-val { font-size:24px; font-weight:600; letter-spacing:-.04em; color:var(--fg); line-height:1; margin-bottom:4px; }
-.kpi.purple .kpi-val { color:var(--fg); }
-.kpi.green  .kpi-val { color:var(--fg); }
-.kpi.gold   .kpi-val { color:var(--fg); }
-.kpi.cyan   .kpi-val { color:var(--fg); }
-.kpi-sub { font-size:11px; color:var(--fg4); }
-.kpi-trend { display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:500; padding:2px 6px; border-radius:100px; }
-.kpi-trend.up   { background:var(--greenbg); color:var(--green); }
-.kpi-trend.down { background:var(--redbg); color:var(--red); }
+.stat-card:hover, .kpi:hover { border-color: var(--line2); box-shadow: var(--shadow2); }
 .kpi::before { display:none; }
+.stat-card-top, .kpi-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stat-card-label, .kpi-label {
+  font-size: 11px; font-weight: 600; color: var(--fg3);
+  text-transform: uppercase; letter-spacing: .06em;
+  margin-bottom: 4px;
+}
+.stat-card-value, .kpi-val {
+  font-family: 'Fraunces', serif;
+  font-size: 26px; font-weight: 700;
+  letter-spacing: -.04em; color: var(--fg); line-height: 1; margin-bottom: 4px;
+}
+.kpi.purple .kpi-val, .kpi.green .kpi-val, .kpi.gold .kpi-val, .kpi.cyan .kpi-val { color: var(--fg); }
+.stat-card-sub, .kpi-sub { font-size: 11px; color: var(--fg4); }
+.stat-card-icon, .kpi-icon { font-size: 16px; }
+.stat-card-icon, .kpi-ico {
+  width: 30px; height: 30px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg3);
+}
+.kpi.purple .kpi-ico { background: var(--purplebg); }
+.kpi.green  .kpi-ico { background: var(--greenbg); }
+.kpi.gold   .kpi-ico { background: var(--yellowbg); }
+.kpi.cyan   .kpi-ico { background: var(--bluebg); }
+.stat-card-badge, .kpi-trend {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10.5px; font-weight: 600;
+  padding: 2px 7px; border-radius: 100px;
+}
+.kpi-trend.up, .stat-card-badge.up { background: var(--greenbg); color: var(--green); }
+.kpi-trend.down, .stat-card-badge.down { background: var(--redbg); color: var(--red); }
+.kpi-trend.neutral, .stat-card-badge.neutral { background: var(--bg3); color: var(--fg3); }
 
 /* ── TABLE ── */
-.table-wrap { overflow-x:auto; }
-.tbl {
-  width:100%;
-  border-collapse:collapse;
-  font-size:12.5px;
-}
+.table-wrap { overflow-x: auto; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .tbl thead th {
-  padding:8px 12px;
-  text-align:left;
-  font-size:11px;
-  font-weight:500;
-  color:var(--fg3);
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  border-bottom:1px solid var(--line);
-  white-space:nowrap;
-  background:var(--bg1);
-  position:sticky;
-  top:0;
+  padding: 9px 12px; text-align: left;
+  font-size: 10.5px; font-weight: 600;
+  color: var(--fg3); text-transform: uppercase; letter-spacing: .07em;
+  border-bottom: 1px solid var(--line2);
+  white-space: nowrap; background: var(--bg1);
+  position: sticky; top: 0;
 }
 .tbl tbody td {
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.03);
-  vertical-align:middle;
-  color:var(--fg2);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle; color: var(--fg2);
 }
-.tbl tbody tr:last-child td { border-bottom:none; }
-.tbl tbody tr { transition:background .1s; }
-.tbl tbody tr:hover td { background:rgba(255,255,255,.02); color:var(--fg); }
+.tbl tbody tr:last-child td { border-bottom: none; }
+.tbl tbody tr { transition: background .1s; }
+.tbl tbody tr:hover td { background: var(--bg2); color: var(--fg); }
 
 /* ── FORM ── */
-.form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .form-group label {
-  font-size:11.5px;
-  font-weight:500;
-  color:var(--fg3);
-  letter-spacing:-.01em;
+  font-size: 11.5px; font-weight: 600; color: var(--fg3); letter-spacing: -.01em;
 }
-.form-group input,
-.form-group select,
-.form-group textarea,
-.field input,
-.field select,
-.field textarea {
-  padding:8px 12px;
-  background:var(--bg2);
-  border:1px solid var(--line2);
-  border-radius:var(--radius);
-  color:var(--fg);
-  font-size:13px;
-  outline:none;
-  transition:border-color .15s, box-shadow .15s;
-  width:100%;
+.form-group input, .form-group select, .form-group textarea,
+.field input, .field select, .field textarea {
+  padding: 8px 12px; background: var(--bg2);
+  border: 1px solid var(--line2); border-radius: var(--radius);
+  color: var(--fg); font-size: 13px; outline: none;
+  transition: all .15s; width: 100%;
 }
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus,
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  border-color:var(--blue2);
-  box-shadow:0 0 0 3px rgba(0,112,243,.12);
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus,
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--amber2); background: var(--bg1);
+  box-shadow: 0 0 0 3px var(--amberbg);
 }
-.form-group input::placeholder,
-.field input::placeholder { color:var(--fg4); }
-.form-group textarea,
-.field textarea { resize:vertical; min-height:80px; line-height:1.6; }
-.form-group select,
-.field select { cursor:pointer; }
-.field { display:flex; flex-direction:column; gap:6px; }
-.field label { font-size:11.5px; font-weight:500; color:var(--fg3); }
-.hint { font-size:11px; color:var(--fg4); }
+.form-group input::placeholder, .field input::placeholder { color: var(--fg4); }
+.form-group textarea, .field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 11.5px; font-weight: 600; color: var(--fg3); }
+.hint { font-size: 11px; color: var(--fg4); }
 
 /* ── GRIDS ── */
 .pg  { display:flex; flex-direction:column; gap:16px; }
@@ -850,156 +581,94 @@ h1,h2,h3,h4,h5 {
 
 /* ── TAGS / BADGES ── */
 .tag {
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
-  padding:3px 8px;
-  border-radius:100px;
-  font-size:11px;
-  font-weight:500;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 100px; font-size: 11px; font-weight: 500;
 }
-.tag.default { background:var(--bg3); color:var(--fg3); border:1px solid var(--line); }
-.tag.green   { background:var(--greenbg); color:var(--green); border:1px solid rgba(80,227,194,.2); }
-.tag.red     { background:var(--redbg); color:var(--red); border:1px solid rgba(255,68,68,.2); }
-.tag.yellow  { background:var(--yellowbg); color:var(--yellow); border:1px solid rgba(247,183,49,.2); }
-.tag.blue    { background:var(--bluebg); color:var(--blue2); border:1px solid rgba(0,112,243,.2); }
-.tag.purple  { background:var(--purplebg); color:#c084fc; border:1px solid rgba(121,40,202,.2); }
-/* Legacy */
-.tag.gold    { background:var(--yellowbg); color:var(--yellow); border:1px solid rgba(247,183,49,.2); }
-.tag.cyan    { background:var(--bluebg); color:var(--blue2); border:1px solid rgba(0,112,243,.2); }
+.tag.default { background: var(--bg3); color: var(--fg3); border: 1px solid var(--line); }
+.tag.green  { background: var(--greenbg); color: var(--green);  border: 1px solid var(--green2); }
+.tag.red    { background: var(--redbg);   color: var(--red);    border: 1px solid var(--red2); }
+.tag.yellow { background: var(--yellowbg); color: var(--yellow); border: 1px solid rgba(217,119,6,.2); }
+.tag.blue   { background: var(--bluebg);  color: var(--blue);   border: 1px solid rgba(37,99,235,.2); }
+.tag.purple { background: var(--purplebg);color: var(--purple);  border: 1px solid rgba(124,58,237,.2); }
+.tag.gold, .tag.cyan { background: var(--amberbg); color: var(--amber); border: 1px solid rgba(212,144,10,.2); }
 
 /* ── CHART ── */
-.chart-wrap { height:240px; position:relative; }
+.chart-wrap { height: 240px; position: relative; }
 
 /* ── EMPTY ── */
-.empty {
-  text-align:center;
-  padding:48px 24px;
-  color:var(--fg4);
-}
-.eico { font-size:32px; margin-bottom:10px; opacity:.3; }
-.empty p { font-size:12.5px; color:var(--fg4); }
+.empty { text-align: center; padding: 48px 24px; color: var(--fg4); }
+.eico { font-size: 32px; margin-bottom: 10px; opacity: .3; }
+.empty p { font-size: 12.5px; color: var(--fg4); }
 
 /* ── TOAST ── */
 #toast {
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:var(--bg2);
-  border:1px solid var(--line2);
-  border-radius:100px;
-  padding:9px 18px;
-  font-size:12.5px;
-  color:var(--fg);
-  display:flex;
-  align-items:center;
-  gap:8px;
-  z-index:9999;
-  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:var(--shadow2);
-  white-space:nowrap;
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--fg); border-radius: 100px;
+  padding: 9px 18px; font-size: 12.5px; color: var(--bg1);
+  display: flex; align-items: center; gap: 8px;
+  z-index: 9999;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  box-shadow: var(--shadow3);
+  white-space: nowrap;
 }
-#toast.show { transform:translateX(-50%) translateY(0); }
+#toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ── COMMAND PALETTE (K) ── */
+/* ── COMMAND PALETTE ── */
 #cmd-overlay {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  backdrop-filter:blur(8px);
-  z-index:9990;
-  align-items:flex-start;
-  justify-content:center;
-  padding-top:15vh;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(6px);
+  z-index: 9990; align-items: flex-start;
+  justify-content: center; padding-top: 15vh;
 }
-#cmd-overlay.open { display:flex; }
+#cmd-overlay.open { display: flex; }
 .cmd-box {
-  width:540px;
-  background:var(--bg1);
-  border:1px solid var(--line2);
-  border-radius:var(--radius3);
-  overflow:hidden;
-  box-shadow:var(--shadow3);
-  animation:cmdIn .15s ease;
+  width: 540px; background: var(--bg1);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius3);
+  overflow: hidden; box-shadow: var(--shadow3);
+  animation: cmdIn .15s ease;
 }
-@keyframes cmdIn { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:none} }
+@keyframes cmdIn { from{opacity:0;transform:scale(.97)} to{opacity:1;transform:none} }
 .cmd-input-wrap {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line);
 }
-.cmd-input-wrap svg { color:var(--fg4); flex-shrink:0; }
-.cmd-input {
-  flex:1;
-  background:none;
-  border:none;
-  color:var(--fg);
-  font-size:14px;
-  outline:none;
-}
-.cmd-input::placeholder { color:var(--fg4); }
-.cmd-results { max-height:320px; overflow-y:auto; }
+.cmd-input-wrap svg { color: var(--fg4); flex-shrink: 0; }
+.cmd-input { flex: 1; background: none; border: none; color: var(--fg); font-size: 14px; outline: none; font-family: 'Instrument Sans', sans-serif; }
+.cmd-input::placeholder { color: var(--fg4); }
+.cmd-results { max-height: 320px; overflow-y: auto; }
 .cmd-item {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 16px;
-  cursor:pointer;
-  transition:background .1s;
-  font-size:12.5px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; cursor: pointer; transition: background .1s; font-size: 12.5px;
 }
-.cmd-item:hover, .cmd-item.active { background:var(--bg2); }
-.cmd-item .cmd-ico { width:28px; height:28px; background:var(--bg3); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
-.cmd-item .cmd-name { color:var(--fg); font-weight:500; }
-.cmd-item .cmd-section { font-size:11px; color:var(--fg4); margin-left:auto; }
-.cmd-empty { padding:24px; text-align:center; font-size:12.5px; color:var(--fg4); }
-.cmd-footer { padding:8px 16px; border-top:1px solid var(--line); display:flex; gap:16px; }
-.cmd-footer-hint { font-size:10.5px; color:var(--fg4); display:flex; align-items:center; gap:4px; }
-.cmd-footer-hint kbd { background:var(--bg3); border:1px solid var(--line2); border-radius:3px; padding:1px 5px; font-family:'Geist Mono',monospace; font-size:9px; }
+.cmd-item:hover, .cmd-item.active { background: var(--bg2); }
+.cmd-ico { width: 28px; height: 28px; background: var(--bg3); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.cmd-name { color: var(--fg); font-weight: 500; }
+.cmd-section { font-size: 11px; color: var(--fg4); margin-left: auto; }
+.cmd-empty { padding: 24px; text-align: center; font-size: 12.5px; color: var(--fg4); }
+.cmd-footer { padding: 8px 16px; border-top: 1px solid var(--line); display: flex; gap: 16px; }
+.cmd-footer-hint { font-size: 10.5px; color: var(--fg4); display: flex; align-items: center; gap: 4px; }
+.cmd-footer-hint kbd { background: var(--bg3); border: 1px solid var(--line2); border-radius: 3px; padding: 1px 5px; font-family: 'Geist Mono', monospace; font-size: 9px; }
 
 /* ── MOBILE ── */
-#sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:99; }
+#sb-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:99; }
 #sb-overlay.show { display:block; }
 
-/* ── NSEC COMPAT ── */
-.nsec { font-size:10px; font-weight:500; color:var(--fg4); text-transform:uppercase; letter-spacing:.08em; padding:10px 6px 4px; white-space:nowrap; overflow:hidden; }
-.sidebar.collapsed .nsec { opacity:0; height:0; padding:0; }
-
 /* ── RESPONSIVE ── */
-@media(max-width:1200px) {
-  .stat-grid, .kpi-grid { grid-template-columns:repeat(2,1fr); }
-  .pg3 { grid-template-columns:1fr 1fr; }
-}
-@media(max-width:900px) {
-  .pg2, .pg3, .fr, .fr3 { grid-template-columns:1fr; }
-}
+@media(max-width:1200px) { .stat-grid,.kpi-grid{grid-template-columns:repeat(2,1fr)} .pg3{grid-template-columns:1fr 1fr} }
+@media(max-width:900px)  { .pg2,.pg3,.fr,.fr3{grid-template-columns:1fr} }
 @media(max-width:768px) {
   :root { --sidebar-w:0px; --sidebar-c:0px; }
-  .sidebar {
-    top:auto; bottom:0; left:0; right:0;
-    width:100% !important; height:auto; max-height:80vh;
-    flex-direction:column;
-    border-right:none; border-top:1px solid var(--line);
-    border-radius:14px 14px 0 0;
-    transform:translateY(100%);
-    transition:transform .25s cubic-bezier(.4,0,.2,1);
-    z-index:200;
-  }
+  .sidebar { top:auto;bottom:0;left:0;right:0;width:100% !important;height:auto;max-height:80vh;flex-direction:column;border-right:none;border-top:1px solid var(--line);border-radius:14px 14px 0 0;transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);z-index:200; }
   .sidebar.mobile-open { transform:translateY(0); }
-  .main, .topbar { margin-left:0 !important; left:0 !important; }
+  .main,.topbar { margin-left:0 !important;left:0 !important; }
   .panel { padding:14px; }
-  .stat-grid, .kpi-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .stat-grid,.kpi-grid { grid-template-columns:1fr 1fr; gap:10px; }
   #mobile-menu-btn { display:flex !important; }
-  .lbox { width:100%; margin:16px; }
+  .lbox { width:100%; margin:16px; padding:28px 22px; }
   #login { padding:0 16px; align-items:flex-start; padding-top:60px; }
-}
-@media(max-width:480px) {
-  .stat-grid, .kpi-grid { grid-template-columns:1fr 1fr; }
-  .fr { grid-template-columns:1fr; }
 }
 </style>
 </head>
@@ -1278,7 +947,7 @@ h1,h2,h3,h4,h5 {
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap">
         <div>
           <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:4px">Dashboard</h2>
-          <p style="font-size:13px;color:var(--m)">Visão geral do desempenho do produto</p>
+          <p style="font-size:13px;color:var(--fg3)">Visão geral do desempenho do produto</p>
         </div>
         <div style="display:flex;gap:8px">
           <button class="btn-sm ghost" onclick="loadOverview()">
@@ -1342,7 +1011,7 @@ h1,h2,h3,h4,h5 {
       <div class="pg3">
         <div class="card">
           <div class="card-head"><h3>🔥 Últimas vendas</h3></div>
-          <div class="card-body"><div id="dash-recent-sales" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+          <div class="card-body"><div id="dash-recent-sales" style="font-size:13px;color:var(--fg3)">Carregando...</div></div>
         </div>
         <div class="card">
           <div class="card-head"><h3>📈 Visitantes 24h</h3></div>
@@ -1357,7 +1026,7 @@ h1,h2,h3,h4,h5 {
         </div>
         <div class="card">
           <div class="card-head"><h3>🌐 Dispositivos & Fontes</h3></div>
-          <div class="card-body"><div id="an-devs" style="font-size:13px;color:var(--m)">—</div></div>
+          <div class="card-body"><div id="an-devs" style="font-size:13px;color:var(--fg3)">—</div></div>
         </div>
       </div>
 
@@ -1385,9 +1054,9 @@ h1,h2,h3,h4,h5 {
         <div class="card-head">
           <h3>Histórico de Vendas</h3>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input type="date" id="vf-from" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
-            <input type="date" id="vf-to" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
-            <select id="vf-status" onchange="loadVendas()" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <input type="date" id="vf-from" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--fg);font-size:12px;outline:none">
+            <input type="date" id="vf-to" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--fg);font-size:12px;outline:none">
+            <select id="vf-status" onchange="loadVendas()" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--fg);font-size:12px;outline:none">
               <option value="real">Reais (sem testes)</option>
               <option value="all">Todos (incl. testes)</option>
               <option value="approved">Aprovadas</option>
@@ -1408,7 +1077,7 @@ h1,h2,h3,h4,h5 {
             <div class="field"><label>Email</label><input type="email" id="ms-e" placeholder="joao@email.com"></div>
             <div class="field"><label>Valor R$</label><input type="number" id="ms-v" step="0.01" placeholder="19.90"></div>
           </div>
-          <div style="margin-top:12px;display:flex;align-items:center;gap:12px"><button class="btn-sm primary" onclick="addSaleManual()">Registrar</button><span style="font-size:12px;color:var(--m2)">⚠️ Vendas manuais são marcadas como <span class="tag gold" style="font-size:10px">🧪 Teste</span> automaticamente.</span></div>
+          <div style="margin-top:12px;display:flex;align-items:center;gap:12px"><button class="btn-sm primary" onclick="addSaleManual()">Registrar</button><span style="font-size:12px;color:var(--fg4)">⚠️ Vendas manuais são marcadas como <span class="tag gold" style="font-size:10px">🧪 Teste</span> automaticamente.</span></div>
         </div>
       </div>
     </div>
@@ -1424,8 +1093,8 @@ h1,h2,h3,h4,h5 {
       <div class="card">
         <div class="card-head"><h3>Extrato Financeiro</h3>
           <div style="display:flex;gap:8px">
-            <input type="date" id="ex-from" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
-            <input type="date" id="ex-to" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--t);font-size:12px;outline:none">
+            <input type="date" id="ex-from" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--fg);font-size:12px;outline:none">
+            <input type="date" id="ex-to" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:6px 10px;color:var(--fg);font-size:12px;outline:none">
             <button class="btn-sm primary" style="padding:6px 12px;font-size:12px" onclick="loadExtrato()">↺ Buscar</button>
           </div>
         </div>
@@ -1497,18 +1166,18 @@ h1,h2,h3,h4,h5 {
               <div style="display:flex;gap:8px;margin-top:6px">
                 <label style="flex:1;cursor:pointer">
                   <input type="radio" name="cp-type" value="local" checked onchange="toggleCouponType(this.value)" style="display:none">
-                  <div class="cp-type-btn on" id="cp-type-local" style="border:1px solid var(--border2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
+                  <div class="cp-type-btn on" id="cp-type-local" style="border:1px solid var(--line2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
                     <div style="font-size:20px;margin-bottom:6px">🎨</div>
                     <div style="font-size:12px;font-weight:700;margin-bottom:3px">Desconto Visual</div>
-                    <div style="font-size:11px;color:var(--m)">Aplica desconto só na exibição do preço no site</div>
+                    <div style="font-size:11px;color:var(--fg3)">Aplica desconto só na exibição do preço no site</div>
                   </div>
                 </label>
                 <label style="flex:1;cursor:pointer">
                   <input type="radio" name="cp-type" value="perfectpay" onchange="toggleCouponType(this.value)" style="display:none">
-                  <div class="cp-type-btn" id="cp-type-perfectpay" style="border:1px solid var(--border2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
+                  <div class="cp-type-btn" id="cp-type-perfectpay" style="border:1px solid var(--line2);border-radius:var(--r-md);padding:14px;text-align:center;transition:all .2s">
                     <div style="font-size:20px;margin-bottom:6px">✅</div>
                     <div style="font-size:12px;font-weight:700;margin-bottom:3px">PerfectPay Real</div>
-                    <div style="font-size:11px;color:var(--m)">Redireciona para link com desconto real no checkout</div>
+                    <div style="font-size:11px;color:var(--fg3)">Redireciona para link com desconto real no checkout</div>
                   </div>
                 </label>
               </div>
@@ -1530,11 +1199,11 @@ h1,h2,h3,h4,h5 {
                 <input id="cp-pp-link" placeholder="https://go.perfectpay.com.br/PPU38CQ4TBC?coupon=PROMO20">
                 <span class="hint">Copie o link em PerfectPay → Produtos → Cupons → Links com Cupom</span>
               </div>
-              <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:var(--r-sm);padding:12px;margin-top:8px;font-size:12px;color:var(--m);line-height:1.7">
+              <div style="background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.15);border-radius:var(--r-sm);padding:12px;margin-top:8px;font-size:12px;color:var(--fg3);line-height:1.7">
                 <strong style="color:var(--cyan)">Como pegar o link na PerfectPay:</strong><br>
-                1. Vá em <strong style="color:var(--t)">Produtos → Meus Produtos → Cupons</strong><br>
+                1. Vá em <strong style="color:var(--fg)">Produtos → Meus Produtos → Cupons</strong><br>
                 2. Crie o cupom lá com o mesmo código<br>
-                3. Clique em <strong style="color:var(--t)">Links de Checkout → Links com Cupom</strong><br>
+                3. Clique em <strong style="color:var(--fg)">Links de Checkout → Links com Cupom</strong><br>
                 4. Copie o link e cole aqui
               </div>
             </div>
@@ -1590,12 +1259,12 @@ h1,h2,h3,h4,h5 {
             <div class="card-head">
               <h3>⚡ Sequência de Boas-vindas</h3>
               <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-                <input type="checkbox" id="seq-active" onchange="toggleSequence(this.checked)" style="width:16px;height:16px;accent-color:var(--a)">
+                <input type="checkbox" id="seq-active" onchange="toggleSequence(this.checked)" style="width:16px;height:16px;accent-color:var(--amber)">
                 <span>Ativa</span>
               </label>
             </div>
             <div class="card-body">
-              <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+              <div style="font-size:13px;color:var(--fg3);margin-bottom:16px;line-height:1.7">
                 Quando alguém deixa o email no site, recebe automaticamente esta sequência de emails. Edite os textos abaixo e salve.
               </div>
               <div id="seq-steps">Carregando...</div>
@@ -1654,8 +1323,8 @@ h1,h2,h3,h4,h5 {
         <div class="card">
           <div class="card-head"><h3>🔑 Token da API PerfectPay</h3><span class="tag" id="pp-st">Não configurado</span></div>
           <div class="card-body">
-            <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.7">
-              Gere o token em: <strong style="color:var(--t)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
+            <div style="font-size:13px;color:var(--fg3);margin-bottom:14px;line-height:1.7">
+              Gere o token em: <strong style="color:var(--fg)">PerfectPay → Ferramentas → API → + Adicionar</strong><br>
               O token é salvo criptografado no Supabase e nunca fica exposto no frontend.
             </div>
             <div class="field" style="margin-bottom:14px">
@@ -1682,8 +1351,8 @@ h1,h2,h3,h4,h5 {
         <div class="card">
           <div class="card-head"><h3>🔗 Webhook (tempo real)</h3></div>
           <div class="card-body">
-            <div style="font-size:13px;color:var(--m);margin-bottom:12px">
-              Configure em: <strong style="color:var(--t)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
+            <div style="font-size:13px;color:var(--fg3);margin-bottom:12px">
+              Configure em: <strong style="color:var(--fg)">PerfectPay → Ferramentas → PostBack/Webhook</strong>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <code style="flex:1">https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/perfectpay-webhook</code>
@@ -1693,7 +1362,7 @@ h1,h2,h3,h4,h5 {
         </div>
         <div class="card">
           <div class="card-head"><h3>📊 Status da Integração</h3></div>
-          <div class="card-body"><div id="pp-status" style="font-size:13px;color:var(--m)">Verificando...</div></div>
+          <div class="card-body"><div id="pp-status" style="font-size:13px;color:var(--fg3)">Verificando...</div></div>
         </div>
       </div>
     </div>
@@ -1885,7 +1554,7 @@ h1,h2,h3,h4,h5 {
           <div class="field"><label>Texto de Compartilhamento</label><input id="f-tys2"></div>
         </div></div>
         <div class="card"><div class="card-head"><h3>Como usar</h3></div><div class="card-body">
-          <div style="font-size:13px;color:var(--m);line-height:1.8">Configure a PerfectPay para redirecionar após compra para:<br><code style="margin-top:6px;display:inline-block">https://seusite.com/?purchased=1</code></div>
+          <div style="font-size:13px;color:var(--fg3);line-height:1.8">Configure a PerfectPay para redirecionar após compra para:<br><code style="margin-top:6px;display:inline-block">https://seusite.com/?purchased=1</code></div>
         </div></div>
       </div>
     </div>
@@ -1917,7 +1586,7 @@ h1,h2,h3,h4,h5 {
             <button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadFAQAdmin()">↺</button>
           </div>
         </div>
-        <div class="card-body"><div id="faq-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+        <div class="card-body"><div id="faq-list" style="font-size:13px;color:var(--fg3)">Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -1935,7 +1604,7 @@ h1,h2,h3,h4,h5 {
             <button class="btn-sm primary" style="padding:5px 10px;font-size:11px" onclick="exportNicheLeads()">📥 CSV</button>
           </div>
         </div>
-          <div class="card-body"><div id="niche-leads-list" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+          <div class="card-body"><div id="niche-leads-list" style="font-size:13px;color:var(--fg3)">Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -1980,7 +1649,7 @@ h1,h2,h3,h4,h5 {
             <div class="fr" style="margin-bottom:12px">
               <div class="field"><label>📅 Data</label><input type="date" id="cal-data"></div>
               <div class="field"><label>📱 Plataforma</label>
-                <select id="cal-plat" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;width:100%;outline:none">
+                <select id="cal-plat" style="background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--fg);font-size:14px;width:100%;outline:none">
                   <option value="tiktok">🎵 TikTok</option>
                   <option value="instagram">📸 Instagram</option>
                   <option value="youtube">▶️ YouTube</option>
@@ -1993,7 +1662,7 @@ h1,h2,h3,h4,h5 {
             <div class="field" style="margin-bottom:10px"><label>Título do conteúdo</label><input id="cal-titulo" placeholder="Ex: Como ganhar R$500 com IA esse mês"></div>
             <div class="fr" style="margin-bottom:14px">
               <div class="field"><label>Status</label>
-                <select id="cal-status" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;width:100%;outline:none">
+                <select id="cal-status" style="background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--fg);font-size:14px;width:100%;outline:none">
                   <option value="planejado">📋 Planejado</option>
                   <option value="criado">✏️ Criado</option>
                   <option value="publicado">✅ Publicado</option>
@@ -2025,15 +1694,15 @@ h1,h2,h3,h4,h5 {
         <div class="card">
           <div class="card-head"><h3>🔗 Criar Link Rastreável</h3></div>
           <div class="card-body">
-            <div style="background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+            <div style="background:rgba(124,92,252,.08);border:1px solid rgba(124,92,252,.2);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--fg3);margin-bottom:16px;line-height:1.7">
               Crie links curtos rastreáveis para usar no TikTok, Instagram, WhatsApp, etc.<br>
-              O link <strong style="color:var(--t)">iaem30.com.br/go/tiktok</strong> redireciona para o checkout e conta os cliques.
+              O link <strong style="color:var(--fg)">iaem30.com.br/go/tiktok</strong> redireciona para o checkout e conta os cliques.
             </div>
             <div class="fr" style="margin-bottom:12px">
               <div class="field">
                 <label>Slug (parte final do link)</label>
                 <div style="display:flex;align-items:center;gap:8px">
-                  <span style="font-size:13px;color:var(--m);white-space:nowrap">iaem30.com.br/go/</span>
+                  <span style="font-size:13px;color:var(--fg3);white-space:nowrap">iaem30.com.br/go/</span>
                   <input id="link-slug" placeholder="tiktok" style="flex:1">
                 </div>
               </div>
@@ -2058,7 +1727,7 @@ h1,h2,h3,h4,h5 {
             <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px">
               <div class="field" style="flex:1;min-width:220px;margin:0"><label>URL para gerar QR Code</label><input id="qr-url" value="https://iaem30.com.br" placeholder="https://iaem30.com.br"></div>
               <div class="field" style="margin:0"><label>Tamanho</label>
-                <select id="qr-size" style="background:var(--card2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--t);font-size:14px;outline:none">
+                <select id="qr-size" style="background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:9px 12px;color:var(--fg);font-size:14px;outline:none">
                   <option value="200">200px</option>
                   <option value="300" selected>300px</option>
                   <option value="400">400px</option>
@@ -2071,7 +1740,7 @@ h1,h2,h3,h4,h5 {
               <img id="qr-img" style="border-radius:12px;border:1px solid var(--b2)">
               <br><br>
               <a id="qr-download" class="btn-sm primary" download="qrcode-iaem30.png">📥 Baixar PNG</a>
-              <p style="font-size:12px;color:var(--m2);margin-top:10px">Clique com botão direito → Salvar imagem para guardar o QR Code</p>
+              <p style="font-size:12px;color:var(--fg4);margin-top:10px">Clique com botão direito → Salvar imagem para guardar o QR Code</p>
             </div>
           </div>
         </div>
@@ -2103,7 +1772,7 @@ h1,h2,h3,h4,h5 {
           <div class="card-body" style="overflow-x:auto">
             <table class="tbl" id="rel-tabela">
               <thead><tr><th>Data</th><th>Visitantes</th><th>Cliques CTA</th><th>Leads</th><th>Vendas</th><th>Taxa Conv.</th></tr></thead>
-              <tbody id="rel-tbody"><tr><td colspan="6" style="text-align:center;color:var(--m)">Carregando...</td></tr></tbody>
+              <tbody id="rel-tbody"><tr><td colspan="6" style="text-align:center;color:var(--fg3)">Carregando...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -2119,7 +1788,7 @@ h1,h2,h3,h4,h5 {
           </div>
           <div class="card-body">
             <div style="background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.8">
-              <strong style="color:var(--t)">Como configurar em 2 minutos:</strong><br>
+              <strong style="color:var(--fg)">Como configurar em 2 minutos:</strong><br>
               1. Abra o Telegram e pesquise por <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">@BotFather</code><br>
               2. Envie <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">/newbot</code> e siga as instruções<br>
               3. Copie o <strong>Token</strong> que o BotFather te mandar<br>
@@ -2134,13 +1803,13 @@ h1,h2,h3,h4,h5 {
               <label>Notificar quando:</label>
               <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px">
                 <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="tg-on-sale" checked style="accent-color:var(--a)"> Nova venda
+                  <input type="checkbox" id="tg-on-sale" checked style="accent-color:var(--amber)"> Nova venda
                 </label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="tg-on-lead" checked style="accent-color:var(--a)"> Novo lead capturado
+                  <input type="checkbox" id="tg-on-lead" checked style="accent-color:var(--amber)"> Novo lead capturado
                 </label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
-                  <input type="checkbox" id="tg-on-daily" style="accent-color:var(--a)"> Resumo diário (8h)
+                  <input type="checkbox" id="tg-on-daily" style="accent-color:var(--amber)"> Resumo diário (8h)
                 </label>
               </div>
             </div>
@@ -2153,7 +1822,7 @@ h1,h2,h3,h4,h5 {
         </div>
         <div class="card">
           <div class="card-head"><h3>📨 Últimas notificações enviadas</h3></div>
-          <div class="card-body"><div id="tg-history" style="font-size:13px;color:var(--m)">Carregando...</div></div>
+          <div class="card-body"><div id="tg-history" style="font-size:13px;color:var(--fg3)">Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -2167,9 +1836,9 @@ h1,h2,h3,h4,h5 {
               <span class="tag" id="pixel-fb-status">Não instalado</span>
             </div>
             <div class="card-body">
-              <div style="font-size:13px;color:var(--m);margin-bottom:14px;line-height:1.7">
+              <div style="font-size:13px;color:var(--fg3);margin-bottom:14px;line-height:1.7">
                 O Meta Pixel permite criar anúncios no Instagram e Facebook para pessoas que já visitaram seu site.
-                <strong style="color:var(--t)"> Instale antes de qualquer anúncio pago!</strong>
+                <strong style="color:var(--fg)"> Instale antes de qualquer anúncio pago!</strong>
               </div>
               <div class="field" style="margin-bottom:14px">
                 <label>Pixel ID</label>
@@ -2183,14 +1852,14 @@ h1,h2,h3,h4,h5 {
           <div class="card">
             <div class="card-head"><h3>📊 Origens de Tráfego (UTM)</h3><button class="btn-sm ghost" style="padding:5px 10px;font-size:11px" onclick="loadPixel()">↺</button></div>
             <div class="card-body">
-              <div id="utm-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
+              <div id="utm-stats" style="font-size:13px;color:var(--fg3)">Carregando...</div>
             </div>
           </div>
         </div>
         <div class="card">
           <div class="card-head"><h3>🔗 Gerador de Links UTM</h3></div>
           <div class="card-body">
-            <div style="font-size:13px;color:var(--m);margin-bottom:14px">Crie links com rastreamento para saber de onde vêm seus visitantes.</div>
+            <div style="font-size:13px;color:var(--fg3);margin-bottom:14px">Crie links com rastreamento para saber de onde vêm seus visitantes.</div>
             <div class="fr" style="margin-bottom:10px">
               <div class="field"><label>Fonte (utm_source)</label><input id="utm-source" placeholder="instagram, tiktok, google..."></div>
               <div class="field"><label>Mídia (utm_medium)</label><input id="utm-medium" placeholder="social, cpc, email..."></div>
@@ -2209,7 +1878,7 @@ h1,h2,h3,h4,h5 {
         <div class="card">
           <div class="card-head"><h3>📱 Visitantes por dispositivo e origem — últimos 30 dias</h3></div>
           <div class="card-body">
-            <div id="device-stats" style="font-size:13px;color:var(--m)">Carregando...</div>
+            <div id="device-stats" style="font-size:13px;color:var(--fg3)">Carregando...</div>
           </div>
         </div>
       </div>
@@ -2240,7 +1909,7 @@ h1,h2,h3,h4,h5 {
                 <div class="field">
                   <label>Slug personalizado</label>
                   <div style="display:flex;align-items:center;gap:0">
-                    <span style="background:rgba(255,255,255,.05);border:1px solid var(--b2);border-right:none;border-radius:8px 0 0 8px;padding:10px 12px;font-size:12px;color:var(--m);white-space:nowrap">iaem30.com.br/r/</span>
+                    <span style="background:rgba(255,255,255,.05);border:1px solid var(--b2);border-right:none;border-radius:8px 0 0 8px;padding:10px 12px;font-size:12px;color:var(--fg3);white-space:nowrap">iaem30.com.br/r/</span>
                     <input id="sl-slug" placeholder="meu-link" style="border-radius:0 8px 8px 0;border-left:none" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
                   </div>
                   <span class="hint">Apenas letras minúsculas, números e hífens</span>
@@ -2256,9 +1925,9 @@ h1,h2,h3,h4,h5 {
               </div>
               <div id="sl-result" style="margin-top:14px;display:none">
                 <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);border-radius:10px;padding:14px">
-                  <div style="font-size:12px;color:var(--g);margin-bottom:6px">✓ Link criado com sucesso!</div>
+                  <div style="font-size:12px;color:var(--green);margin-bottom:6px">✓ Link criado com sucesso!</div>
                   <div style="display:flex;align-items:center;gap:8px">
-                    <span id="sl-new-url" style="font-size:14px;font-weight:600;color:var(--t);word-break:break-all"></span>
+                    <span id="sl-new-url" style="font-size:14px;font-weight:600;color:var(--fg);word-break:break-all"></span>
                     <button onclick="copyShortLink()" class="btn-sm ghost" style="padding:5px 10px;font-size:11px;flex-shrink:0">📋 Copiar</button>
                   </div>
                 </div>
@@ -2271,13 +1940,13 @@ h1,h2,h3,h4,h5 {
           <div class="card">
             <div class="card-head"><h3>ℹ️ Como funciona</h3></div>
             <div class="card-body">
-              <div style="font-size:13px;color:var(--m);line-height:1.8">
+              <div style="font-size:13px;color:var(--fg3);line-height:1.8">
                 <p style="margin-bottom:12px">Os links curtos funcionam assim:</p>
                 <div style="background:var(--bg);border-radius:8px;padding:12px;font-family:monospace;font-size:13px;margin-bottom:12px">
-                  iaem30.com.br<span style="color:var(--a2)">/r/comprar</span> → PerfectPay
+                  iaem30.com.br<span style="color:var(--amber2)">/r/comprar</span> → PerfectPay
                 </div>
                 <p>Para ativar os redirecionamentos, adicione no <code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px">vercel.json</code>:</p>
-                <div id="sl-vercel-config" style="background:var(--bg);border-radius:8px;padding:12px;font-family:monospace;font-size:11px;margin-top:10px;white-space:pre-wrap;color:var(--a2)">Carregando...</div>
+                <div id="sl-vercel-config" style="background:var(--bg);border-radius:8px;padding:12px;font-family:monospace;font-size:11px;margin-top:10px;white-space:pre-wrap;color:var(--amber2)">Carregando...</div>
                 <button onclick="copyVercelConfig()" class="btn-sm ghost" style="margin-top:8px;padding:5px 10px;font-size:11px">📋 Copiar config</button>
               </div>
             </div>
@@ -2316,7 +1985,7 @@ h1,h2,h3,h4,h5 {
           <div class="card">
             <div class="card-head"><h3>✨ Criar página pessoal</h3></div>
             <div class="card-body">
-              <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.7">
+              <div style="font-size:13px;color:var(--fg3);margin-bottom:16px;line-height:1.7">
                 Cria uma landing page exclusiva para um lead específico com cupom único e desconto personalizado. O link é enviado por email automaticamente.
               </div>
               <div class="fr" style="margin-bottom:12px">
@@ -2331,23 +2000,23 @@ h1,h2,h3,h4,h5 {
           <div class="card">
             <div class="card-head"><h3>ℹ️ Como funciona</h3></div>
             <div class="card-body">
-              <div style="font-size:13px;color:var(--m);line-height:1.8">
+              <div style="font-size:13px;color:var(--fg3);line-height:1.8">
                 <p style="margin-bottom:10px">Quando alguém abandona o carrinho, o sistema cria automaticamente:</p>
                 <div style="display:flex;flex-direction:column;gap:8px">
                   <div style="display:flex;gap:8px;align-items:flex-start">
-                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>
-                    <span>Uma página de venda <strong style="color:var(--t)">com o nome do cliente</strong></span>
+                    <span style="background:var(--agg);color:var(--amber2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</span>
+                    <span>Uma página de venda <strong style="color:var(--fg)">com o nome do cliente</strong></span>
                   </div>
                   <div style="display:flex;gap:8px;align-items:flex-start">
-                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>
-                    <span>Um <strong style="color:var(--t)">cupom único</strong> de 15% válido por 48h</span>
+                    <span style="background:var(--agg);color:var(--amber2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</span>
+                    <span>Um <strong style="color:var(--fg)">cupom único</strong> de 15% válido por 48h</span>
                   </div>
                   <div style="display:flex;gap:8px;align-items:flex-start">
-                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span>
-                    <span>Um <strong style="color:var(--t)">email personalizado</strong> com o link da página</span>
+                    <span style="background:var(--agg);color:var(--amber2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</span>
+                    <span>Um <strong style="color:var(--fg)">email personalizado</strong> com o link da página</span>
                   </div>
                   <div style="display:flex;gap:8px;align-items:flex-start">
-                    <span style="background:var(--agg);color:var(--a2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span>
+                    <span style="background:var(--agg);color:var(--amber2);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</span>
                     <span>Countdown em tempo real na página</span>
                   </div>
                 </div>
@@ -2379,7 +2048,7 @@ h1,h2,h3,h4,h5 {
           <button class="btn-sm primary" onclick="changePw()">Alterar Senha</button>
         </div></div>
         <div class="card"><div class="card-head"><h3>💾 Backup</h3></div><div class="card-body">
-          <div style="font-size:13px;color:var(--m);margin-bottom:14px">Configs salvas no Supabase. Exporte como JSON para segurança.</div>
+          <div style="font-size:13px;color:var(--fg3);margin-bottom:14px">Configs salvas no Supabase. Exporte como JSON para segurança.</div>
           <div style="display:flex;gap:10px;flex-wrap:wrap">
             <button class="btn-sm primary" onclick="exportJSON()">📥 Exportar JSON</button>
             <button class="btn-sm ghost" onclick="document.getElementById('imp').click()">📤 Importar JSON</button>
@@ -2743,7 +2412,7 @@ function rList(key,items){
     const g=`grid-template-columns:${schema.map(s=>s.split(':')[1]||'1fr').join(' ')}`;
     const cols=schema.map(s=>{const[k,w]=s.split(':');return`<input placeholder="${k}" value="${e(item[k]||'')}" data-k="${k}" data-i="${i}" style="min-width:0">`;}).join('');
     const xtra=extra?`<textarea rows="2" placeholder="${extra}" data-k="${extra}" data-i="${i}">${e(item[extra]||'')}</textarea>`:'';
-    const starrow=key==='test'?`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--m)">Estrelas: <div class="stars" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star${s<=(item.stars||5)?' on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div></div>`:'';
+    const starrow=key==='test'?`<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg3)">Estrelas: <div class="stars" id="sr-${i}">${[1,2,3,4,5].map(s=>`<button class="star${s<=(item.stars||5)?' on':''}" onclick="setStar(${i},${s})" data-s="${s}">★</button>`).join('')}</div></div>`:'';
     return`<div class="li"><div class="lib">
       <div style="display:grid;gap:6px;${g}">${cols}</div>${xtra}${starrow}
     </div><div class="lacts">
@@ -2779,7 +2448,7 @@ function mkChart(id,type,labels,datasets,opts={}){
   if(!ctx) return;
   charts[id]=new Chart(ctx,{type,data:{labels,datasets},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#7e7a96',font:{size:12}}},tooltip:{backgroundColor:'#14141f',borderColor:'rgba(255,255,255,.1)',borderWidth:1,titleColor:'#eeeaf8',bodyColor:'#7e7a96'}},
+      plugins:{legend:{labels:{color:'#7e7a96',font:{size:12}}},tooltip:{backgroundColor:'#14141f',borderColor:'rgba(0,0,0,0.08)',borderWidth:1,titleColor:'#eeeaf8',bodyColor:'#7e7a96'}},
       scales:type==='doughnut'||type==='pie'?{}:{
         x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#7e7a96',font:{size:11}}},
         y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#7e7a96',font:{size:11},...(opts.yCallback?{callback:opts.yCallback}:{})}}
@@ -2835,11 +2504,11 @@ async function loadOverview(){
       <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
         <div style="flex:1">
           <div style="font-size:13px;font-weight:500">${s.customer_name||'—'}</div>
-          <div style="font-size:11px;color:var(--m)">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
+          <div style="font-size:11px;color:var(--fg3)">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</div>
         </div>
         <div>
           <div style="font-size:14px;font-weight:700;color:${s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')}</div>
-          <div style="font-size:11px;color:var(--m);text-align:right">${s.payment_method||'—'}</div>
+          <div style="font-size:11px;color:var(--fg3);text-align:right">${s.payment_method||'—'}</div>
         </div>
         ${s.status==='approved'?'<span class="tag green" style="font-size:10px">✓</span>':s.status==='refunded'?'<span class="tag red" style="font-size:10px">↩</span>':'<span class="tag gray" style="font-size:10px">⏳</span>'}
       </div>`).join('');
@@ -2867,12 +2536,12 @@ async function loadMiniAnalytics(){
   const devEl=document.getElementById('an-devs');
   if(devEl) devEl.innerHTML=`
     <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>📱 Mobile</span><span style="color:var(--t)">${mob} (${tot?Math.round(mob/tot*100):0}%)</span></div>
-      <div style="background:var(--card2);border-radius:4px;height:5px"><div style="background:var(--a);height:5px;border-radius:4px;width:${tot?Math.round(mob/tot*100):0}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>📱 Mobile</span><span style="color:var(--fg)">${mob} (${tot?Math.round(mob/tot*100):0}%)</span></div>
+      <div style="background:var(--bg2);border-radius:4px;height:5px"><div style="background:var(--amber);height:5px;border-radius:4px;width:${tot?Math.round(mob/tot*100):0}%"></div></div>
     </div>
     <div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>💻 Desktop</span><span style="color:var(--t)">${tot-mob} (${tot?Math.round((tot-mob)/tot*100):0}%)</span></div>
-      <div style="background:var(--card2);border-radius:4px;height:5px"><div style="background:var(--g);height:5px;border-radius:4px;width:${tot?Math.round((tot-mob)/tot*100):0}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>💻 Desktop</span><span style="color:var(--fg)">${tot-mob} (${tot?Math.round((tot-mob)/tot*100):0}%)</span></div>
+      <div style="background:var(--bg2);border-radius:4px;height:5px"><div style="background:var(--g);height:5px;border-radius:4px;width:${tot?Math.round((tot-mob)/tot*100):0}%"></div></div>
     </div>`;
 }
 
@@ -2912,13 +2581,13 @@ async function loadVendas(){
     ${disp.slice(0,100).map(s=>`<tr>
       <td style="white-space:nowrap">${new Date(s.created_at).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
       <td style="font-weight:500">${s.customer_name||'—'} ${s.is_test?'<span class="tag gold" style="font-size:10px;margin-left:4px">🧪 Teste</span>':''}</td>
-      <td style="color:var(--m)">${s.customer_email||'—'}</td>
-      <td style="font-weight:700;color:${s.is_test?'var(--m2)':s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')} ${s.is_test?'<span style="font-size:10px;color:var(--m2)">(teste)</span>':''}</td>
-      <td style="color:var(--m)">${s.payment_method||'—'}</td>
+      <td style="color:var(--fg3)">${s.customer_email||'—'}</td>
+      <td style="font-weight:700;color:${s.is_test?'var(--m2)':s.status==='approved'?'var(--g)':'var(--m)'}">R$${parseFloat(s.amount||0).toFixed(2).replace('.',',')} ${s.is_test?'<span style="font-size:10px;color:var(--fg4)">(teste)</span>':''}</td>
+      <td style="color:var(--fg3)">${s.payment_method||'—'}</td>
       <td>${s.is_test?'<span class="tag gold">🧪 Teste</span>':sb(s.status)}</td>
-      <td style="color:var(--a2)">${s.coupon_code||'—'}</td>
+      <td style="color:var(--amber2)">${s.coupon_code||'—'}</td>
     </tr>`).join('')}
-  </tbody></table>${disp.length>100?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--m2)">Mostrando 100 de ${disp.length}</div>`:''}`;
+  </tbody></table>${disp.length>100?`<div style="text-align:center;padding:10px;font-size:12px;color:var(--fg4)">Mostrando 100 de ${disp.length}</div>`:''}`;
 }
 
 async function addSaleManual(){
@@ -2951,7 +2620,7 @@ async function loadExtrato(){
         <td>${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
         <td>${r.description||r.desc||'—'}</td>
         <td style="font-weight:600;color:${(r.type||'').includes('credit')||parseFloat(r.value||0)>0?'var(--g)':'var(--r)'}">R$${parseFloat(r.value||r.amount||0).toFixed(2).replace('.',',')}</td>
-        <td style="color:var(--m)">${r.type||'—'}</td>
+        <td style="color:var(--fg3)">${r.type||'—'}</td>
         <td><span class="tag ${r.status==='paid'?'green':r.status==='pending'?'gold':'gray'}">${r.status||'—'}</span></td>
       </tr>`).join('')}
     </tbody></table>`;
@@ -2994,8 +2663,8 @@ async function loadComissoes(){
       <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
         <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${i===0?'var(--gold)':i===1?'var(--m)':i===2?'#cd7f32':'var(--m2)'};width:20px">#${i+1}</div>
         <div style="flex:1;font-size:13px">${af.name}</div>
-        <div style="font-weight:700;color:var(--g)">${fmt(af.total)}</div>
-        <div style="font-size:11px;color:var(--m)">${af.count} vendas</div>
+        <div style="font-weight:700;color:var(--green)">${fmt(af.total)}</div>
+        <div style="font-size:11px;color:var(--fg3)">${af.count} vendas</div>
       </div>`).join('');
   } else if(rankEl){
     rankEl.innerHTML='<div class="empty"><div class="eico">🤝</div>Nenhum afiliado encontrado.</div>';
@@ -3006,8 +2675,8 @@ async function loadComissoes(){
       ${rows.slice(0,30).map(r=>`<tr>
         <td>${r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—'}</td>
         <td>${r.affiliate_name||r.affiliate?.name||'—'}</td>
-        <td style="color:var(--m)">${r.product_name||'—'}</td>
-        <td style="font-weight:600;color:var(--g)">R$${parseFloat(r.commission_value||r.value||0).toFixed(2).replace('.',',')}</td>
+        <td style="color:var(--fg3)">${r.product_name||'—'}</td>
+        <td style="font-weight:600;color:var(--green)">R$${parseFloat(r.commission_value||r.value||0).toFixed(2).replace('.',',')}</td>
         <td><span class="tag ${r.status==='approved'?'green':'gold'}">${r.status||'—'}</span></td>
       </tr>`).join('')}
     </tbody></table>`;
@@ -3027,9 +2696,9 @@ async function loadProdutos(){
     ${prods.map(p=>`
       <div class="card" style="padding:18px">
         <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px">${p.name||p.product_name||'Produto'}</div>
-        <div style="font-size:12px;color:var(--m);margin-bottom:10px">${p.description||''}</div>
+        <div style="font-size:12px;color:var(--fg3);margin-bottom:10px">${p.description||''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:18px;font-weight:800;color:var(--g)">R$${parseFloat(p.value||p.price||0).toFixed(2).replace('.',',')}</div>
+          <div style="font-size:18px;font-weight:800;color:var(--green)">R$${parseFloat(p.value||p.price||0).toFixed(2).replace('.',',')}</div>
           <span class="tag ${p.status==='active'||p.active?'green':'gray'}">${p.status||'—'}</span>
         </div>
       </div>`).join('')}
@@ -3065,12 +2734,12 @@ async function loadAnalytics(){
   if(srcEl){
     srcEl.innerHTML=sorted.length?sorted.map(([s,cnt])=>`
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span style="font-size:12px;min-width:110px;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s}</span>
-        <div style="flex:1;background:var(--card2);border-radius:4px;height:6px">
-          <div style="background:var(--a);height:6px;border-radius:4px;width:${tot?Math.round(cnt/tot*100):0}%"></div>
+        <span style="font-size:12px;min-width:110px;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s}</span>
+        <div style="flex:1;background:var(--bg2);border-radius:4px;height:6px">
+          <div style="background:var(--amber);height:6px;border-radius:4px;width:${tot?Math.round(cnt/tot*100):0}%"></div>
         </div>
-        <span style="font-size:11px;color:var(--m);min-width:28px;text-align:right">${cnt}</span>
-      </div>`).join(''):'<div style="color:var(--m2);font-size:13px">Nenhuma visita ainda.</div>';
+        <span style="font-size:11px;color:var(--fg3);min-width:28px;text-align:right">${cnt}</span>
+      </div>`).join(''):'<div style="color:var(--fg4);font-size:13px">Nenhuma visita ainda.</div>';
   }
   // Table
   const tbl=document.getElementById('a-tbl');if(!tbl)return;
@@ -3079,9 +2748,9 @@ async function loadAnalytics(){
     ${vis.slice(0,30).map(vv=>`<tr>
       <td>${new Date(vv.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td>
       <td>${vv.device==='mobile'?'📱 Mobile':'💻 Desktop'}</td>
-      <td style="color:var(--m)">${vv.referrer?.split('/')[2]||'Direto'}</td>
-      <td style="color:var(--m)">${vv.utm_source||'—'}</td>
-      <td>${vv.clicked_cta?'<span class="tag green" style="font-size:10px">✓ Clicou</span>':'<span style="color:var(--m2)">—</span>'}</td>
+      <td style="color:var(--fg3)">${vv.referrer?.split('/')[2]||'Direto'}</td>
+      <td style="color:var(--fg3)">${vv.utm_source||'—'}</td>
+      <td>${vv.clicked_cta?'<span class="tag green" style="font-size:10px">✓ Clicou</span>':'<span style="color:var(--fg4)">—</span>'}</td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -3112,17 +2781,17 @@ async function loadFunil() {
       ].map(f => `
         <div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
-            <span style="color:var(--t)">${f.label}</span>
-            <span style="color:var(--m)">${f.val} <span style="color:${f.color};font-weight:700">(${f.pct})</span></span>
+            <span style="color:var(--fg)">${f.label}</span>
+            <span style="color:var(--fg3)">${f.val} <span style="color:${f.color};font-weight:700">(${f.pct})</span></span>
           </div>
           <div style="background:rgba(255,255,255,.06);border-radius:6px;height:10px;overflow:hidden">
             <div style="background:${f.color};height:100%;width:${f.w}%;border-radius:6px;transition:width .6s ease"></div>
           </div>
         </div>`).join('')}
     </div>
-    <div style="font-size:12px;color:var(--m2);margin-top:8px">
+    <div style="font-size:12px;color:var(--fg4);margin-top:8px">
       Taxa de conversão geral: <strong style="color:${s>0?'#10b981':'var(--m)'}">${pct(s,v)}</strong> dos visitantes compram.
-      ${s===0 ? '💡 <span style="color:#f59e0b">Foco em conversão — adicione prova social e urgência ao site.</span>' : ''}
+      ${s===0 ? '💡 <span style="color:var(--yellow)">Foco em conversão — adicione prova social e urgência ao site.</span>' : ''}
     </div>`;
 }
 
@@ -3187,9 +2856,9 @@ async function createCoupon() {
     toast('✓ Cupom criado!');
     ['cp-c','cp-desc','cp-pp-link'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
     if (msg) msg.innerHTML = start
-      ? '<span style="color:var(--g)">✓ Agendado para ' + new Date(start).toLocaleDateString('pt-BR') + '</span>'
+      ? '<span style="color:var(--green)">✓ Agendado para ' + new Date(start).toLocaleDateString('pt-BR') + '</span>'
       : type === 'perfectpay'
-        ? '<span style="color:var(--g)">✓ Cupom PerfectPay criado! O visitante será redirecionado para o checkout com desconto real.</span>'
+        ? '<span style="color:var(--green)">✓ Cupom PerfectPay criado! O visitante será redirecionado para o checkout com desconto real.</span>'
         : '';
     setTimeout(() => { if(msg) msg.innerHTML=''; }, 5000);
     loadCupons();
@@ -3220,14 +2889,14 @@ async function loadCupons() {
       ? '<button onclick="copyCouponLink(this)" data-link="' + encodeURIComponent(c.perfectpay_link || '') + '" class="btn-sm ghost" style="padding:4px 10px;font-size:11px">📋 Link PP</button>'
       : '';
     const ppLinkRow = (c.coupon_type === 'perfectpay' && c.perfectpay_link)
-      ? '<div style="margin-top:10px;background:var(--card2);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--m);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">🔗</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">' + c.perfectpay_link + '</span></div>'
+      ? '<div style="margin-top:10px;background:var(--bg2);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--fg3);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">🔗</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">' + c.perfectpay_link + '</span></div>'
       : '';
     const toggleBtn = '<button onclick="toggleCoupon(' + JSON.stringify(c.id) + ',' + (!c.active) + ')" class="btn-sm ' + (c.active ? 'ghost' : 'primary') + '" style="padding:4px 10px;font-size:11px">' + (c.active ? 'Desativar' : 'Ativar') + '</button>';
 
-    return '<div style="border:1px solid var(--border);border-radius:var(--r-md);padding:16px;margin-bottom:10px;background:var(--card)">' +
+    return '<div style="border:1px solid var(--line);border-radius:var(--r-md);padding:16px;margin-bottom:10px;background:var(--bg1)">' +
       '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">' +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
-          '<span style="font-family:monospace;font-size:15px;font-weight:700;color:var(--a2);background:var(--agg);padding:4px 10px;border-radius:6px;letter-spacing:.05em">' + c.code + '</span>' +
+          '<span style="font-family:monospace;font-size:15px;font-weight:700;color:var(--amber2);background:var(--agg);padding:4px 10px;border-radius:6px;letter-spacing:.05em">' + c.code + '</span>' +
           '<span class="tag green" style="font-size:12px">' + c.discount_percent + '% OFF</span>' +
           typeTag + statusTag +
         '</div>' +
@@ -3235,8 +2904,8 @@ async function loadCupons() {
           toggleBtn + ppLinkBtn +
         '</div>' +
       '</div>' +
-      '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--m)">' +
-        '<span>📊 <strong style="color:var(--t2)">' + c.uses + '</strong>/' + c.max_uses + ' usos</span>' +
+      '<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--fg3)">' +
+        '<span>📊 <strong style="color:var(--fg2)">' + c.uses + '</strong>/' + c.max_uses + ' usos</span>' +
         (c.description ? '<span>📝 ' + c.description + '</span>' : '') +
         (c.starts_at ? '<span>▶️ ' + new Date(c.starts_at).toLocaleDateString('pt-BR') + '</span>' : '') +
         (c.expires_at ? '<span>⏰ ' + new Date(c.expires_at).toLocaleDateString('pt-BR') + '</span>' : '') +
@@ -3277,9 +2946,9 @@ async function loadEmails(){
   el.innerHTML='<table class="tbl"><thead><tr>'+['Email','Nome','Origem','Data'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
     rows.map(r=>'<tr>'+
       '<td style="font-weight:500">'+r.email+'</td>'+
-      '<td style="color:var(--m)">'+(r.name||'—')+'</td>'+
+      '<td style="color:var(--fg3)">'+(r.name||'—')+'</td>'+
       '<td><span class="tag '+(r.source==='purchase'?'green':r.source==='modal'?'purple':'gray')+'">'+(r.source||'—')+'</span></td>'+
-      '<td style="color:var(--m)">'+(r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
+      '<td style="color:var(--fg3)">'+(r.created_at?new Date(r.created_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
     '</tr>').join('')+
   '</tbody></table>';
 }
@@ -3301,15 +2970,15 @@ async function loadSequence() {
   if (cb) cb.checked = seq.active;
   const steps = await sbGet('iaem30_email_steps','?sequence_id=eq.'+seq.id+'&order=order_index.asc');
   const el = document.getElementById('seq-steps'); if (!el) return;
-  if (!steps?.length) { el.innerHTML='<div style="color:var(--m);font-size:13px">Nenhum passo configurado.</div>'; return; }
+  if (!steps?.length) { el.innerHTML='<div style="color:var(--fg3);font-size:13px">Nenhum passo configurado.</div>'; return; }
   el.innerHTML = steps.map((s,i) => `
     <div style="border:1px solid var(--b2);border-radius:10px;padding:16px;margin-bottom:12px" data-step-id="${s.id}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <span style="background:var(--a);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</span>
+        <span style="background:var(--amber);color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</span>
         <div style="flex:1">
-          <div style="font-size:12px;color:var(--m2)">Enviado ${s.delay_hours===0?'imediatamente':s.delay_hours<24?s.delay_hours+'h depois':Math.round(s.delay_hours/24)+'d depois'}</div>
+          <div style="font-size:12px;color:var(--fg4)">Enviado ${s.delay_hours===0?'imediatamente':s.delay_hours<24?s.delay_hours+'h depois':Math.round(s.delay_hours/24)+'d depois'}</div>
         </div>
-        <select class="step-delay" data-id="${s.id}" style="background:var(--card2);border:1px solid var(--b2);border-radius:7px;padding:5px 8px;color:var(--t);font-size:12px;outline:none">
+        <select class="step-delay" data-id="${s.id}" style="background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:5px 8px;color:var(--fg);font-size:12px;outline:none">
           <option value="0" ${s.delay_hours===0?'selected':''}>Imediato</option>
           <option value="1" ${s.delay_hours===1?'selected':''}>1h depois</option>
           <option value="24" ${s.delay_hours===24?'selected':''}>1 dia depois</option>
@@ -3360,8 +3029,8 @@ async function saveSequence() {
     if (!res) ok = false;
   }
   if (msg) msg.innerHTML = ok
-    ? '<span style="color:var(--g)">✓ Sequência salva com sucesso!</span>'
-    : '<span style="color:var(--r)">Erro ao salvar alguns passos.</span>';
+    ? '<span style="color:var(--green)">✓ Sequência salva com sucesso!</span>'
+    : '<span style="color:var(--red)">Erro ao salvar alguns passos.</span>';
   if (ok) toast('✓ Sequência salva!');
   setTimeout(()=>{ if(msg) msg.innerHTML=''; }, 3000);
 }
@@ -3373,9 +3042,9 @@ async function loadSends() {
   el.innerHTML = '<table class="tbl"><thead><tr>'+['Email','Assunto','Agendado','Enviado','Status'].map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
     rows.map(r => '<tr>'+
       '<td>'+r.email+'</td>'+
-      '<td style="font-size:12px;color:var(--m)">'+(r.iaem30_email_steps?.subject||'—').slice(0,40)+'</td>'+
-      '<td style="font-size:12px;color:var(--m)">'+new Date(r.scheduled_for).toLocaleDateString('pt-BR')+'</td>'+
-      '<td style="font-size:12px;color:var(--m)">'+(r.sent_at?new Date(r.sent_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
+      '<td style="font-size:12px;color:var(--fg3)">'+(r.iaem30_email_steps?.subject||'—').slice(0,40)+'</td>'+
+      '<td style="font-size:12px;color:var(--fg3)">'+new Date(r.scheduled_for).toLocaleDateString('pt-BR')+'</td>'+
+      '<td style="font-size:12px;color:var(--fg3)">'+(r.sent_at?new Date(r.sent_at).toLocaleDateString('pt-BR'):'—')+'</td>'+
       '<td><span class="tag '+(r.status==='sent'?'green':r.status==='failed'?'red':r.status==='pending'?'gold':'gray')+'">'+r.status+'</span></td>'+
     '</tr>').join('')+
   '</tbody></table>';
@@ -3396,7 +3065,7 @@ async function loadNotifs(){
   const el=document.getElementById('nt-lst');if(!el)return;
   if(!rows?.length){el.innerHTML='<div class="empty"><div class="eico">🔔</div>Nenhuma notificação cadastrada.</div>';return;}
   el.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px">'+
-    rows.map(r=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px">✅ <strong>${r.name}</strong> de ${r.city}</div>`).join('')+
+    rows.map(r=>`<div style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:13px">✅ <strong>${r.name}</strong> de ${r.city}</div>`).join('')+
     '</div>';
 }
 
@@ -3409,7 +3078,7 @@ async function loadPPStatus(){
   const statusEl=document.getElementById('pp-status');
   if(rows?.[0]?.value){
     if(st){st.textContent='✓ Configurado';st.className='tag green';}
-    if(statusEl) statusEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--g)"><span style="font-size:20px">✓</span> Token configurado e ativo. A integração está funcionando.</div>';
+    if(statusEl) statusEl.innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--green)"><span style="font-size:20px">✓</span> Token configurado e ativo. A integração está funcionando.</div>';
   } else {
     if(statusEl) statusEl.innerHTML='<div class="empty"><div class="eico">🔑</div>Token não configurado. Clique em "Token da API PerfectPay" acima para configurar.</div>';
   }
@@ -3426,7 +3095,7 @@ async function savePPToken(){
 }
 async function syncPP(all){
   const res=document.getElementById('sy-res');res.style.display='block';
-  res.innerHTML='<span style="color:var(--a2)">⏳ Sincronizando com PerfectPay...</span>';
+  res.innerHTML='<span style="color:var(--amber2)">⏳ Sincronizando com PerfectPay...</span>';
   const extra={};
   if(!all){
     const f=document.getElementById('sy-from')?.value,t=document.getElementById('sy-to')?.value;
@@ -3434,11 +3103,11 @@ async function syncPP(all){
   }
   const d=await ppAPI('sales',extra);
   if(d?.ok){
-    res.innerHTML=`<span style="color:var(--g)">✓ ${d.synced} vendas sincronizadas! (${d.total} encontradas na API)</span>`;
+    res.innerHTML=`<span style="color:var(--green)">✓ ${d.synced} vendas sincronizadas! (${d.total} encontradas na API)</span>`;
     toast('✓ '+d.synced+' vendas importadas!');
     loadOverview();loadVendas();
   } else {
-    res.innerHTML=`<span style="color:var(--r)">❌ ${d?.error||'Erro desconhecido'}</span>`;
+    res.innerHTML=`<span style="color:var(--red)">❌ ${d?.error||'Erro desconhecido'}</span>`;
     toast(d?.error||'Erro','err');
   }
 }
@@ -3456,16 +3125,16 @@ async function saveFAQ() {
   const q  = document.getElementById('faq-q').value.trim();
   const a  = document.getElementById('faq-a').value.trim();
   const msg = document.getElementById('faq-msg');
-  if (!kw || !q || !a) { msg.innerHTML = '<span style="color:var(--r)">Preencha todos os campos.</span>'; return; }
+  if (!kw || !q || !a) { msg.innerHTML = '<span style="color:var(--red)">Preencha todos os campos.</span>'; return; }
   const keywords = kw.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
   const ok = await sbPost('iaem30_chat_faq', { keywords, question: q, answer: a, active: true, priority: 5 });
   if (ok) {
-    msg.innerHTML = '<span style="color:var(--g)">✓ Resposta salva!</span>';
+    msg.innerHTML = '<span style="color:var(--green)">✓ Resposta salva!</span>';
     ['faq-kw','faq-q','faq-a'].forEach(id => document.getElementById(id).value = '');
     loadFAQAdmin();
     setTimeout(() => msg.innerHTML = '', 3000);
   } else {
-    msg.innerHTML = '<span style="color:var(--r)">Erro ao salvar.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">Erro ao salvar.</span>';
   }
 }
 
@@ -3477,12 +3146,12 @@ async function loadFAQAdmin() {
   if (cnt) cnt.textContent = (rows||[]).length + ' respostas';
   if (!rows?.length) { el.innerHTML = '<div class="empty"><div class="eico">💬</div>Nenhuma resposta cadastrada.</div>'; return; }
   el.innerHTML = rows.map(r => `
-    <div style="border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--bg)">
+    <div style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--bg)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
         <div>
           <div style="font-weight:600;font-size:13px">${r.question}</div>
           <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">
-            ${r.keywords.map(k => `<span style="background:rgba(124,92,252,.1);color:var(--a2);border:1px solid rgba(124,92,252,.2);border-radius:4px;padding:2px 7px;font-size:11px">${k}</span>`).join('')}
+            ${r.keywords.map(k => `<span style="background:rgba(124,92,252,.1);color:var(--amber2);border:1px solid rgba(124,92,252,.2);border-radius:4px;padding:2px 7px;font-size:11px">${k}</span>`).join('')}
           </div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
@@ -3490,7 +3159,7 @@ async function loadFAQAdmin() {
           <button onclick="deleteFAQ('${r.id}')" class="btn-sm danger" style="padding:4px 10px;font-size:11px">Excluir</button>
         </div>
       </div>
-      <div style="font-size:12px;color:var(--m);background:var(--card2);border-radius:7px;padding:10px;white-space:pre-wrap;max-height:80px;overflow:hidden">${r.answer.slice(0,200)}${r.answer.length>200?'...':''}</div>
+      <div style="font-size:12px;color:var(--fg3);background:var(--bg2);border-radius:7px;padding:10px;white-space:pre-wrap;max-height:80px;overflow:hidden">${r.answer.slice(0,200)}${r.answer.length>200?'...':''}</div>
     </div>`).join('');
 }
 
@@ -3513,7 +3182,7 @@ async function saveAIKey() {
   const key = document.getElementById('ai-key-input').value.trim();
   const msg = document.getElementById('ai-key-msg');
   if (!key || !key.startsWith('sk-')) {
-    msg.innerHTML = '<span style="color:var(--r)">❌ Chave inválida. Deve começar com sk-ant-...</span>';
+    msg.innerHTML = '<span style="color:var(--red)">❌ Chave inválida. Deve começar com sk-ant-...</span>';
     return;
   }
   // Save to Supabase secrets table
@@ -3523,16 +3192,16 @@ async function saveAIKey() {
     : await sbPost('iaem30_secrets', {key: 'anthropic_key', value: key});
 
   if (ok) {
-    msg.innerHTML = '<span style="color:var(--g)">✓ Chave salva! Agora configure como variável de ambiente no Supabase.</span>';
+    msg.innerHTML = '<span style="color:var(--green)">✓ Chave salva! Agora configure como variável de ambiente no Supabase.</span>';
     const st = document.getElementById('ai-key-status');
     if (st) { st.textContent = '✓ Configurada'; st.className = 'tag green'; }
     document.getElementById('ai-key-input').value = '';
     // Show instructions
     setTimeout(() => {
-      msg.innerHTML += '<br><span style="font-size:12px;color:var(--m)">⚠️ Para ativar: Supabase → Edge Functions → Secrets → adicione <code>ANTHROPIC_API_KEY</code> com o valor da chave.</span>';
+      msg.innerHTML += '<br><span style="font-size:12px;color:var(--fg3)">⚠️ Para ativar: Supabase → Edge Functions → Secrets → adicione <code>ANTHROPIC_API_KEY</code> com o valor da chave.</span>';
     }, 1000);
   } else {
-    msg.innerHTML = '<span style="color:var(--r)">❌ Erro ao salvar.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">❌ Erro ao salvar.</span>';
   }
 }
 
@@ -3576,8 +3245,8 @@ async function loadAIChats() {
   });
 
   const html = Object.entries(sessions).slice(0,20).map(([sid, msgs]) => `
-    <div style="border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden">
-      <div style="background:var(--bg);padding:10px 14px;font-size:11px;color:var(--m2);display:flex;justify-content:space-between">
+    <div style="border:1px solid var(--line);border-radius:10px;margin-bottom:10px;overflow:hidden">
+      <div style="background:var(--bg);padding:10px 14px;font-size:11px;color:var(--fg4);display:flex;justify-content:space-between">
         <span>Sessão: ${sid.slice(0,16)}...</span>
         <span>${msgs.length} mensagens · ${new Date(msgs[msgs.length-1].created_at).toLocaleDateString('pt-BR')}</span>
       </div>
@@ -3604,7 +3273,7 @@ async function loadNicheLeads() {
     ${rows.map(r=>`<tr>
       <td style="white-space:nowrap">${new Date(r.created_at).toLocaleDateString('pt-BR')}</td>
       <td style="font-weight:500">${r.profession||'—'}</td>
-      <td style="color:var(--m)">${r.email||'<span style="color:var(--m2)">Não informado</span>'}</td>
+      <td style="color:var(--fg3)">${r.email||'<span style="color:var(--fg4)">Não informado</span>'}</td>
       <td><button onclick="viewNichePlan(this)" data-plan='${JSON.stringify(r.niche_plan).replace(/'/g,"&#39;")}' class="btn-sm ghost" style="padding:4px 10px;font-size:11px">Ver plano</button></td>
     </tr>`).join('')}
   </tbody></table>`;
@@ -3751,7 +3420,7 @@ async function loadTelegram() {
   const hist = await sbGet('iaem30_telegram_sends', '?order=created_at.desc&limit=10');
   const el = document.getElementById('tg-history');
   if (el) {
-    if (!hist?.length) { el.innerHTML = '<div style="color:var(--m2);font-size:13px">Nenhuma notificação enviada ainda.</div>'; return; }
+    if (!hist?.length) { el.innerHTML = '<div style="color:var(--fg4);font-size:13px">Nenhuma notificação enviada ainda.</div>'; return; }
     el.innerHTML = '<table class="tbl"><thead><tr><th>Mensagem</th><th>Status</th><th>Data</th></tr></thead><tbody>' +
       hist.map(r => `<tr>
         <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.message||'—'}</td>
@@ -3765,7 +3434,7 @@ async function saveTelegram() {
   const token = document.getElementById('tg-token').value.trim();
   const chatid = document.getElementById('tg-chatid').value.trim();
   const msg = document.getElementById('tg-msg');
-  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--r)">Preencha token e chat ID.</span>'; return; }
+  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--red)">Preencha token e chat ID.</span>'; return; }
 
   await Promise.all([
     upsertSecret('telegram_token', token),
@@ -3774,7 +3443,7 @@ async function saveTelegram() {
 
   const st = document.getElementById('tg-status');
   if (st) { st.textContent = '✓ Configurado'; st.className = 'tag green'; }
-  msg.innerHTML = '<span style="color:var(--g)">✓ Salvo! Clique em "Enviar teste" para verificar.</span>';
+  msg.innerHTML = '<span style="color:var(--green)">✓ Salvo! Clique em "Enviar teste" para verificar.</span>';
   setTimeout(() => msg.innerHTML = '', 4000);
 }
 
@@ -3791,9 +3460,9 @@ async function testTelegram() {
   const token = document.getElementById('tg-token').value.trim();
   const chatid = document.getElementById('tg-chatid').value.trim();
   const msg = document.getElementById('tg-msg');
-  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--r)">Configure token e chat ID primeiro.</span>'; return; }
+  if (!token || !chatid) { msg.innerHTML = '<span style="color:var(--red)">Configure token e chat ID primeiro.</span>'; return; }
 
-  msg.innerHTML = '<span style="color:var(--m)">Enviando...</span>';
+  msg.innerHTML = '<span style="color:var(--fg3)">Enviando...</span>';
   try {
     const text = encodeURIComponent(`🤖 *IA em 30 Dias — Teste*
 
@@ -3805,12 +3474,12 @@ _${new Date().toLocaleString('pt-BR')}_`);
     const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatid}&text=${text}&parse_mode=Markdown`);
     const data = await r.json();
     if (data.ok) {
-      msg.innerHTML = '<span style="color:var(--g)">✓ Mensagem enviada! Verifique seu Telegram.</span>';
+      msg.innerHTML = '<span style="color:var(--green)">✓ Mensagem enviada! Verifique seu Telegram.</span>';
     } else {
-      msg.innerHTML = `<span style="color:var(--r)">❌ Erro: ${data.description||'Verifique token e chat ID'}</span>`;
+      msg.innerHTML = `<span style="color:var(--red)">❌ Erro: ${data.description||'Verifique token e chat ID'}</span>`;
     }
   } catch(e) {
-    msg.innerHTML = '<span style="color:var(--r)">❌ Erro de conexão.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">❌ Erro de conexão.</span>';
   }
 }
 
@@ -3843,12 +3512,12 @@ async function loadPixel() {
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <span style="min-width:100px;font-size:13px">${src}</span>
         <div style="flex:1;background:rgba(255,255,255,.06);border-radius:4px;height:8px;overflow:hidden">
-          <div style="background:var(--a);height:100%;width:${Math.round(cnt/total*100)}%;border-radius:4px"></div>
+          <div style="background:var(--amber);height:100%;width:${Math.round(cnt/total*100)}%;border-radius:4px"></div>
         </div>
-        <span style="font-size:12px;color:var(--m);min-width:60px;text-align:right">${cnt} (${Math.round(cnt/total*100)}%)</span>
-      </div>`).join('') || '<span style="color:var(--m2)">Sem dados UTM ainda. Gere links com UTM para rastrear.</span>';
+        <span style="font-size:12px;color:var(--fg3);min-width:60px;text-align:right">${cnt} (${Math.round(cnt/total*100)}%)</span>
+      </div>`).join('') || '<span style="color:var(--fg4)">Sem dados UTM ainda. Gere links com UTM para rastrear.</span>';
   } else if (utmEl) {
-    utmEl.innerHTML = '<span style="color:var(--m2)">Sem dados UTM ainda. Use o gerador abaixo para criar links rastreáveis.</span>';
+    utmEl.innerHTML = '<span style="color:var(--fg4)">Sem dados UTM ainda. Use o gerador abaixo para criar links rastreáveis.</span>';
   }
 
   // Device stats
@@ -3866,7 +3535,7 @@ async function loadPixel() {
           <div style="font-size:24px;margin-bottom:6px">${dev==='Mobile'?'📱':dev==='Tablet'?'📟':'💻'}</div>
           <div class="kpi-label">${dev}</div>
           <div class="kpi-val" style="font-size:20px">${cnt}</div>
-          <div style="font-size:11px;color:var(--m2)">${Math.round(cnt/total*100)}%</div>
+          <div style="font-size:11px;color:var(--fg4)">${Math.round(cnt/total*100)}%</div>
         </div>`).join('') + `</div>`;
   }
 }
@@ -3875,13 +3544,13 @@ async function savePixel() {
   const id = document.getElementById('fb-pixel-id').value.trim();
   const msgEl = document.getElementById('pixel-msg');
   if (!id || !/^\d{10,20}$/.test(id)) {
-    msgEl.innerHTML = '<span style="color:var(--r)">ID inválido. Deve ser um número com 10-20 dígitos.</span>';
+    msgEl.innerHTML = '<span style="color:var(--red)">ID inválido. Deve ser um número com 10-20 dígitos.</span>';
     return;
   }
   await upsertSecret('meta_pixel_id', id);
   const st = document.getElementById('pixel-fb-status');
   if (st) { st.textContent = '✓ Instalado: ' + id; st.className = 'tag green'; }
-  msgEl.innerHTML = '<span style="color:var(--g)">✓ Pixel salvo! Faça um novo deploy do site para ativar o rastreamento.</span>';
+  msgEl.innerHTML = '<span style="color:var(--green)">✓ Pixel salvo! Faça um novo deploy do site para ativar o rastreamento.</span>';
   setTimeout(() => msgEl.innerHTML = '', 5000);
 }
 
@@ -3954,18 +3623,18 @@ async function loadShortLinks() {
       ${rows.map(r => `<tr>
         <td>
           <div style="display:flex;align-items:center;gap:6px">
-            <span style="color:var(--a2);font-weight:600">/r/${r.slug}</span>
+            <span style="color:var(--amber2);font-weight:600">/r/${r.slug}</span>
             <button onclick="copyLink('${SL_BASE}${r.slug}')" class="btn-sm ghost" style="padding:3px 7px;font-size:10px">📋</button>
           </div>
         </td>
         <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          <a href="${r.destination}" target="_blank" style="color:var(--m);text-decoration:none;font-size:12px">${r.destination}</a>
+          <a href="${r.destination}" target="_blank" style="color:var(--fg3);text-decoration:none;font-size:12px">${r.destination}</a>
         </td>
-        <td style="color:var(--m);font-size:13px">${r.title || '—'}</td>
+        <td style="color:var(--fg3);font-size:13px">${r.title || '—'}</td>
         <td>
           <span style="font-weight:700;color:${r.clicks > 0 ? 'var(--g)' : 'var(--m2)'}">${r.clicks || 0}</span>
         </td>
-        <td style="font-size:12px;color:var(--m2)">
+        <td style="font-size:12px;color:var(--fg4)">
           ${r.last_clicked_at ? new Date(r.last_clicked_at).toLocaleDateString('pt-BR') : '—'}
         </td>
         <td>
@@ -3991,9 +3660,9 @@ async function createShortLink() {
   const msg   = document.getElementById('sl-msg');
   const res   = document.getElementById('sl-result');
 
-  if (!dest) { msg.innerHTML = '<span style="color:var(--r)">URL de destino obrigatória.</span>'; return; }
-  if (!slug) { msg.innerHTML = '<span style="color:var(--r)">Slug obrigatório.</span>'; return; }
-  if (slug.length < 2) { msg.innerHTML = '<span style="color:var(--r)">Slug muito curto (mín. 2 caracteres).</span>'; return; }
+  if (!dest) { msg.innerHTML = '<span style="color:var(--red)">URL de destino obrigatória.</span>'; return; }
+  if (!slug) { msg.innerHTML = '<span style="color:var(--red)">Slug obrigatório.</span>'; return; }
+  if (slug.length < 2) { msg.innerHTML = '<span style="color:var(--red)">Slug muito curto (mín. 2 caracteres).</span>'; return; }
 
   msg.innerHTML = '';
   const ok = await sbPost('iaem30_short_links', { slug, destination: dest, title: title || null, clicks: 0, active: true });
@@ -4006,7 +3675,7 @@ async function createShortLink() {
     ['sl-dest','sl-slug','sl-title'].forEach(id => document.getElementById(id).value = '');
     loadShortLinks();
   } else {
-    msg.innerHTML = '<span style="color:var(--r)">❌ Erro. O slug pode já estar em uso.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">❌ Erro. O slug pode já estar em uso.</span>';
     res.style.display = 'none';
   }
 }
@@ -4076,11 +3745,11 @@ async function loadPersonalPages() {
     const copyBtn = '<button class="btn-sm ghost" data-link="' + pageUrl + '" onclick="ppCopyLink(this)" style="padding:4px 8px;font-size:11px">📋</button>';
     const viewBtn = '<button class="btn-sm ghost" data-link="' + pageUrl + '" onclick="ppView(this)" style="padding:4px 8px;font-size:11px">👁️ Ver</button>';
     return '<tr>' +
-      '<td><div style="font-weight:600;font-size:13px">' + (p.name||'—') + '</div><div style="font-size:11px;color:var(--m)">' + p.email + '</div></td>' +
-      '<td><span style="font-family:monospace;font-size:12px;color:var(--a2);background:var(--agg);padding:2px 8px;border-radius:4px">' + (p.coupon_code||'—') + '</span></td>' +
+      '<td><div style="font-weight:600;font-size:13px">' + (p.name||'—') + '</div><div style="font-size:11px;color:var(--fg3)">' + p.email + '</div></td>' +
+      '<td><span style="font-family:monospace;font-size:12px;color:var(--amber2);background:var(--agg);padding:2px 8px;border-radius:4px">' + (p.coupon_code||'—') + '</span></td>' +
       '<td style="text-align:center"><strong>' + (p.views||0) + '</strong></td>' +
       '<td>' + statusTag + '</td>' +
-      '<td style="font-size:12px;color:var(--m)">' + new Date(p.expires_at).toLocaleDateString('pt-BR') + '</td>' +
+      '<td style="font-size:12px;color:var(--fg3)">' + new Date(p.expires_at).toLocaleDateString('pt-BR') + '</td>' +
       '<td><div style="display:flex;gap:5px">' + viewBtn + copyBtn + '</div></td>' +
     '</tr>';
   }).join('');
@@ -4097,11 +3766,11 @@ async function createPersonalPage() {
   const msg   = document.getElementById('pp-msg');
 
   if (!email || !email.includes('@')) {
-    msg.innerHTML = '<span style="color:var(--r)">Email inválido.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">Email inválido.</span>';
     return;
   }
 
-  msg.innerHTML = '<span style="color:var(--m)">Criando página e enviando email...</span>';
+  msg.innerHTML = '<span style="color:var(--fg3)">Criando página e enviando email...</span>';
 
   try {
     const r = await fetch('https://ihylwxjxjajtdhsnlrfm.supabase.co/functions/v1/personal-page', {
@@ -4112,16 +3781,16 @@ async function createPersonalPage() {
     const data = await r.json();
 
     if (data.ok) {
-      msg.innerHTML = '<span style="color:var(--g)">✓ Página criada e email enviado! Cupom: <strong>' + data.coupon + '</strong></span>';
+      msg.innerHTML = '<span style="color:var(--green)">✓ Página criada e email enviado! Cupom: <strong>' + data.coupon + '</strong></span>';
       document.getElementById('pp-email').value = '';
       document.getElementById('pp-name').value = '';
       setTimeout(() => msg.innerHTML = '', 8000);
       loadPersonalPages();
     } else {
-      msg.innerHTML = '<span style="color:var(--r)">❌ ' + (data.error||'Erro desconhecido') + '</span>';
+      msg.innerHTML = '<span style="color:var(--red)">❌ ' + (data.error||'Erro desconhecido') + '</span>';
     }
   } catch(e) {
-    msg.innerHTML = '<span style="color:var(--r)">❌ Erro de conexão.</span>';
+    msg.innerHTML = '<span style="color:var(--red)">❌ Erro de conexão.</span>';
   }
 }
 
@@ -4191,7 +3860,7 @@ async function loadMetas() {
     const pct = Math.min(100, Math.round(val / Math.max(max,1) * 100));
     return `<div style="background:rgba(255,255,255,.06);border-radius:6px;height:12px;overflow:hidden;margin-top:6px">
       <div style="background:${color};height:100%;width:${pct}%;border-radius:6px;transition:width .8s ease"></div>
-    </div><div style="font-size:11px;color:var(--m2);margin-top:3px">${pct}% — ${val} de ${max}</div>`;
+    </div><div style="font-size:11px;color:var(--fg4);margin-top:3px">${pct}% — ${val} de ${max}</div>`;
   };
 
   el.innerHTML = `<div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
@@ -4241,8 +3910,8 @@ async function saveMeta() {
   if (existing?.[0]) ok = await sbPatch('iaem30_metas', '?mes=eq.' + mes, data);
   else ok = await sbPost('iaem30_metas', data);
   const msg = document.getElementById('meta-msg');
-  if (ok) { msg.innerHTML = '<span style="color:var(--g)">✓ Metas salvas!</span>'; loadMetas(); setTimeout(()=>msg.innerHTML='',3000); }
-  else msg.innerHTML = '<span style="color:var(--r)">Erro ao salvar.</span>';
+  if (ok) { msg.innerHTML = '<span style="color:var(--green)">✓ Metas salvas!</span>'; loadMetas(); setTimeout(()=>msg.innerHTML='',3000); }
+  else msg.innerHTML = '<span style="color:var(--red)">Erro ao salvar.</span>';
 }
 
 // ══════════════════════════════════════
@@ -4265,15 +3934,15 @@ async function loadCalendario() {
 
   el.innerHTML = Object.entries(byDate).map(([date, items]) => `
     <div style="margin-bottom:16px">
-      <div style="font-size:12px;font-weight:600;color:var(--m2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b2)">
+      <div style="font-size:12px;font-weight:600;color:var(--fg4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b2)">
         ${new Date(date+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'})}
       </div>
       ${items.map(i => `
         <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:1px solid var(--b2);border-radius:9px;margin-bottom:6px">
           <span style="font-size:20px">${PLAT_ICONS[i.plataforma]||'📌'}</span>
           <div style="flex:1">
-            <div style="font-size:13px;font-weight:600;color:var(--t)">${i.titulo}</div>
-            <div style="font-size:11px;color:var(--m)">${i.plataforma} · <span style="color:${STATUS_COLORS[i.status]||'var(--m)'}">${i.status}</span></div>
+            <div style="font-size:13px;font-weight:600;color:var(--fg)">${i.titulo}</div>
+            <div style="font-size:11px;color:var(--fg3)">${i.plataforma} · <span style="color:${STATUS_COLORS[i.status]||'var(--m)'}">${i.status}</span></div>
           </div>
           <div style="display:flex;gap:6px">
             ${i.link ? `<a href="${i.link}" target="_blank" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">🔗</a>` : ''}
@@ -4330,12 +3999,12 @@ async function loadLinks() {
   el.innerHTML = `<table class="tbl"><thead><tr><th>Slug</th><th>Destino</th><th>Descrição</th><th>Cliques</th><th>Status</th><th></th></tr></thead><tbody>
     ${rows.map(r=>`<tr>
       <td>
-        <a href="https://iaem30.com.br/go/${r.slug}" target="_blank" style="color:var(--a2);font-weight:600">/${r.slug}</a>
-        <button onclick="copyLinkSlug('${r.slug}')" style="background:none;border:none;cursor:pointer;color:var(--m);font-size:12px;margin-left:4px" title="Copiar">📋</button>
+        <a href="https://iaem30.com.br/go/${r.slug}" target="_blank" style="color:var(--amber2);font-weight:600">/${r.slug}</a>
+        <button onclick="copyLinkSlug('${r.slug}')" style="background:none;border:none;cursor:pointer;color:var(--fg3);font-size:12px;margin-left:4px" title="Copiar">📋</button>
       </td>
-      <td style="color:var(--m);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${r.destino}</td>
-      <td style="color:var(--m);font-size:12px">${r.descricao||'—'}</td>
-      <td><span style="font-weight:700;color:var(--a2)">${r.cliques||0}</span></td>
+      <td style="color:var(--fg3);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${r.destino}</td>
+      <td style="color:var(--fg3);font-size:12px">${r.descricao||'—'}</td>
+      <td><span style="font-weight:700;color:var(--amber2)">${r.cliques||0}</span></td>
       <td><span class="tag ${r.active?'green':''}">${r.active?'Ativo':'Inativo'}</span></td>
       <td style="display:flex;gap:5px">
         <button onclick="toggleLink('${r.id}',${!r.active})" class="btn-sm ghost" style="padding:4px 8px;font-size:11px">${r.active?'Pausar':'Ativar'}</button>
@@ -4355,16 +4024,16 @@ async function saveLink() {
   const destino = document.getElementById('link-destino').value.trim();
   const descricao = document.getElementById('link-desc').value.trim();
   const msg = document.getElementById('link-msg');
-  if (!slug || !destino) { msg.innerHTML = '<span style="color:var(--r)">Preencha o slug e o destino.</span>'; return; }
+  if (!slug || !destino) { msg.innerHTML = '<span style="color:var(--red)">Preencha o slug e o destino.</span>'; return; }
   const ok = await sbPost('iaem30_links', { slug, destino, descricao, cliques: 0, active: true });
   if (ok) {
-    msg.innerHTML = '<span style="color:var(--g)">✓ Link criado! <strong>iaem30.com.br/go/' + slug + '</strong></span>';
+    msg.innerHTML = '<span style="color:var(--green)">✓ Link criado! <strong>iaem30.com.br/go/' + slug + '</strong></span>';
     document.getElementById('link-slug').value = '';
     document.getElementById('link-destino').value = '';
     document.getElementById('link-desc').value = '';
     loadLinks();
     setTimeout(()=>msg.innerHTML='', 5000);
-  } else msg.innerHTML = '<span style="color:var(--r)">Erro. Slug pode já existir.</span>';
+  } else msg.innerHTML = '<span style="color:var(--red)">Erro. Slug pode já existir.</span>';
 }
 
 async function toggleLink(id, active) {
